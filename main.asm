@@ -18,8 +18,10 @@ screen_top: defb    0   ; WPMEMx
     include "canvas.z80"
     include "controls.z80"
     include "screen.z80"
+    include "sprite.z80"
 
     include "build/graphics/font_npm.asm"
+    include "build/graphics/graphics_snake.asm"
 
  defs 0x8000 - $
  ORG $8000
@@ -33,8 +35,23 @@ Scene_Draw:
 Initialise_Sprites:
     RET
 
+Update_snake:
+    LD H, Snake_head_x
+    LD L, Snake_head_y
+    CALL Get_Char_Address
+    LD A, Snake_head_direction
+    LD DE, Snake_1
+    CALL Print_Char
+    RET
 Interrupt:
     DI
+    EXX
+    EX AF, AF'
+
+    CALL Update_snake
+
+    EX AF, AF'
+    EXX
     EI
     RET
 

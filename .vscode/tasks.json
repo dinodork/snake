@@ -37,11 +37,12 @@
             },
             "dependsOn": [
                 "CreateBuildDirectory",
-                "GenerateAsmFromGraphics",
+                "GenerateFontAsm",
+                "GenerateGraphicsAsm",
             ],
         },
         {
-            "label": "GenerateAsmFromGraphics",
+            "label": "GenerateFontAsm",
             "type": "process",
             "linux": {
                 "command": "/usr/bin/python3",
@@ -50,6 +51,26 @@
                     "-W1",
                     "${workspaceFolder}/graphics/npm.fnt",
                     "-o${config:buildPath}/graphics/font_npm.asm",
+                ],
+            },
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            },
+            "dependsOn": [
+                "create build directory",
+            ],
+        },
+        {
+            "label": "GenerateGraphicsAsm",
+            "type": "process",
+            "linux": {
+                "command": "/usr/bin/python3",
+                "args": [
+                    "scripts/graphics_to_asm.py",
+                    "-W1",
+                    "${workspaceFolder}/graphics/snake.udg",
+                    "-o${config:buildPath}/graphics/graphics_snake.asm",
                 ],
             },
             "group": {

@@ -1,0 +1,8 @@
+Direction_up: EQU 0x00
+Direction_down: EQU 0x01
+Direction_left: EQU 0x02
+Direction_right: EQU 0x03
+
+Snake_head_x: EQU 0x10
+Snake_head_y: EQU 0x12
+Snake_head_direction: EQU Direction_right
