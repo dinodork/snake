@@ -8,8 +8,8 @@ Clear_Screen:
 	LD BC, 6144	; Length of bitmap memory to clear
 	LD (HL), 0	; Set the first byte to 0
 	LDIR		; Copy this byte to the second, and so on
-	LD BC,767	; Length of attribute memory, less one to clear
-	LD (HL),A	; Set the first byte to A
+	LD BC, 767	; Length of attribute memory, less one to clear
+	LD (HL), A	; Set the first byte to A
 	LDIR		; Copy this byte to the second, and so on
 	RET
 
@@ -84,6 +84,7 @@ Print_Strings:
 	RET Z
 	INC IX
 	JP Print_Strings
+
 Print_String:
 	LD L, (IX+0)	; Fetch the X coordinate
 	INC IX			; Increase HL to the next memory location

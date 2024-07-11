@@ -1,0 +1,25 @@
+; Read the in-game controls
+; HL: The control map
+; Returns:
+;  A: Input flags - 000UDLRF (Up, Down, Left, Right, Fire)
+; Zero flag set if no key pressed
+;
+Read_Controls:
+  LD D, 5  	; Number of controls to check
+  LD E, 0  	; The output flags
+  LD C, 0xFE  ; Low is always 0xFE for reading keyboard
+Read_Controls1:
+  LD B, (HL)  ; Get the keyboard port address
+  INC HL
+  IN A, (C)  ; Read the rows in
+  AND (HL)  ; And with the mask
+  JR NZ, Read_Controls2		; Skip if not pressed (bit is 0)
+  SCF  	; Set C flag
+Read_Controls2:
+	RL E  	; Rotate the carry flag into E
+  INC HL
+  DEC D
+  JR NZ, Read_Controls1		; Loop
+  LD A,E  	; Fetch the key flags
+  AND A  	; Check for 0
+  RET

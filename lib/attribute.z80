@@ -1,0 +1,29 @@
+
+
+    ifndef lib_attribute_z80
+    define lib_attribute_z80
+
+Ink_Black:     EQU 0x00
+Ink_Blue:      EQU 0x01
+Ink_Red:       EQU 0x02
+Ink_Magenta:   EQU 0x03
+Ink_Green:     EQU 0x04
+Ink_Cyan:      EQU 0x05
+Ink_Yellow:    EQU 0x06
+Ink_White:     EQU 0x07
+Paper_Black:   EQU 0x00
+Paper_Blue:    EQU 0x08
+Paper_Red:     EQU 0x10
+Paper_Magenta: EQU 0x18
+Paper_Green:   EQU 0x20
+Paper_Cyan:    EQU 0x28
+Paper_Yellow:  EQU 0x30
+Paper_White:   EQU 0x38
+
+Bright:        EQU 0x40
+Flash:         EQU 0x80
+
+Attribute_box_columns: EQU 32
+Attribute_box_rows:    EQU 24
+
+    endif

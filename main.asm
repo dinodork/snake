@@ -14,7 +14,9 @@ NEX:    equ 0   ;  1=Create nex file, 0=create sna file
     defs 0x6000 - $    ; move after screen area
 screen_top: defb    0   ; WPMEMx
 
+    include "lib/attribute.z80"
     include "canvas.z80"
+    include "controls.z80"
     include "screen.z80"
 
     include "build/graphics/font_npm.asm"
@@ -32,12 +34,14 @@ Initialise_Sprites:
     RET
 
 Interrupt:
+    DI
+    EI
     RET
 
 main:
 	DI
 	LD SP, Stack_Top
-	LD A, 0x47
+	LD A, Paper_Black | Ink_White | Bright
 	CALL Clear_Screen
 
 	LD IX, Text_Scores
@@ -57,6 +61,11 @@ main:
 	LD I, A
 	IM 2
 	EI
+
+Loop:
+	HALT
+	CALL Handle_Controls
+	JP Loop
 
 stack_top:
     defw 0  ; WPMEM, 2
