@@ -1,0 +1,4 @@
+{
+  "projectName" : "snake",
+  "buildPath" : "${workspaceFolder}/build",
+}

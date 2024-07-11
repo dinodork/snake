@@ -1,0 +1,64 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "CreateBuildDirectory",
+            "type": "shell",
+            "command": "mkdir -p ${config:buildPath} ${config:buildPath}/graphics",
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            }
+        },
+        {
+            "label": "Make(sjasmplus)",
+            "type": "shell",
+            "command": "sjasmplus", // Please add the full path to sjasmplus
+            "args": [
+                "--outprefix=${config:buildPath}/",
+                "--sld=${config:buildPath}/${config:projectName}.sld",
+                "--fullpath",
+                "${workspaceFolder}/main.asm"
+            ],
+            "problemMatcher": {
+                "owner": "sjasmplus",
+                "fileLocation": "autoDetect",
+                "pattern": {
+                    "regexp": "^(.*)\\((\\d+)\\):\\s+(warning|error):\\s+(.*)$",
+                    "file": 1,
+                    "line": 2,
+                    "severity": 3,
+                    "message": 4
+                }
+            },
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "dependsOn": [
+                "CreateBuildDirectory",
+                "GenerateAsmFromGraphics",
+            ],
+        },
+        {
+            "label": "GenerateAsmFromGraphics",
+            "type": "process",
+            "linux": {
+                "command": "/usr/bin/python3",
+                "args": [
+                    "scripts/graphics_to_asm.py",
+                    "-W1",
+                    "${workspaceFolder}/graphics/npm.fnt",
+                    "-o${config:buildPath}/graphics/font_npm.asm",
+                ],
+            },
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            },
+            "dependsOn": [
+                "create build directory",
+            ],
+        },
+    ]
+}

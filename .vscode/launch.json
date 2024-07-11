@@ -1,0 +1,39 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "dezog",
+            "request": "launch",
+            "name": "Internal Simulator",
+            "remoteType": "zsim",
+            "zsim": {
+                "visualMemory": true,
+                "memoryModel": "ZXNEXT",
+                "ulaScreen": true,
+                "zxBorderWidth": 20,
+                "vsyncInterrupt": true,
+                "zxKeyboard": true,
+                "zxBeeper": true
+            },
+            "sjasmplus": [
+                {
+                    "path": "snake.sld"
+                }
+            ],
+            "history": {
+                "reverseDebugInstructionCount": 1000000,
+                "spotCount": 10,
+                "codeCoverageEnabled": true
+            },
+            "startAutomatically": false,
+            "commandsAfterLaunch": [],
+            "rootFolder": "${config:buildPath}",
+            "topOfStack": "stack_top",
+            //"load": "${projectName}.sna",
+            "load": "snake.sna",
+            "smallValuesMaximum": 513,
+            "tmpDir": ".tmp",
+            "preLaunchTask": "Make(sjasmplus)"
+        },
+    ],
+}

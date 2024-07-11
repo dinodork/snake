@@ -1,0 +1,4 @@
+Text_Scores:
+	DB 0, 0, "Snake", 0xFE
+	DB 9, 0, "Score 00000000", 0xFE
+	DB 24, 0, "Lives 0", 0xFF
