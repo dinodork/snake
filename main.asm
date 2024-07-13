@@ -61,12 +61,25 @@ Update_snake:
 
     RET
 
+Delay:  EQU 10
+Delay_timer:
+    DEFS 1
+
+>>>>>>> 4f43ee5 (Delay timer.)
 Interrupt:
     DI
     EXX
     EX AF, AF'
 
+    LD A, (Delay_timer)
+    INC A
+    CP Delay
+    JR NZ, Interrupt_done
+
     CALL Update_snake
+    LD A, 0
+Interrupt_done:
+    LD (Delay_timer), A
 
     EX AF, AF'
     EXX

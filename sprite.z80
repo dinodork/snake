@@ -63,6 +63,8 @@ Snake_tail_x:
 Snake_tail_y:
     DEFS 0x1
 
+; The direction that the head is currently facing. The user controls the value
+; with the keyboard/joystick, see Handle_Controls.
 Current_Direction:
     DEFS 0x1
 
