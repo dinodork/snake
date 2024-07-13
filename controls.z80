@@ -16,6 +16,7 @@ Right_text:
 	DB "Right", 0xFE
 
 
+; Reads the keyboard and updates the player sprite's direction
 Handle_Controls:
     LD HL, Input_Custom
     CALL Read_Controls
@@ -31,7 +32,11 @@ Check_Up:
 	LD H, 10
 	LD L, 10
 	CALL Print_String_At
-    JP Check_Left
+
+    LD A, Facing_up
+    LD (Snake_head_direction), A
+
+    RET
 Check_Down:
     POP AF
     PUSH AF
@@ -45,7 +50,47 @@ Check_Down:
 	LD L, 10
 	CALL Print_String_At
 
+    LD A, Facing_down
+    LD (Snake_head_direction), A
+
+    RET
 Check_Left:
+    POP AF
+    PUSH AF
+    AND 4
+    CP 0
+    JR Z, Check_Right
+
+    LD DE, Npm_1 - 0x100
+    LD IX, Left_text
+	LD H, 10
+	LD L, 10
+	CALL Print_String_At
+
+    LD A, Facing_left
+    LD (Snake_head_direction), A
+
+    RET
+
+Check_Right:
+    POP AF
+    PUSH AF
+    AND 2
+    CP 0
+    JR Z, Keycheck_Done
+
+    LD DE, Npm_1 - 0x100
+    LD IX, Right_text
+	LD H, 10
+	LD L, 10
+	CALL Print_String_At
+
+    LD A, Facing_right
+    LD (Snake_head_direction), A
+
+    RET
+
+
 Keycheck_Done:
     POP AF
     RET

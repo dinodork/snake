@@ -32,17 +32,35 @@ Stack_Top:		EQU 0xFFF0
 Scene_Draw:
     RET
 
-Initialise_Sprites:
+; H Snake head Y position
+; L Snake head X position
+; A Snake head direction description, see comment above Snake_segment_queue.
+Move_snake:
+    AND 0x0F
+    CP Facing_right
+    JP NZ, Move_snake_2
+    INC L
+    RET
+Move_snake_2:
     RET
 
 Update_snake:
-    LD H, Snake_head_x
-    LD L, Snake_head_y
+    LD HL, (Snake_head_x) ; H := Y position, L := X position
+    LD A, (Current_Direction)
+    CALL Move_snake
+
+    ; Write new head position
+    LD (Snake_head_x), HL
+
+    ; Draw the head in the new position
+    PUSH AF
     CALL Get_Char_Address
-    LD A, Snake_head_direction
+    POP AF
     LD DE, Snake_1
     CALL Print_Char
+
     RET
+
 Interrupt:
     DI
     EXX
