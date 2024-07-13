@@ -15,6 +15,8 @@ Left_text:
 Right_text:
 	DB "Right", 0xFE
 
+Game_over_text:
+    DB "Game Over", 0xFE
 
 ; Reads the keyboard and updates the player sprite's direction
 Handle_Controls:
@@ -34,7 +36,7 @@ Check_Up:
 	CALL Print_String_At
 
     LD A, Facing_up
-    LD (Snake_head_direction), A
+    LD (Current_Direction), A
 
     RET
 Check_Down:
@@ -51,7 +53,7 @@ Check_Down:
 	CALL Print_String_At
 
     LD A, Facing_down
-    LD (Snake_head_direction), A
+    LD (Current_Direction), A
 
     RET
 Check_Left:
@@ -68,7 +70,7 @@ Check_Left:
 	CALL Print_String_At
 
     LD A, Facing_left
-    LD (Snake_head_direction), A
+    LD (Current_Direction), A
 
     RET
 
@@ -86,7 +88,7 @@ Check_Right:
 	CALL Print_String_At
 
     LD A, Facing_right
-    LD (Snake_head_direction), A
+    LD (Current_Direction), A
 
     RET
 

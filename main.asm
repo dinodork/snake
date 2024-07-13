@@ -32,22 +32,55 @@ Stack_Top:		EQU 0xFFF0
 Scene_Draw:
     RET
 
+; Updates the X, Y position of the head according to the direction it's facing.
 ; H Snake head Y position
 ; L Snake head X position
 ; A Snake head direction description, see comment above Snake_segment_queue.
-Move_snake:
+Advance_head:
     AND 0x0F
     CP Facing_right
-    JP NZ, Move_snake_2
+    JP NZ, Advance_head_2
     INC L
     RET
-Move_snake_2:
+Advance_head_2:
+    CP Facing_left
+    JP NZ, Advance_head_3
+    DEC L
+    RET
+Advance_head_3:
+    CP Facing_up
+    JP NZ, Advance_head_4
+    DEC H
+    RET
+Advance_head_4:
+    CP Facing_down
+    RET NZ
+    INC H
+    RET
+
+Game_Over:
+    DEFS 1
+
+; H Snake head Y position
+; L Snake head X position
+Detect_Collision:
+    LD A, L
+    CP 31
+    JR Z, Detect_Collision_Happened
+    RET
+Detect_Collision_Happened:
+    LD IX, Game_Over
+    LD (IX), 1
     RET
 
 Update_snake:
     LD HL, (Snake_head_x) ; H := Y position, L := X position
     LD A, (Current_Direction)
-    CALL Move_snake
+    CALL Advance_head
+
+    PUSH AF
+    CALL Detect_Collision
+    POP AF
 
     ; Write new head position
     LD (Snake_head_x), HL
@@ -61,11 +94,10 @@ Update_snake:
 
     RET
 
-Delay:  EQU 10
+Delay:  EQU 10 ; TODO - make sure to initialise to 0
 Delay_timer:
     DEFS 1
 
->>>>>>> 4f43ee5 (Delay timer.)
 Interrupt:
     DI
     EXX
@@ -99,6 +131,10 @@ main:
     CALL Scene_Draw
 
 	CALL Initialise_Sprites
+
+    LD IX, Game_Over
+    LD (IX), 0
+
 	LD HL, Interrupt
 	LD IX, 0xFFF0
 	LD (IX + 04h), 0xC3	   ; Opcode for JP
@@ -113,7 +149,20 @@ main:
 Loop:
 	HALT
 	CALL Handle_Controls
-	JP Loop
+    LD IX, Game_Over
+    LD A, (IX)
+    CP 1
+    JR Z, Handle_Game_Over
+    JP Loop
+
+Handle_Game_Over:
+    DI
+    LD DE, Npm_1 - 0x100
+    LD IX, Game_over_text
+	LD H, 10
+	LD L, 10
+	CALL Print_String_At
+    HALT
 
 stack_top:
     defw 0  ; WPMEM, 2
