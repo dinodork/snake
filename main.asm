@@ -29,9 +29,6 @@ screen_top: defb    0   ; WPMEMx
 Stack_Top:		EQU 0xFFF0
 			LD SP, Stack_Top
 
-Scene_Draw:
-    RET
-
 ; Updates the X, Y position of the head according to the direction it's facing.
 ; H Snake head Y position
 ; L Snake head X position
@@ -128,7 +125,7 @@ main:
     LD DE, Npm_1 - 0x100
 	CALL Print_Strings
 
-    CALL Scene_Draw
+    CALL Draw_Scene
 
 	CALL Initialise_Sprites
 
