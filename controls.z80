@@ -18,15 +18,14 @@ Right_text:
 Game_over_text:
     DB "Game Over", 0xFE
 
-; Reads the keyboard and updates the player sprite's direction
+; Reads the keyboard and updates the player sprite's direction;
+; Current_Direction
 Handle_Controls:
     LD HL, Input_Custom
     CALL Read_Controls
 
 Check_Up:
-    PUSH AF
-    AND 10h
-    CP 0
+    BIT 4, A
     JR Z, Check_Down
 
     LD DE, Npm_1 - 0x100
@@ -40,10 +39,7 @@ Check_Up:
 
     RET
 Check_Down:
-    POP AF
-    PUSH AF
-    AND 8
-    CP 0
+    BIT 3, A
     JR Z, Check_Left
 
     LD DE, Npm_1 - 0x100
@@ -57,10 +53,7 @@ Check_Down:
 
     RET
 Check_Left:
-    POP AF
-    PUSH AF
-    AND 4
-    CP 0
+    BIT 2, A
     JR Z, Check_Right
 
     LD DE, Npm_1 - 0x100
@@ -75,10 +68,7 @@ Check_Left:
     RET
 
 Check_Right:
-    POP AF
-    PUSH AF
-    AND 2
-    CP 0
+    BIT 1, A
     JR Z, Keycheck_Done
 
     LD DE, Npm_1 - 0x100
@@ -90,9 +80,5 @@ Check_Right:
     LD A, Facing_right
     LD (Current_Direction), A
 
-    RET
-
-
 Keycheck_Done:
-    POP AF
     RET
