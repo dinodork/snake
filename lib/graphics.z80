@@ -1,3 +1,4 @@
+Attribute_ram_columns: EQU 32
 Start_Of_Image_File: EQU 0x4000
 
 Start_Of_Attribute_Ram: EQU 0x4000 + 0x1800

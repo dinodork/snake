@@ -1,9 +1,47 @@
+
+	include "lib/attribute.z80"
+	include "lib/graphics.z80"
 Text_Scores:
 	DB 0, 0, "Snake", 0xFE
 	DB 9, 0, "Score 00000000", 0xFE
 	DB 24, 0, "Lives 0", 0xFF
 
 Tile_index_brick: EQU 19
+Play_area_height: EQU 24 - 3 ; Status bar + top, bottom walls
+
+Play_area_attribute: EQU Paper_Blue | Ink_Black | Bright
+Play_area_drop_shadow_attribute: EQU (Paper_Blue | Ink_Black) & ~Bright
+Draw_Vertical_Fence:
+	LD B, 21
+Draw_Vertical_Fence_Loop:
+    LD H, B ; Row
+	LD L, D ; Column
+	INC H
+	CALL Get_Char_Address
+
+	PUSH BC
+
+	; Fill in the colour
+	LD C, B
+	INC C
+	LD B, 0
+
+	DUP 5 ; Multiply BC by 32
+	RL BC
+	EDUP
+
+	LD IX, Start_Of_Attribute_Ram
+	ADD IX, BC
+	LD (IX), Ink_Yellow | Paper_Red      ; We do these two lines twice, but who
+	LD (IX + 31), Ink_Yellow | Paper_Red ; cares?
+
+	; Draw the tile
+	LD IY, Snake_1 + Tile_index_brick * 8
+	CALL Print_UDG8
+	POP BC
+
+	DJNZ Draw_Vertical_Fence_Loop
+	RET
 
 Draw_Scene:
 	LD B, 32
@@ -54,37 +92,56 @@ Draw_Scene_Bottom_Fence_Loop:
 	LD D, 31
 	CALL Draw_Vertical_Fence
 
-	RET
 
-Draw_Vertical_Fence:
-	LD B, 21
-Draw_Scene_Left_Fence_Loop:
-    LD H, B ; Row
-	LD L, D ; Column
-	INC H
-	CALL Get_Char_Address
+Clear_Play_Area: ; Purely done in attribute RAM
 
-	PUSH BC
+	; Draw the drop shadow of top wall
+	LD HL, Start_Of_Attribute_Ram + 32 * 2 + 1
+	LD DE, Start_Of_Attribute_Ram + 32 * 2 + 2
+	LD BC, 29	; Length of bitmap memory to clear
+	LD (HL), Paper_Blue | Ink_Black
+	LDIR		; Copy this byte to the second, and so on
 
-	; Fill in the colour
-	LD C, B
-	INC C
-	LD B, 0
+	; Draw the drop shadow of left wall
+	LD B, 20
+	LD HL, Start_Of_Attribute_Ram + Attribute_ram_columns * 3 + 1
+	LD DE, Attribute_ram_columns
+Left_wall_drop_shadow_loop:
+	LD (HL), Play_area_drop_shadow_attribute
+	ADD HL, DE
 
-	DUP 5 ; Multiply BC by 32
-	RL BC
+	DJNZ Left_wall_drop_shadow_loop
+
+	LD B, Play_area_height - 1
+Clear_Play_Area_Loop:
+	LD H, 0
+	LD L, B
+	INC L
+	INC L
+
+	; Multiply by 32 (length of attribute rows)
+	DUP 5
+	RL HL
 	EDUP
 
-	LD IX, Start_Of_Attribute_Ram
-	ADD IX, BC
-	LD (IX), Ink_Yellow | Paper_Red      ; We do these two lines twice, but who
-	LD (IX + 31), Ink_Yellow | Paper_Red ; cares?
+	; Shift two positions to the right (wall + drop shadow)
+	INC HL
+	INC HL
 
-	; Draw the tile
-	LD IY, Snake_1 + Tile_index_brick * 8
-	CALL Print_UDG8
+	; Add that to the start of attr area
+	LD DE, Start_Of_Attribute_Ram
+	ADD HL, DE
+
+	; DE := HL + 1
+	LD DE, HL
+	INC DE
+
+	PUSH BC
+	LD BC, 28	; Length of bitmap memory to clear
+	LD (HL), Paper_Blue | Ink_Black | Bright
+	LDIR		; Copy this byte to the second, and so on
 	POP BC
 
-	DJNZ Draw_Scene_Left_Fence_Loop
+	DJNZ Clear_Play_Area_Loop
 
 	RET
