@@ -78,6 +78,8 @@ Update_snake:
     PUSH AF
     CALL Detect_Collision
     POP AF
+    BIT 0, (IX)
+    RET NZ
 
     ; Write new head position
     LD (Snake_head_x), HL
