@@ -9,9 +9,6 @@ Follower_down: EQU 0x10
 Follower_left: EQU 0x20
 Follower_right: EQU 0x30
 
-Snake_head_direction: EQU 2
-
-Snake_head_size: EQU Snake_head_direction
 
 ; The head's on-screen x coordinate
 Snake_head_x:
@@ -26,11 +23,6 @@ Snake_tail_x:
 
 ; The tail's on-screen y coordinate
 Snake_tail_y:
-    DEFS 0x1
-
-; The direction that the head is currently facing. The user controls the value
-; with the keyboard/joystick, see Handle_Controls.
-Current_Direction:
     DEFS 0x1
 
 Initialise_Sprites:
@@ -49,7 +41,6 @@ Initialise_Sprites:
     LD (IX),  (24 - 3) / 2 - 2
 
 ; Initialise direction
-    LD IX, Current_Direction
     LD (IX), Facing_right
 
 ; Initialise segment queue

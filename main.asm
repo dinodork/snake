@@ -71,8 +71,10 @@ Detect_Collision_Happened:
     RET
 
 Update_snake:
+    CALL Segment_Queue_get_head
+    LD A, (HL)
+
     LD HL, (Snake_head_x) ; H := Y position, L := X position
-    LD A, (Current_Direction)
     CALL Advance_head
 
     PUSH AF

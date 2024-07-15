@@ -21,7 +21,7 @@
 ; The head has the special case that its follower is in the opposite direction
 ; it's facing, while the tail has the special case that it has no follower,
 ; by definition.
-Segment_Queue_buffer_size: EQU (Snake_head_size * (24 - 2) * (32 - 2))
+Segment_Queue_buffer_size: EQU (24 - 2) * (32 - 2)
 
 Segment_Queue_buffer:
     DEFS Segment_Queue_buffer_size
@@ -45,4 +45,13 @@ Segment_Queue_initialise:
 	LD IX, Segment_Queue_tail_index
     LD (IX), 0
 
+    RET
+
+; Returns the address of the segment queue's head in HL
+Segment_Queue_get_head:
+    LD IX, Segment_Queue_head_index
+    LD E, (IX)
+    LD D, 0
+    LD HL, Segment_Queue_buffer
+    ADD HL, DE
     RET

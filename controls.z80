@@ -34,8 +34,8 @@ Check_Up:
 	LD L, 10
 	CALL Print_String_At
 
-    LD A, Facing_up
-    LD (Current_Direction), A
+    CALL Segment_Queue_get_head
+    LD (HL), Facing_up
 
     RET
 Check_Down:
@@ -48,8 +48,8 @@ Check_Down:
 	LD L, 10
 	CALL Print_String_At
 
-    LD A, Facing_down
-    LD (Current_Direction), A
+    CALL Segment_Queue_get_head
+    LD (HL), Facing_down
 
     RET
 Check_Left:
@@ -62,8 +62,8 @@ Check_Left:
 	LD L, 10
 	CALL Print_String_At
 
-    LD A, Facing_left
-    LD (Current_Direction), A
+    CALL Segment_Queue_get_head
+    LD (HL), Facing_left
 
     RET
 
@@ -77,8 +77,8 @@ Check_Right:
 	LD L, 10
 	CALL Print_String_At
 
-    LD A, Facing_right
-    LD (Current_Direction), A
+    CALL Segment_Queue_get_head
+    LD (HL), Facing_right
 
 Keycheck_Done:
     RET
