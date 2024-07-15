@@ -1,3 +1,5 @@
+    include "segment_queue.z80"
+
 Facing_up: EQU 0x00
 Facing_down: EQU 0x01
 Facing_left: EQU 0x02
@@ -10,43 +12,6 @@ Follower_right: EQU 0x30
 Snake_head_direction: EQU 2
 
 Snake_head_size: EQU Snake_head_direction
-
-Snake_segment_queue_size: EQU (Snake_head_size * (24 - 2) * (32 - 2))
-
-
-; The snake itself is implemented as queue of segments that lives inside a
-; circular buffer. There can be at most 24 - 3 (top and bottom walls + score)
-; times 32 - 2 (side walls) segments before game over, so that's the size of
-; the buffer.
-; Each segment is one byte, where
-; Bit 0-3: The direction this segment is facing
-; Bit 4-8: The direction the previous segment is found.
-; For example, for this snake
-;
-;        -\
-;         V
-;
-; The head is facing down, and the segment above it is found in the upwards
-; direction. The first body segment is facing down, while the previous segment
-; is found to the left. The tail is facing right, and has no segment following
-; it, so it doesn't matter what we set it to.
-;
-; Hence the queue consists of
-; {Facing_right, Facing_down | Follower_left, Facing_down | Follower_up}
-;
-; The head has the special case that its follower is in the opposite direction
-; it's facing, while the tail has the special case that it has no follower,
-; by definition.
-Snake_segment_queue:
-    DEFS Snake_segment_queue_size
-
-; The index of the head in the segment queue
-Snake_head_index:
-    DEFS 0x1
-
-; The index of the tails in the segment queue
-Snake_tail_index:
-    DEFS 0x1
 
 ; The head's on-screen x coordinate
 Snake_head_x:
@@ -70,15 +35,7 @@ Current_Direction:
 
 Initialise_Sprites:
 
-; Initialize the queue. Initially, the queue consists of
-; 0: tail
-; 1: body segment
-; 2: head
-	LD IX, Snake_head_index
-    LD (IX), 2
-
-	LD IX, Snake_tail_index
-    LD (IX), 0
+    CALL Segment_Queue_initialise
 
 ; Initialise starting positions
     LD IX, Snake_head_x
@@ -96,7 +53,7 @@ Initialise_Sprites:
     LD (IX), Facing_right
 
 ; Initialise segment queue
-	LD IX, Snake_segment_queue
+	LD IX, Segment_Queue_instance
 	LD (IX), Facing_right                     ; tail
 	LD (IX + 1), Facing_right | Follower_left ; body
 	LD (IX + 2), Facing_right | Follower_left ; head
