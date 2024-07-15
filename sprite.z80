@@ -53,7 +53,7 @@ Initialise_Sprites:
     LD (IX), Facing_right
 
 ; Initialise segment queue
-	LD IX, Segment_Queue_instance
+	LD IX, Segment_Queue_buffer
 	LD (IX), Facing_right                     ; tail
 	LD (IX + 1), Facing_right | Follower_left ; body
 	LD (IX + 2), Facing_right | Follower_left ; head

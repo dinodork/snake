@@ -23,7 +23,7 @@
 ; by definition.
 Segment_Queue_buffer_size: EQU (Snake_head_size * (24 - 2) * (32 - 2))
 
-Segment_Queue_instance:
+Segment_Queue_buffer:
     DEFS Segment_Queue_buffer_size
 
 ; The index of the head in the segment queue buffer
