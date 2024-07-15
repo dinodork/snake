@@ -26,4 +26,32 @@ Flash:         EQU 0x80
 Attribute_box_columns: EQU 32
 Attribute_box_rows:    EQU 24
 
+; Returns attribute address
+; H = Y character position
+; L = X character position
+; Returns address in HL
+
+Get_attr_address:
+    ; Save the X value in DE
+    LD E, L
+    LD D, 0
+
+    ; Make HL contain only the Y value
+    LD L, H
+    LD H, 0
+
+    ; Multiply by 32
+    DUP 5
+    RL HL
+    EDUP
+
+    ; Add the X value back
+    ADD HL, DE
+
+    ; Add this to the start of attribute RAM
+    LD DE, Start_Of_Attribute_Ram
+    ADD HL, DE
+
+    RET
+
     endif

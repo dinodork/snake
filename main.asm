@@ -84,6 +84,11 @@ Update_snake:
     ; Write new head position
     LD (Snake_head_x), HL
 
+    PUSH HL
+    CALL Get_attr_address
+    LD (HL), Play_area_attribute | Snake_ink
+    POP HL
+
     ; Draw the head in the new position
     PUSH AF
     CALL Get_Char_Address
