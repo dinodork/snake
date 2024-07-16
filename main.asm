@@ -71,7 +71,7 @@ Detect_Collision_Happened:
     RET
 
 Update_snake:
-    CALL Segment_Queue_get_head
+    CALL Segment_Queue_get_back
     LD A, (HL)
 
     LD HL, (Snake_head_x) ; H := Y position, L := X position
@@ -87,6 +87,7 @@ Update_snake:
     LD (Snake_head_x), HL
 
     PUSH HL
+    CALL Segment_Queue_push_back
     CALL Get_attr_address
     LD (HL), Play_area_attribute | Snake_ink
     POP HL

@@ -27,11 +27,11 @@ Segment_Queue_buffer:
     DEFS Segment_Queue_buffer_size
 
 ; The index of the head in the segment queue buffer
-Segment_Queue_head_index:
+Segment_Queue_end_index:
     DEFS 0x1
 
 ; The index of the tails in the segment queue buffer
-Segment_Queue_tail_index:
+Segment_Queue_front_index:
     DEFS 0x1
 
 ; Initializes the queue. Initially, the queue consists of
@@ -39,19 +39,43 @@ Segment_Queue_tail_index:
 ; 1: body segment
 ; 2: head
 Segment_Queue_initialise:
-	LD IX, Segment_Queue_head_index
-    LD (IX), 2
+	LD IX, Segment_Queue_end_index
+    LD (IX), 0
 
-	LD IX, Segment_Queue_tail_index
+	LD IX, Segment_Queue_front_index
     LD (IX), 0
 
     RET
 
-; Returns the address of the segment queue's head in HL
-Segment_Queue_get_head:
-    LD IX, Segment_Queue_head_index
+; HL: The address of the last element
+Segment_Queue_get_back:
+    LD IX, Segment_Queue_end_index
+    DEC IX
     LD E, (IX)
     LD D, 0
     LD HL, Segment_Queue_buffer
     ADD HL, DE
+    RET
+
+; Adds an element to the end of the queue.
+; If the queue is full the effect is undefined.
+; A: the element to push
+Segment_Queue_push_back:
+    LD HL, (Segment_Queue_end_index)
+    LD DE, HL
+    LD BC, Segment_Queue_buffer
+    ADD HL, BC
+    LD (HL), A
+
+    LD BC, Segment_Queue_buffer + Segment_Queue_buffer_size
+    ; If the new head index is outside the buffer,
+    ; set it to 0
+    SBC HL, BC
+    JR NZ, Nowrap
+    LD DE, 0
+    JP Wrap
+Nowrap:
+    INC DE
+Wrap:
+    LD (Segment_Queue_end_index), DE
     RET
