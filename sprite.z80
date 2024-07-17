@@ -25,6 +25,8 @@ Snake_tail_x:
 Snake_tail_y:
     DEFS 0x1
 
+Snake_length:
+    DEFS 0x2
 Initialise_Sprites:
 
     CALL Segment_Queue_initialise

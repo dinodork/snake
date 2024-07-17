@@ -70,6 +70,8 @@ Detect_Collision_Happened:
     LD (IX), 1
     RET
 
+; The heart of the game loop. Updates the state of the snake, checks
+; for collisions and updates the game's state accordingly.
 Update_snake:
     CALL Segment_Queue_get_back
     LD A, (HL) ; A := head's direction
@@ -88,9 +90,12 @@ Update_snake:
 
     PUSH HL
     CALL Segment_Queue_push_back
+    POP HL
+    PUSH HL
     CALL Get_attr_address
     PUSH AF
-    CALL Write_Ink
+    LD A, Snake_ink
+    CALL Set_Ink
     POP AF
     POP HL
 
@@ -101,6 +106,25 @@ Update_snake:
     LD DE, Snake_1
     CALL Print_Char
 
+    CALL Segment_Queue_get_length
+    CP (Snake_length), (HL)
+
+    JR Z, Done
+
+Dont_grow:
+    ; The snake does not need to grow anymore, so move the tail one slot in its
+    ; current direction.
+    CALL Segment_Queue_get_front
+    LD A, (HL) ; A := tail's direction
+
+    LD HL, (Snake_tail_x) ; H := Y position, L := X position
+    PUSH HL
+    CALL Get_attr_address
+    LD A, Background_Ink
+    CALL Set_Ink
+    POP HL
+    ; Write the new tail here
+Done:
     RET
 
 Delay:  EQU 10 ; TODO - make sure to initialise to 0

@@ -31,6 +31,18 @@ Attribute_box_rows:    EQU 24
 ; L = X character position
 ; Returns address in HL
 
+    MACRO ClearCarryFlag
+        SCF
+        CCF
+    ENDM
+
+    MACRO HL_X_32
+        ClearCarryFlag
+        DUP 5
+        RL HL
+        EDUP
+    ENDM
+
 Get_attr_address:
     ; Save the X value in DE
     LD E, L
@@ -40,10 +52,7 @@ Get_attr_address:
     LD L, H
     LD H, 0
 
-    ; Multiply by 32
-    DUP 5
-    RL HL
-    EDUP
+    HL_X_32
 
     ; Add the X value back
     ADD HL, DE
@@ -54,14 +63,15 @@ Get_attr_address:
 
     RET
 
+; Sets a new ink value, leaving other attributes intact.
 ; A: New ink value
 ; HL: Address of attribute byte
-Write_Ink:
+Set_Ink:
     LD B, A
     LD A, (HL)
     AND A, ~Ink_White
     OR A, B
-    LD (HL), Play_area_attribute | Snake_ink
+    LD (HL), A
     RET
 
     endif

@@ -28,11 +28,11 @@ Segment_Queue_buffer:
 
 ; The index of the head in the segment queue buffer
 Segment_Queue_end_index:
-    DEFS 0x1
+    DEFS 0x2
 
 ; The index of the tails in the segment queue buffer
 Segment_Queue_front_index:
-    DEFS 0x1
+    DEFS 0x2
 
 ; Initializes the queue. Initially, the queue consists of
 ; 0: tail
@@ -45,6 +45,13 @@ Segment_Queue_initialise:
 	LD IX, Segment_Queue_front_index
     LD (IX), 0
 
+    RET
+
+; HL: The address of the first element
+Segment_Queue_get_front:
+    LD DE, (Segment_Queue_front_index)
+    LD HL, Segment_Queue_buffer
+    ADD HL, DE
     RET
 
 ; HL: The address of the last element
@@ -78,4 +85,17 @@ Nowrap:
     INC DE
 Wrap:
     LD (Segment_Queue_end_index), DE
+    RET
+
+; HL: Length of the queue
+Segment_Queue_get_length:
+    LD HL, (Segment_Queue_end_index)
+    LD DE, (Segment_Queue_front_index)
+    SBC HL, DE
+
+    RET NC ; No carry, we're done.
+
+    ; head index < tail index
+    LD BC, Segment_Queue_buffer_size
+    ADD HL, BC
     RET
