@@ -72,7 +72,7 @@ Detect_Collision_Happened:
 
 Update_snake:
     CALL Segment_Queue_get_back
-    LD A, (HL)
+    LD A, (HL) ; A := head's direction
 
     LD HL, (Snake_head_x) ; H := Y position, L := X position
     CALL Advance_head
@@ -89,7 +89,9 @@ Update_snake:
     PUSH HL
     CALL Segment_Queue_push_back
     CALL Get_attr_address
-    LD (HL), Play_area_attribute | Snake_ink
+    PUSH AF
+    CALL Write_Ink
+    POP AF
     POP HL
 
     ; Draw the head in the new position
