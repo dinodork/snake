@@ -19,6 +19,7 @@ screen_top: defb    0   ; WPMEMx
     include "controls.z80"
     include "screen.z80"
     include "sprite.z80"
+    include "graphics/tile_metadata.z80"
 
     include "build/graphics/font_npm.asm"
     include "build/graphics/graphics_snake.asm"
@@ -55,7 +56,10 @@ Advance_head_4:
     INC H
     RET
 
-Game_Over:
+Game_State_Pregame: EQU 0
+Game_State_Ongoing: EQU 1
+Game_State_Game_Over: EQU 1
+Game_State:
     DEFS 1
 
 ; H Snake head Y position
@@ -66,8 +70,30 @@ Detect_Collision:
     JR Z, Detect_Collision_Happened
     RET
 Detect_Collision_Happened:
-    LD IX, Game_Over
-    LD (IX), 1
+    LD IX, Game_State
+    LD (IX), Game_State_Game_Over
+    RET
+
+; Draw the snake in its entirety. This is only done in few occasions, mostly
+; when drawing the screen at the start of the game.
+Draw_Snake:
+    LD HL, (Snake_tail_x) ; H := Y position, L := X position
+    CALL Get_Char_Address
+    LD DE, Snake_1
+    PUSH HL
+    PUSH DE
+    CALL Segment_Queue_get_front
+    LD A, (HL) ; A := tail's direction
+    ADD A, Tile_snake_tail_start
+    POP DE
+    POP HL
+    CALL Print_Char
+
+    LD HL, (Snake_tail_x) ; H := Y position, L := X position
+    CALL Get_attr_address
+    LD A, Snake_ink
+    CALL Set_Ink
+
     RET
 
 ; The heart of the game loop. Updates the state of the snake, checks
@@ -162,10 +188,11 @@ main:
 	CALL Print_Strings
 
     CALL Draw_Scene
-
 	CALL Initialise_Sprites
+    CALL Draw_Snake
 
-    LD IX, Game_Over
+
+    LD IX, Game_State
     LD (IX), 0
 
 	LD HL, Interrupt
@@ -182,7 +209,7 @@ main:
 Loop:
 	HALT
 	CALL Handle_Controls
-    LD IX, Game_Over
+    LD IX, Game_State
     LD A, (IX)
     CP 1
     JR Z, Handle_Game_Over

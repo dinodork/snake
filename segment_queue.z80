@@ -64,6 +64,14 @@ Segment_Queue_get_back:
     ADD HL, DE
     RET
 
+; HL: The address after the last element
+Segment_Queue_get_end:
+    LD HL, Segment_Queue_buffer
+    LD BC, (Segment_Queue_end_index)
+    ADD HL, BC
+    RET
+
+
 ; Adds an element to the end of the queue.
 ; If the queue is full the effect is undefined.
 ; A: the element to push
