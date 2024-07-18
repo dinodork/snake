@@ -112,19 +112,12 @@ Draw_Snake:
     CALL Advance_head
     LD IX, HL
 Draw_Snake_Loop:
-    ; The pixels
+    ; Draw a body segment
     LD HL, IX
-    CALL Get_Char_Address
+    LD A, Tile_snake_body_start
     PUSH IY
-    LD IY, Tile_snake_body_start * 8 + Snake_1
-    CALL Print_UDG8
+    CALL Draw_snake_tile
     POP IY
-
-    ; The colour
-    LD HL, IX
-    CALL Get_attr_address
-    LD A, Snake_ink
-    CALL Set_Ink
 
     ; Go to next X, Y position
     LD HL, IX
@@ -137,24 +130,29 @@ Draw_Snake_Loop:
     CALL Segment_Queue_get_next
     LD IY, HL
 
-
-
-
-    ;
     ; Draw the head
-    ;
     LD HL, IX
+    LD A, (IY)
+    CALL Draw_snake_tile
+
+    RET
+
+; Draws a tile (bitmap + attribute) of the snake.
+;   H: Y position
+;   L: X position
+;   A: Tile number
+Draw_snake_tile:
+    PUSH HL
+    PUSH AF
     CALL Get_Char_Address
     LD DE, Snake_1
-    LD A, (IY)
+    POP AF
     CALL Print_Char
 
-    ; The colour
-    LD HL, IX
+    POP HL
     CALL Get_attr_address
     LD A, Snake_ink
     CALL Set_Ink
-
     RET
 
 ; The heart of the game loop. Updates the state of the snake, checks
