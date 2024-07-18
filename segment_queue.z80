@@ -54,11 +54,12 @@ Segment_Queue_get_front:
     ADD HL, DE
     RET
 
-; HL: The address of the last element
+; Returns address of the last element.
+;   HL: The address of the last element
 Segment_Queue_get_back:
     LD IX, Segment_Queue_end_index
-    DEC IX
     LD E, (IX)
+    DEC E
     LD D, 0
     LD HL, Segment_Queue_buffer
     ADD HL, DE

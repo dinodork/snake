@@ -62,15 +62,18 @@ Game_State_Game_Over: EQU 1
 Game_State:
     DEFS 1
 
-; H Snake head Y position
-; L Snake head X position
+; Checks for collision and updates game state accordingly.
+;   H Snake head Y position
+;   L Snake head X position
+; Returns game state in IX
+
 Detect_Collision:
     LD A, L
     CP 31
     JR Z, Detect_Collision_Happened
+    LD IX, Game_State
     RET
 Detect_Collision_Happened:
-    LD IX, Game_State
     LD (IX), Game_State_Game_Over
     RET
 
@@ -213,6 +216,7 @@ Dont_grow:
     POP HL
     POP AF
     CALL Advance
+    LD (Snake_tail_x), HL
     ADD A, Tile_snake_tail_start
     CALL Draw_Snake_Tile
 Done:
