@@ -69,7 +69,7 @@
                 "args": [
                     "scripts/graphics_to_asm.py",
                     "-W1",
-                    "${workspaceFolder}/graphics/snake.udg",
+                    "${workspaceFolder}/graphics/tiles.udg",
                     "-o${config:buildPath}/graphics/graphics_snake.asm",
                 ],
             },

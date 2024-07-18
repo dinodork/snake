@@ -38,7 +38,7 @@ Draw_Vertical_Fence_Loop:
 	LD (IX + 31), Ink_Yellow | Paper_Red ; cares?
 
 	; Draw the tile
-	LD IY, Snake_1 + Tile_index_brick * 8
+	LD IY, Tiles_1 + Tile_index_brick * 8
 	CALL Print_UDG8
 	POP BC
 
@@ -54,7 +54,7 @@ Draw_Scene_Top_Fence_Loop:
 	CALL Get_Char_Address
 
 	LD A, Tile_index_brick
-	LD DE, Snake_1
+	LD DE, Tiles_1
 	PUSH BC ; B gets overwritten
 	CALL Print_Char
 	POP BC
@@ -76,7 +76,7 @@ Draw_Scene_Bottom_Fence_Loop:
 	CALL Get_Char_Address
 
 	LD A, Tile_index_brick
-	LD DE, Snake_1
+	LD DE, Tiles_1
 	PUSH BC ; B gets overwritten
 	CALL Print_Char
 	POP BC

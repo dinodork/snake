@@ -85,7 +85,7 @@ Draw_Snake:
     ;
     LD HL, (Snake_tail_x) ; H := Y position, L := X position
     CALL Get_Char_Address
-    LD DE, Snake_1
+    LD DE, Tiles_1
     PUSH HL
     PUSH DE
 
@@ -148,7 +148,7 @@ Draw_Snake_Tile:
     PUSH HL
     PUSH AF
     CALL Get_Char_Address
-    LD DE, Snake_1
+    LD DE, Tiles_1
     POP AF
     CALL Print_Char
 
@@ -191,7 +191,7 @@ Update_Snake:
     PUSH AF
     CALL Get_Char_Address
     POP AF
-    LD DE, Snake_1
+    LD DE, Tiles_1
     CALL Print_Char
 
     CALL Segment_Queue_get_length
