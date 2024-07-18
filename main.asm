@@ -195,9 +195,10 @@ Update_Snake:
     CALL Print_Char
 
     CALL Segment_Queue_get_length
-    CP (Snake_length), (HL)
+    LD DE, (Snake_length)
+    SBC HL, DE
 
-    JR Z, Done
+    JR NZ, Done
 
 Dont_grow:
     ; The snake does not need to grow anymore, so move the tail one slot in its
