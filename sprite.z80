@@ -47,4 +47,9 @@ Initialise_Sprites:
     CALL Segment_Queue_push_back
     CALL Segment_Queue_push_back
     CALL Segment_Queue_push_back
+
+; Initialise snake length
+    LD IX, Snake_length
+    LD (IX), 3
+
     RET

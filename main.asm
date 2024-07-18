@@ -34,7 +34,7 @@ Stack_Top:		EQU 0xFFF0
 ; H Snake head Y position
 ; L Snake head X position
 ; A Snake head direction description, see comment above Snake_segment_queue.
-Advance_head:
+Advance:
     AND 0x0F
     CP Facing_right
     JP NZ, Advance_head_2
@@ -109,20 +109,20 @@ Draw_Snake:
     LD IY, HL
     INC IY
     LD HL, (Snake_tail_x) ; H := Y position, L := X position
-    CALL Advance_head
+    CALL Advance
     LD IX, HL
 Draw_Snake_Loop:
     ; Draw a body segment
     LD HL, IX
     LD A, Tile_snake_body_start
     PUSH IY
-    CALL Draw_snake_tile
+    CALL Draw_Snake_Tile
     POP IY
 
     ; Go to next X, Y position
     LD HL, IX
     LD A, (IY)
-    CALL Advance_head
+    CALL Advance
     LD IX, HL
 
     ; Advance position in segment queue
@@ -133,7 +133,7 @@ Draw_Snake_Loop:
     ; Draw the head
     LD HL, IX
     LD A, (IY)
-    CALL Draw_snake_tile
+    CALL Draw_Snake_Tile
 
     RET
 
@@ -141,7 +141,7 @@ Draw_Snake_Loop:
 ;   H: Y position
 ;   L: X position
 ;   A: Tile number
-Draw_snake_tile:
+Draw_Snake_Tile:
     PUSH HL
     PUSH AF
     CALL Get_Char_Address
@@ -162,7 +162,7 @@ Update_snake:
     LD A, (HL) ; A := head's direction
 
     LD HL, (Snake_head_x) ; H := Y position, L := X position
-    CALL Advance_head
+    CALL Advance
 
     PUSH AF
     CALL Detect_Collision
@@ -201,14 +201,20 @@ Dont_grow:
     ; current direction.
     CALL Segment_Queue_get_front
     LD A, (HL) ; A := tail's direction
+    PUSH AF
 
     LD HL, (Snake_tail_x) ; H := Y position, L := X position
     PUSH HL
     CALL Get_attr_address
     LD A, Background_Ink
     CALL Set_Ink
+
+    ; Write the new tail
     POP HL
-    ; Write the new tail here
+    POP AF
+    CALL Advance
+    ADD A, Tile_snake_tail_start
+    CALL Draw_Snake_Tile
 Done:
     RET
 
