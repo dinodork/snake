@@ -38,7 +38,7 @@ Initialise_Sprites:
     LD (IX), (24 - 3) / 2 - 1
 
     LD IX, Snake_tail_x
-    LD (IX), (32 - 2) / 2 - 2
+    LD (IX), (32 - 2) / 2 - 1
     LD IX, Snake_tail_y
     LD (IX),  (24 - 3) / 2 - 1
 

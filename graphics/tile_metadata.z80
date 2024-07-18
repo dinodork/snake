@@ -1,2 +1,3 @@
 Tile_snake_head_start: EQU 0
 Tile_snake_tail_start: EQU 4
+Tile_snake_body_start: EQU 8

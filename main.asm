@@ -77,19 +77,80 @@ Detect_Collision_Happened:
 ; Draw the snake in its entirety. This is only done in few occasions, mostly
 ; when drawing the screen at the start of the game.
 Draw_Snake:
+    ;
+    ; Draw the tail
+    ;
     LD HL, (Snake_tail_x) ; H := Y position, L := X position
     CALL Get_Char_Address
     LD DE, Snake_1
     PUSH HL
     PUSH DE
+
+    ; A := tail's direction
     CALL Segment_Queue_get_front
-    LD A, (HL) ; A := tail's direction
+    LD A, (HL)
     ADD A, Tile_snake_tail_start
+
     POP DE
     POP HL
     CALL Print_Char
 
     LD HL, (Snake_tail_x) ; H := Y position, L := X position
+    CALL Get_attr_address
+    LD A, Snake_ink
+    CALL Set_Ink
+
+    ;
+    ; Draw the body segments loop
+    ; IX: The current X, Y position
+    ; IY: The current index in the segment queue
+    CALL Segment_Queue_get_front
+    LD A, (HL) ; A := tail's direction
+    LD IY, HL
+    INC IY
+    LD HL, (Snake_tail_x) ; H := Y position, L := X position
+    CALL Advance_head
+    LD IX, HL
+Draw_Snake_Loop:
+    ; The pixels
+    LD HL, IX
+    CALL Get_Char_Address
+    PUSH IY
+    LD IY, Tile_snake_body_start * 8 + Snake_1
+    CALL Print_UDG8
+    POP IY
+
+    ; The colour
+    LD HL, IX
+    CALL Get_attr_address
+    LD A, Snake_ink
+    CALL Set_Ink
+
+    ; Go to next X, Y position
+    LD HL, IX
+    LD A, (IY)
+    CALL Advance_head
+    LD IX, HL
+
+    ; Advance position in segment queue
+    LD HL, IY
+    CALL Segment_Queue_get_next
+    LD IY, HL
+
+
+
+
+    ;
+    ; Draw the head
+    ;
+    LD HL, IX
+    CALL Get_Char_Address
+    LD DE, Snake_1
+    LD A, (IY)
+    CALL Print_Char
+
+    ; The colour
+    LD HL, IX
     CALL Get_attr_address
     LD A, Snake_ink
     CALL Set_Ink

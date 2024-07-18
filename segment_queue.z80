@@ -107,3 +107,19 @@ Segment_Queue_get_length:
     LD BC, Segment_Queue_buffer_size
     ADD HL, BC
     RET
+
+; The next index in the queue
+; HL current address
+; Returns address of the next element in HL
+Segment_Queue_get_next:
+    INC HL
+    LD BC, HL
+    LD DE, Segment_Queue_buffer + Segment_Queue_buffer_size
+    SBC HL, DE
+
+    JR C, Segment_Queue_next_index_nowrap
+    LD HL, 0
+    RET
+Segment_Queue_next_index_nowrap:
+    LD HL, BC
+    RET
