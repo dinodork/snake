@@ -54,6 +54,28 @@ Segment_Queue_get_front:
     ADD HL, DE
     RET
 
+; Pops the first element off the queue and returns it in A
+Segment_Queue_pop_front:
+    CALL Segment_Queue_get_front
+    LD A, (HL)
+    PUSH AF
+    LD HL, (Segment_Queue_front_index)
+    CALL Segment_Queue_get_next_index
+    LD (Segment_Queue_front_index), HL
+    POP AF
+    RET
+
+Segment_Queue_get_next_index:
+    INC HL
+    PUSH HL
+    LD DE, Segment_Queue_buffer_size
+    SBC HL, BC
+    POP HL
+    RET NZ
+    LD HL, 0
+    RET
+
+
 ; Returns address of the last element.
 ;   HL: The address of the last element
 Segment_Queue_get_back:

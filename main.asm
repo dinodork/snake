@@ -160,7 +160,7 @@ Draw_Snake_Tile:
 
 ; The heart of the game loop. Updates the state of the snake, checks
 ; for collisions and updates the game's state accordingly.
-Update_snake:
+Update_Snake:
     CALL Segment_Queue_get_back
     LD A, (HL) ; A := head's direction
 
@@ -202,8 +202,7 @@ Update_snake:
 Dont_grow:
     ; The snake does not need to grow anymore, so move the tail one slot in its
     ; current direction.
-    CALL Segment_Queue_get_front
-    LD A, (HL) ; A := tail's direction
+    CALL Segment_Queue_pop_front
     PUSH AF
 
     LD HL, (Snake_tail_x) ; H := Y position, L := X position
@@ -217,6 +216,11 @@ Dont_grow:
     POP AF
     CALL Advance
     LD (Snake_tail_x), HL
+
+    PUSH HL
+    CALL Segment_Queue_get_front
+    LD A, (HL) ; A := current direction
+    POP HL
     ADD A, Tile_snake_tail_start
     CALL Draw_Snake_Tile
 Done:
@@ -236,7 +240,7 @@ Interrupt:
     CP Delay
     JR NZ, Interrupt_done
 
-    CALL Update_snake
+    CALL Update_Snake
     LD A, 0
 Interrupt_done:
     LD (Delay_timer), A
