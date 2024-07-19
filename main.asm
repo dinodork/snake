@@ -19,6 +19,7 @@ screen_top: defb    0   ; WPMEMx
     include "controls.z80"
     include "screen.z80"
     include "sprite.z80"
+    include "game.z80"
     include "graphics/tile_metadata.z80"
 
     include "build/graphics/font_npm.asm"
@@ -83,62 +84,42 @@ Draw_Snake:
     ;
     ; Draw the tail
     ;
-    LD HL, (Snake_tail_x) ; H := Y position, L := X position
+    LD HL, (Game_snake_tail_x) ; H := Y position, L := X position
+    CALL Game_get_address
+    CALL Game_get_direction
+    PUSH AF
+    LD HL, (Game_snake_tail_x)
     CALL Get_Char_Address
-    LD DE, Tiles_1
-    PUSH HL
-    PUSH DE
-
-    ; A := tail's direction
-    CALL Segment_Queue_get_front
-    LD A, (HL)
+    POP AF
+    PUSH AF
     ADD A, Tile_snake_tail_start
 
-    POP DE
-    POP HL
-    CALL Print_Char
+    LD HL, (Game_snake_tail_x) ; H := Y position, L := X position
+    CALL Draw_Snake_Tile
 
-    LD HL, (Snake_tail_x) ; H := Y position, L := X position
-    CALL Get_attr_address
-    LD A, Snake_ink
-    CALL Set_Ink
-
-    ;
-    ; Draw the body segments loop
-    ; IX: The current X, Y position
-    ; IY: The current index in the segment queue
-    CALL Segment_Queue_get_front
-    LD A, (HL) ; A := tail's direction
-    LD IY, HL
-    INC IY
-    LD HL, (Snake_tail_x) ; H := Y position, L := X position
+    POP AF
+    LD HL, (Game_snake_tail_x) ; H := Y position, L := X position
     CALL Advance
-    LD IX, HL
+
 Draw_Snake_Loop:
-    ; Draw a body segment
-    LD HL, IX
     LD A, Tile_snake_body_start
-    PUSH IY
+    PUSH HL
     CALL Draw_Snake_Tile
-    POP IY
+    POP HL
 
-    ; Go to next X, Y position
-    LD HL, IX
-    LD A, (IY)
+    PUSH HL
+    CALL Game_get_address
+    CALL Game_get_direction
+    POP HL
     CALL Advance
-    LD IX, HL
+    LD BC, (Game_snake_head_x)
+    LD DE, HL
+    SBC DE, BC
 
-    ; Advance position in segment queue
-    LD HL, IY
-    CALL Segment_Queue_get_next
-    LD IY, HL
+    JR NZ, Draw_Snake_Loop
 
-    ; Draw the head
-    LD HL, IX
-    LD A, (IY)
+    ADD A, Tile_snake_head_start
     CALL Draw_Snake_Tile
-
-    RET
 
 ; Draws a tile (bitmap + attribute) of the snake.
 ;   H: Y position
@@ -262,7 +243,7 @@ main:
 	CALL Print_Strings
 
     CALL Draw_Scene
-	CALL Initialise_Sprites
+	CALL Game_initialise
     CALL Draw_Snake
 
 
