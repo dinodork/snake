@@ -78,12 +78,7 @@ Detect_Collision_Happened:
     LD (IX), Game_State_Game_Over
     RET
 
-; Draw the snake in its entirety. This is only done in few occasions, mostly
-; when drawing the screen at the start of the game.
-Draw_Snake:
-    ;
-    ; Draw the tail
-    ;
+Draw_Tail:
     LD HL, (Game_snake_tail_x) ; H := Y position, L := X position
     CALL Game_get_address
     CALL Game_get_direction
@@ -98,6 +93,12 @@ Draw_Snake:
     CALL Draw_Snake_Tile
 
     POP AF
+    RET
+
+; Draw the snake in its entirety. This is only done in few occasions, mostly
+; when drawing the screen at the start of the game.
+Draw_Snake:
+    CALL Draw_Tail
     LD HL, (Game_snake_tail_x) ; H := Y position, L := X position
     CALL Advance
 
@@ -142,10 +143,11 @@ Draw_Snake_Tile:
 ; The heart of the game loop. Updates the state of the snake, checks
 ; for collisions and updates the game's state accordingly.
 Update_Snake:
-    CALL Segment_Queue_get_back
-    LD A, (HL) ; A := head's direction
 
-    LD HL, (Snake_head_x) ; H := Y position, L := X position
+    LD HL, (Game_snake_head_x) ; H := Y position, L := X position
+    CALL Game_get_address
+    CALL Game_get_direction ; A := head's direction
+    LD HL, (Game_snake_head_x) ; H := Y position, L := X position
     CALL Advance
 
     PUSH AF
@@ -155,7 +157,27 @@ Update_Snake:
     RET NZ
 
     ; Write new head position
-    LD (Snake_head_x), HL
+    CALL Game_get_address
+    LD (Game_snake_head_x), HL
+
+    LD HL, (Game_snake_target_length)
+    LD DE, (Game_snake_length)
+    SBC HL, DE
+    JR NZ, Render_snake
+
+    ; The snake doesn't need to grow anymore, so move the tail one slot in its
+    ; current direction.
+
+    LD HL, (Game_snake_tail_x) ; H := Y position, L := X position
+    CALL Game_get_address
+    CALL Game_get_direction ; A := head's direction
+    LD (HL), Game_tile_empty
+    LD HL, (Game_snake_tail_x) ; H := Y position, L := X position
+    CALL Advance
+    LD (Game_snake_tail_x), HL
+
+Render_snake:
+    CALL Draw_Tail
 
     PUSH HL
     CALL Segment_Queue_push_back

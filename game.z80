@@ -10,6 +10,7 @@ Game_tile_facing_left: EQU 0x02
 Game_tile_facing_right: EQU 0x03
 Game_tile_wall: EQU 0x04
 Game_tile_food: EQU 0x05
+Game_tile_empty: EQU 0xFF
 
 ; The head's on-screen x coordinate
 Game_snake_head_x:
@@ -28,6 +29,8 @@ Game_snake_tail_y:
 
 ; The target length of the snake. The tail will not advance until this length
 ; is met.
+Game_snake_target_length:
+    DEFS 0x2
 Game_snake_length:
     DEFS 0x2
 
@@ -42,7 +45,7 @@ Game_initialise:
    	LD HL, Game
 	LD DE, Game + 1
 	LD BC, Game_size
-	LD (HL), 0	; Set the first byte to 0
+	LD (HL), Game_tile_empty
 	LDIR		; Copy this byte to the second, and so on
 
     ; Draw top wall
@@ -69,6 +72,9 @@ Game_initialise:
     LD (IX), Game_tile_facing_right
     LD (IX + 1), Game_tile_facing_right
     LD (IX + 2), Game_tile_facing_right
+
+    LD HL, Game_snake_target_length
+    LD (HL), 3
     LD HL, Game_snake_length
     LD (HL), 3
 
