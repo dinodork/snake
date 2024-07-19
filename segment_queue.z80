@@ -65,13 +65,15 @@ Segment_Queue_pop_front:
     POP AF
     RET
 
+; Advances HL to the next index.
+;   HL: Current index
 Segment_Queue_get_next_index:
     INC HL
     PUSH HL
     LD DE, Segment_Queue_buffer_size
-    SBC HL, BC
+    SBC HL, DE
     POP HL
-    RET NZ
+    RET S
     LD HL, 0
     RET
 
