@@ -1,5 +1,15 @@
 ; The game's graphics is all in this file
 
+; Lookup table for body segments. The tile to choose for a body segment depends
+; upon:
+; 1) The previous tile's
+; 2) The current tile's direction
+; To get the correct tile index, take the previous tile's direction and use
+; that value as the row, then use the current tile's direction and use that
+; as the column.
+Body_segments:
+    BYTE   9, -1, 10, 13,    -1, 9, 11, 13,    11, 10, 8,  8,    11, 10, -1, 8
+
 ; Draws a tile (bitmap + attribute) of the snake.
 ;   H: Y position
 ;   L: X position
@@ -18,6 +28,8 @@ Draw_Snake_Tile:
     CALL Set_Ink
     RET
 
+; H Snake head Y position
+; L Snake head X position
 Draw_Head:
     LD HL, (Game_snake_head_x) ; H := Y position, L := X position
     CALL Game_get_address
@@ -35,6 +47,57 @@ Draw_Head:
     POP AF
     RET
 
+; D: Previous body segment Y position
+; E: Previous body segment X position
+; H: Current body segment Y position
+; L: Current body segment X position
+Draw_snake_body_segment:
+    PUSH HL
+    PUSH DE
+    CALL Game_get_address
+    CALL Game_get_direction
+    LD B, A ; B := previous segment's direction
+
+    ; A := B * 4
+    LD A, 0
+Draw_snake_body_segment_loop:
+    ADD A, 4
+    DJNZ Draw_snake_body_segment_loop
+    LD C, A
+
+    POP DE
+    LD HL, DE
+    CALL Game_get_address
+    CALL Game_get_direction
+    ; A := current segment's direction
+
+    ADD A, C
+
+    ; Index into the lookup table, it's one-dimensional at this point.
+    LD D, 0
+    LD E, A
+    LD HL, Body_segments
+    ADD HL, DE
+
+    LD A, (HL)
+
+    POP HL
+    CALL Draw_Snake_Tile
+    RET
+
+
+; Draws the neck of the snake, i.e. the body segment immediately behind the
+; head.
+; H Snake neck Y position
+; L Snake neck X position
+Draw_Neck:
+    LD DE, HL
+    LD HL, (Game_snake_head_x)
+    CALL Draw_snake_body_segment
+    RET
+
+; H Snake head Y position
+; L Snake head X position
 Draw_Tail:
     LD HL, (Game_snake_tail_x) ; H := Y position, L := X position
     CALL Game_get_address

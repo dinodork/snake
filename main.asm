@@ -84,12 +84,12 @@ Detect_Collision_Happened:
 Draw_Snake:
     CALL Draw_Tail
     LD HL, (Game_snake_tail_x) ; H := Y position, L := X position
+    LD DE, HL
     CALL Advance
 
 Draw_Snake_Loop:
-    LD A, Tile_snake_body_start
     PUSH HL
-    CALL Draw_Snake_Tile
+    CALL Draw_snake_body_segment
     POP HL
 
     PUSH HL
@@ -105,12 +105,14 @@ Draw_Snake_Loop:
 
     ADD A, Tile_snake_head_start
     CALL Draw_Snake_Tile
+    RET
 
 ; The heart of the game loop. Updates the state of the snake, checks
 ; for collisions and updates the game's state accordingly.
 Update_Snake:
 
     LD HL, (Game_snake_head_x) ; H := Y position, L := X position
+    PUSH HL
     CALL Game_get_address
     CALL Game_get_direction ; A := head's direction
     LD HL, (Game_snake_head_x) ; H := Y position, L := X position
@@ -155,6 +157,8 @@ Update_Snake:
 
 Render_snake:
     CALL Draw_Tail
+    POP HL
+    CALL Draw_Neck
     CALL Draw_Head
 
 
