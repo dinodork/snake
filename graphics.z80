@@ -1,0 +1,53 @@
+; The game's graphics is all in this file
+
+; Draws a tile (bitmap + attribute) of the snake.
+;   H: Y position
+;   L: X position
+;   A: Tile number
+Draw_Snake_Tile:
+    PUSH HL
+    PUSH AF
+    CALL Get_Char_Address
+    LD DE, Tiles_1
+    POP AF
+    CALL Print_Char
+
+    POP HL
+    CALL Get_attr_address
+    LD A, Snake_ink
+    CALL Set_Ink
+    RET
+
+Draw_Head:
+    LD HL, (Game_snake_head_x) ; H := Y position, L := X position
+    CALL Game_get_address
+    CALL Game_get_direction
+    PUSH AF
+    LD HL, (Game_snake_head_x)
+    CALL Get_Char_Address
+    POP AF
+    PUSH AF
+    ADD A, Tile_snake_head_start
+
+    LD HL, (Game_snake_head_x) ; H := Y position, L := X position
+    CALL Draw_Snake_Tile
+
+    POP AF
+    RET
+
+Draw_Tail:
+    LD HL, (Game_snake_tail_x) ; H := Y position, L := X position
+    CALL Game_get_address
+    CALL Game_get_direction
+    PUSH AF
+    LD HL, (Game_snake_tail_x)
+    CALL Get_Char_Address
+    POP AF
+    PUSH AF
+    ADD A, Tile_snake_tail_start
+
+    LD HL, (Game_snake_tail_x) ; H := Y position, L := X position
+    CALL Draw_Snake_Tile
+
+    POP AF
+    RET

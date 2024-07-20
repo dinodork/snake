@@ -19,7 +19,9 @@ screen_top: defb    0   ; WPMEMx
     include "controls.z80"
     include "screen.z80"
     include "sprite.z80"
+    include "game.z80"
     include "graphics/tile_metadata.z80"
+    include "graphics.z80"
 
     include "build/graphics/font_npm.asm"
     include "build/graphics/graphics_snake.asm"
@@ -80,91 +82,38 @@ Detect_Collision_Happened:
 ; Draw the snake in its entirety. This is only done in few occasions, mostly
 ; when drawing the screen at the start of the game.
 Draw_Snake:
-    ;
-    ; Draw the tail
-    ;
-    LD HL, (Snake_tail_x) ; H := Y position, L := X position
-    CALL Get_Char_Address
-    LD DE, Tiles_1
-    PUSH HL
-    PUSH DE
-
-    ; A := tail's direction
-    CALL Segment_Queue_get_front
-    LD A, (HL)
-    ADD A, Tile_snake_tail_start
-
-    POP DE
-    POP HL
-    CALL Print_Char
-
-    LD HL, (Snake_tail_x) ; H := Y position, L := X position
-    CALL Get_attr_address
-    LD A, Snake_ink
-    CALL Set_Ink
-
-    ;
-    ; Draw the body segments loop
-    ; IX: The current X, Y position
-    ; IY: The current index in the segment queue
-    CALL Segment_Queue_get_front
-    LD A, (HL) ; A := tail's direction
-    LD IY, HL
-    INC IY
-    LD HL, (Snake_tail_x) ; H := Y position, L := X position
+    CALL Draw_Tail
+    LD HL, (Game_snake_tail_x) ; H := Y position, L := X position
     CALL Advance
-    LD IX, HL
+
 Draw_Snake_Loop:
-    ; Draw a body segment
-    LD HL, IX
     LD A, Tile_snake_body_start
-    PUSH IY
-    CALL Draw_Snake_Tile
-    POP IY
-
-    ; Go to next X, Y position
-    LD HL, IX
-    LD A, (IY)
-    CALL Advance
-    LD IX, HL
-
-    ; Advance position in segment queue
-    LD HL, IY
-    CALL Segment_Queue_get_next
-    LD IY, HL
-
-    ; Draw the head
-    LD HL, IX
-    LD A, (IY)
-    CALL Draw_Snake_Tile
-
-    RET
-
-; Draws a tile (bitmap + attribute) of the snake.
-;   H: Y position
-;   L: X position
-;   A: Tile number
-Draw_Snake_Tile:
     PUSH HL
-    PUSH AF
-    CALL Get_Char_Address
-    LD DE, Tiles_1
-    POP AF
-    CALL Print_Char
-
+    CALL Draw_Snake_Tile
     POP HL
-    CALL Get_attr_address
-    LD A, Snake_ink
-    CALL Set_Ink
-    RET
+
+    PUSH HL
+    CALL Game_get_address
+    CALL Game_get_direction
+    POP HL
+    CALL Advance
+    LD BC, (Game_snake_head_x)
+    LD DE, HL
+    SBC DE, BC
+
+    JR NZ, Draw_Snake_Loop
+
+    ADD A, Tile_snake_head_start
+    CALL Draw_Snake_Tile
 
 ; The heart of the game loop. Updates the state of the snake, checks
 ; for collisions and updates the game's state accordingly.
 Update_Snake:
-    CALL Segment_Queue_get_back
-    LD A, (HL) ; A := head's direction
 
-    LD HL, (Snake_head_x) ; H := Y position, L := X position
+    LD HL, (Game_snake_head_x) ; H := Y position, L := X position
+    CALL Game_get_address
+    CALL Game_get_direction ; A := head's direction
+    LD HL, (Game_snake_head_x) ; H := Y position, L := X position
     CALL Advance
 
     PUSH AF
@@ -174,57 +123,41 @@ Update_Snake:
     RET NZ
 
     ; Write new head position
-    LD (Snake_head_x), HL
+    LD (Game_snake_head_x), HL
+    CALL Game_get_address
+    LD (HL), A
 
-    PUSH HL
-    CALL Segment_Queue_push_back
-    POP HL
-    PUSH HL
-    CALL Get_attr_address
-    PUSH AF
-    LD A, Snake_ink
-    CALL Set_Ink
-    POP AF
-    POP HL
-
-    ; Draw the head in the new position
-    PUSH AF
-    CALL Get_Char_Address
-    POP AF
-    LD DE, Tiles_1
-    CALL Print_Char
-
-    CALL Segment_Queue_get_length
-    LD DE, (Snake_length)
+    LD HL, (Game_snake_target_length)
+    LD DE, (Game_snake_length)
     SBC HL, DE
+    JR NZ, Render_snake
 
-    JR NZ, Done
-
-Dont_grow:
-    ; The snake does not need to grow anymore, so move the tail one slot in its
+    ; The snake doesn't need to grow anymore, so move the tail one slot in its
     ; current direction.
-    CALL Segment_Queue_pop_front
-    PUSH AF
 
-    LD HL, (Snake_tail_x) ; H := Y position, L := X position
-    PUSH HL
+    LD HL, (Game_snake_tail_x)
+    CALL Game_get_address
+    CALL Game_get_direction
+    PUSH AF
+    LD (HL), Game_tile_empty
+
+    LD HL, (Game_snake_tail_x)
     CALL Get_attr_address
-    LD A, Background_Ink
+    LD A, 0
     CALL Set_Ink
 
-    ; Write the new tail
-    POP HL
+    LD HL, (Game_snake_tail_x)
     POP AF
     CALL Advance
-    LD (Snake_tail_x), HL
+    LD (Game_snake_tail_x), HL
 
-    PUSH HL
-    CALL Segment_Queue_get_front
-    LD A, (HL) ; A := current direction
-    POP HL
-    ADD A, Tile_snake_tail_start
-    CALL Draw_Snake_Tile
-Done:
+
+
+Render_snake:
+    CALL Draw_Tail
+    CALL Draw_Head
+
+
     RET
 
 Delay:  EQU 10 ; TODO - make sure to initialise to 0
@@ -262,7 +195,7 @@ main:
 	CALL Print_Strings
 
     CALL Draw_Scene
-	CALL Initialise_Sprites
+	CALL Game_initialise
     CALL Draw_Snake
 
 

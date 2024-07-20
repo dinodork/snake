@@ -1,0 +1,107 @@
+Game_height: EQU 24
+Game_width: EQU 32
+
+Game_size: EQU Game_height * Game_width
+Game:
+    DEFS Game_size
+Game_tile_facing_up: EQU 0x00
+Game_tile_facing_down: EQU 0x01
+Game_tile_facing_left: EQU 0x02
+Game_tile_facing_right: EQU 0x03
+Game_tile_wall: EQU 0x04
+Game_tile_food: EQU 0x05
+Game_tile_empty: EQU 0xFF
+
+; The head's on-screen x coordinate
+Game_snake_head_x:
+    DEFS 0x1
+; The head's on-screen y coordinate
+Game_snake_head_y:
+    DEFS 0x1
+
+; The tail's on-screen x coordinate
+Game_snake_tail_x:
+    DEFS 0x1
+
+; The tail's on-screen y coordinate
+Game_snake_tail_y:
+    DEFS 0x1
+
+; The target length of the snake. The tail will not advance until this length
+; is met.
+Game_snake_target_length:
+    DEFS 0x2
+Game_snake_length:
+    DEFS 0x2
+
+Game_initial_snake_length: EQU 3
+Game_head_start_x:  EQU Game_width / 2 + Game_initial_snake_length - 1
+Game_head_start_y:  EQU Game_height / 2
+Game_tail_start_x: EQU Game_width / 2
+Game_tail_start_y: EQU Game_height / 2
+
+Game_initialise:
+    ; Clear the whole game
+   	LD HL, Game
+	LD DE, Game + 1
+	LD BC, Game_size
+	LD (HL), Game_tile_empty
+	LDIR		; Copy this byte to the second, and so on
+
+    ; Draw top wall
+   	LD HL, Game + Game_width
+	LD DE, Game + Game_width + 1
+	LD BC, Game_width
+	LD (HL), Game_tile_wall	; Set the first byte to 0
+	LDIR		; Copy this byte to the second, and so on
+
+    ; Draw snake
+    LD IX, Game_snake_head_x
+    LD (IX), Game_head_start_x
+
+    LD IX, Game_snake_head_y
+    LD (IX), Game_head_start_y
+
+    LD IX, Game_snake_tail_x
+    LD (IX), Game_tail_start_x
+
+    LD IX, Game_snake_tail_y
+    LD (IX), Game_tail_start_y
+
+    LD IX, Game + Game_tail_start_y * Game_width + Game_tail_start_x
+    LD (IX), Game_tile_facing_right
+    LD (IX + 1), Game_tile_facing_right
+    LD (IX + 2), Game_tile_facing_right
+
+    LD HL, Game_snake_target_length
+    LD (HL), 3
+    LD HL, Game_snake_length
+    LD (HL), 3
+
+; HL: address of game tile in HL
+Game_get_direction:
+    LD A, (HL)
+    RET
+
+; Returns address of game tile in HL
+;   H: Y position
+;   L: X position
+Game_get_address:
+    ; Save the X value in DE
+    LD E, L
+    LD D, 0
+
+    ; Make HL contain only the Y value
+    LD L, H
+    LD H, 0
+
+    HL_X_32
+
+    ; Add the X value back
+    ADD HL, DE
+
+    ; Add this to the start of Game
+    LD DE, Game
+    ADD HL, DE
+
+    RET
