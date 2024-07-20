@@ -78,6 +78,23 @@ Detect_Collision_Happened:
     LD (IX), Game_State_Game_Over
     RET
 
+Draw_Head:
+    LD HL, (Game_snake_head_x) ; H := Y position, L := X position
+    CALL Game_get_address
+    CALL Game_get_direction
+    PUSH AF
+    LD HL, (Game_snake_head_x)
+    CALL Get_Char_Address
+    POP AF
+    PUSH AF
+    ADD A, Tile_snake_head_start
+
+    LD HL, (Game_snake_head_x) ; H := Y position, L := X position
+    CALL Draw_Snake_Tile
+
+    POP AF
+    RET
+
 Draw_Tail:
     LD HL, (Game_snake_tail_x) ; H := Y position, L := X position
     CALL Game_get_address
@@ -157,8 +174,9 @@ Update_Snake:
     RET NZ
 
     ; Write new head position
-    CALL Game_get_address
     LD (Game_snake_head_x), HL
+    CALL Game_get_address
+    LD (HL), A
 
     LD HL, (Game_snake_target_length)
     LD DE, (Game_snake_length)
@@ -178,56 +196,9 @@ Update_Snake:
 
 Render_snake:
     CALL Draw_Tail
+    CALL Draw_Head
 
-    PUSH HL
-    CALL Segment_Queue_push_back
-    POP HL
-    PUSH HL
-    CALL Get_attr_address
-    PUSH AF
-    LD A, Snake_ink
-    CALL Set_Ink
-    POP AF
-    POP HL
 
-    ; Draw the head in the new position
-    PUSH AF
-    CALL Get_Char_Address
-    POP AF
-    LD DE, Tiles_1
-    CALL Print_Char
-
-    CALL Segment_Queue_get_length
-    LD DE, (Snake_length)
-    SBC HL, DE
-
-    JR NZ, Done
-
-Dont_grow:
-    ; The snake does not need to grow anymore, so move the tail one slot in its
-    ; current direction.
-    CALL Segment_Queue_pop_front
-    PUSH AF
-
-    LD HL, (Snake_tail_x) ; H := Y position, L := X position
-    PUSH HL
-    CALL Get_attr_address
-    LD A, Background_Ink
-    CALL Set_Ink
-
-    ; Write the new tail
-    POP HL
-    POP AF
-    CALL Advance
-    LD (Snake_tail_x), HL
-
-    PUSH HL
-    CALL Segment_Queue_get_front
-    LD A, (HL) ; A := current direction
-    POP HL
-    ADD A, Tile_snake_tail_start
-    CALL Draw_Snake_Tile
-Done:
     RET
 
 Delay:  EQU 10 ; TODO - make sure to initialise to 0
