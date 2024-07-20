@@ -21,6 +21,7 @@ screen_top: defb    0   ; WPMEMx
     include "sprite.z80"
     include "game.z80"
     include "graphics/tile_metadata.z80"
+    include "graphics.z80"
 
     include "build/graphics/font_npm.asm"
     include "build/graphics/graphics_snake.asm"
@@ -78,40 +79,6 @@ Detect_Collision_Happened:
     LD (IX), Game_State_Game_Over
     RET
 
-Draw_Head:
-    LD HL, (Game_snake_head_x) ; H := Y position, L := X position
-    CALL Game_get_address
-    CALL Game_get_direction
-    PUSH AF
-    LD HL, (Game_snake_head_x)
-    CALL Get_Char_Address
-    POP AF
-    PUSH AF
-    ADD A, Tile_snake_head_start
-
-    LD HL, (Game_snake_head_x) ; H := Y position, L := X position
-    CALL Draw_Snake_Tile
-
-    POP AF
-    RET
-
-Draw_Tail:
-    LD HL, (Game_snake_tail_x) ; H := Y position, L := X position
-    CALL Game_get_address
-    CALL Game_get_direction
-    PUSH AF
-    LD HL, (Game_snake_tail_x)
-    CALL Get_Char_Address
-    POP AF
-    PUSH AF
-    ADD A, Tile_snake_tail_start
-
-    LD HL, (Game_snake_tail_x) ; H := Y position, L := X position
-    CALL Draw_Snake_Tile
-
-    POP AF
-    RET
-
 ; Draw the snake in its entirety. This is only done in few occasions, mostly
 ; when drawing the screen at the start of the game.
 Draw_Snake:
@@ -138,24 +105,6 @@ Draw_Snake_Loop:
 
     ADD A, Tile_snake_head_start
     CALL Draw_Snake_Tile
-
-; Draws a tile (bitmap + attribute) of the snake.
-;   H: Y position
-;   L: X position
-;   A: Tile number
-Draw_Snake_Tile:
-    PUSH HL
-    PUSH AF
-    CALL Get_Char_Address
-    LD DE, Tiles_1
-    POP AF
-    CALL Print_Char
-
-    POP HL
-    CALL Get_attr_address
-    LD A, Snake_ink
-    CALL Set_Ink
-    RET
 
 ; The heart of the game loop. Updates the state of the snake, checks
 ; for collisions and updates the game's state accordingly.
