@@ -186,13 +186,23 @@ Update_Snake:
     ; The snake doesn't need to grow anymore, so move the tail one slot in its
     ; current direction.
 
-    LD HL, (Game_snake_tail_x) ; H := Y position, L := X position
+    LD HL, (Game_snake_tail_x)
     CALL Game_get_address
-    CALL Game_get_direction ; A := head's direction
+    CALL Game_get_direction
+    PUSH AF
     LD (HL), Game_tile_empty
-    LD HL, (Game_snake_tail_x) ; H := Y position, L := X position
+
+    LD HL, (Game_snake_tail_x)
+    CALL Get_attr_address
+    LD A, 0
+    CALL Set_Ink
+
+    LD HL, (Game_snake_tail_x)
+    POP AF
     CALL Advance
     LD (Game_snake_tail_x), HL
+
+
 
 Render_snake:
     CALL Draw_Tail
