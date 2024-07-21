@@ -216,9 +216,8 @@ main:
 	CALL Print_Strings
 
     CALL Draw_Scene
-	CALL Game_initialise
+    CALL Game_initialise
     CALL Draw_Snake
-
 
     LD IX, Game_State
     LD (IX), 0
