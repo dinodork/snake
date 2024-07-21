@@ -77,7 +77,7 @@ Game_initialise:
     LD (IX + 2), Game_tile_facing_right
 
     LD HL, Game_snake_target_length
-    LD (HL), 30
+    LD (HL), 3
     LD HL, Game_snake_length
     LD (HL), 3
 

@@ -147,7 +147,7 @@ Update_Snake:
     LD HL, (Game_snake_target_length)
     LD DE, (Game_snake_length)
     SBC HL, DE
-    JR NZ, Render_snake
+    JR NZ, Grow_Snake
 
     ; The snake doesn't need to grow anymore, so move the tail one slot in its
     ; current direction.
@@ -167,9 +167,11 @@ Update_Snake:
     POP AF
     CALL Get_Next_Position
     LD (Game_snake_tail_x), HL
+    JP Render_snake
 
-
-
+Grow_Snake:
+    INC DE
+    LD (Game_snake_length), DE
 Render_snake:
     CALL Draw_Tail
     POP HL
