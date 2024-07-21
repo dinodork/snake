@@ -175,7 +175,12 @@ Grow_Snake:
 Render_snake:
     CALL Draw_Tail
     POP HL
-    CALL Draw_Neck
+    PUSH HL
+    CALL Draw_snake_body_segment
+    POP HL
+    CALL Game_get_address
+    LD A, (Game_next_direction)
+    LD (HL), A
     CALL Draw_Head
 
 

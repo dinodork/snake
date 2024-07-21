@@ -28,8 +28,6 @@ Draw_Snake_Tile:
     CALL Set_Ink
     RET
 
-; H Snake head Y position
-; L Snake head X position
 Draw_Head:
     LD HL, (Game_snake_head_x) ; H := Y position, L := X position
     CALL Game_get_address
