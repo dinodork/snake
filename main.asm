@@ -18,7 +18,6 @@ screen_top: defb    0   ; WPMEMx
     include "canvas.z80"
     include "controls.z80"
     include "screen.z80"
-    include "sprite.z80"
     include "game_state.z80"
     include "graphics/tile_metadata.z80"
     include "graphics.z80"
@@ -38,22 +37,22 @@ Stack_Top:		EQU 0xFFF0
 ; A Snake head direction description, see comment above Snake_segment_queue.
 Get_Next_Position:
     AND 0x0F
-    CP Facing_right
+    CP Game_tile_facing_right
     JP NZ, Get_Next_Position_head_2
     INC L
     RET
 Get_Next_Position_head_2:
-    CP Facing_left
+    CP Game_tile_facing_left
     JP NZ, Get_Next_Position_head_3
     DEC L
     RET
 Get_Next_Position_head_3:
-    CP Facing_up
+    CP Game_tile_facing_up
     JP NZ, Get_Next_Position_head_4
     DEC H
     RET
 Get_Next_Position_head_4:
-    CP Facing_down
+    CP Game_tile_facing_down
     RET NZ
     INC H
     RET

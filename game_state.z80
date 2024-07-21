@@ -82,7 +82,7 @@ Game_initialise:
     LD (HL), 3
 
     LD IX, Game_next_direction
-    LD (IX), Facing_right
+    LD (IX), Game_tile_facing_right
     RET
 
 ; Returns the direction in the tile in A.

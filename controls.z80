@@ -43,7 +43,7 @@ Check_Up:
     RET Z
 
     LD HL, Game_next_direction
-    LD (HL), Facing_up
+    LD (HL), Game_tile_facing_up
 
     RET
 Check_Down:
@@ -65,7 +65,7 @@ Check_Down:
     RET Z
 
     LD HL, Game_next_direction
-    LD (HL), Facing_down
+    LD (HL), Game_tile_facing_down
 
     RET
 Check_Left:
@@ -87,7 +87,7 @@ Check_Left:
     RET Z
 
     LD HL, Game_next_direction
-    LD (HL), Facing_left
+    LD (HL), Game_tile_facing_left
 
     RET
 
@@ -110,7 +110,7 @@ Check_Right:
     RET Z
 
     LD HL, Game_next_direction
-    LD (HL), Facing_right
+    LD (HL), Game_tile_facing_right
 
 Keycheck_Done:
     RET
