@@ -36,23 +36,23 @@ Stack_Top:		EQU 0xFFF0
 ; H Snake head Y position
 ; L Snake head X position
 ; A Snake head direction description, see comment above Snake_segment_queue.
-Advance:
+Get_Next_Position:
     AND 0x0F
     CP Facing_right
-    JP NZ, Advance_head_2
+    JP NZ, Get_Next_Position_head_2
     INC L
     RET
-Advance_head_2:
+Get_Next_Position_head_2:
     CP Facing_left
-    JP NZ, Advance_head_3
+    JP NZ, Get_Next_Position_head_3
     DEC L
     RET
-Advance_head_3:
+Get_Next_Position_head_3:
     CP Facing_up
-    JP NZ, Advance_head_4
+    JP NZ, Get_Next_Position_head_4
     DEC H
     RET
-Advance_head_4:
+Get_Next_Position_head_4:
     CP Facing_down
     RET NZ
     INC H
@@ -85,7 +85,7 @@ Draw_Snake:
     CALL Draw_Tail
     LD HL, (Game_snake_tail_x) ; H := Y position, L := X position
     LD DE, HL
-    CALL Advance
+    CALL Get_Next_Position
 
 Draw_Snake_Loop:
     PUSH HL
@@ -96,7 +96,7 @@ Draw_Snake_Loop:
     CALL Game_get_address
     CALL Game_get_direction
     POP HL
-    CALL Advance
+    CALL Get_Next_Position
     LD BC, (Game_snake_head_x)
     LD DE, HL
     SBC DE, BC
@@ -109,14 +109,20 @@ Draw_Snake_Loop:
 
 ; The heart of the game loop. Updates the state of the snake, checks
 ; for collisions and updates the game's state accordingly.
+; Roughly, the procedure is this:
+; - Stow away the current position of the head, this will be the new neck
+; - Stow away the direction stored in the head position. This is the same as
+;   the direction in the tile before it. It may change during this function, if
+;   the player requested a turn. The new direction is in this case in
+;   `Game_next_direction`.
+; - Advance the head in the direction _`Game_next_direction`_.
 Update_Snake:
 
     LD HL, (Game_snake_head_x) ; H := Y position, L := X position
     PUSH HL
-    CALL Game_get_address
-    CALL Game_get_direction ; A := head's direction
+    LD A, (Game_next_direction)
     LD HL, (Game_snake_head_x) ; H := Y position, L := X position
-    CALL Advance
+    CALL Get_Next_Position
 
     PUSH AF
     CALL Detect_Collision
@@ -150,7 +156,7 @@ Update_Snake:
 
     LD HL, (Game_snake_tail_x)
     POP AF
-    CALL Advance
+    CALL Get_Next_Position
     LD (Game_snake_tail_x), HL
 
 
