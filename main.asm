@@ -19,7 +19,7 @@ screen_top: defb    0   ; WPMEMx
     include "controls.z80"
     include "screen.z80"
     include "sprite.z80"
-    include "game.z80"
+    include "game_state.z80"
     include "graphics/tile_metadata.z80"
     include "graphics.z80"
 
