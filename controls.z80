@@ -34,8 +34,7 @@ Check_Up:
 	LD L, 10
 	CALL Print_String_At
 
-    LD HL, (Game_snake_head_x)
-    CALL Game_get_address
+    LD HL, Game_next_direction
     LD (HL), Facing_up
 
     RET
@@ -49,8 +48,7 @@ Check_Down:
 	LD L, 10
 	CALL Print_String_At
 
-    LD HL, (Game_snake_head_x)
-    CALL Game_get_address
+    LD HL, Game_next_direction
     LD (HL), Facing_down
 
     RET
@@ -64,8 +62,7 @@ Check_Left:
 	LD L, 10
 	CALL Print_String_At
 
-    LD HL, (Game_snake_head_x)
-    CALL Game_get_address
+    LD HL, Game_next_direction
     LD (HL), Facing_left
 
     RET
@@ -80,8 +77,7 @@ Check_Right:
 	LD L, 10
 	CALL Print_String_At
 
-    LD HL, (Game_snake_head_x)
-    CALL Game_get_address
+    LD HL, Game_next_direction
     LD (HL), Facing_right
 
 Keycheck_Done:

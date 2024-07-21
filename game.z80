@@ -27,6 +27,9 @@ Game_snake_tail_x:
 Game_snake_tail_y:
     DEFS 0x1
 
+Game_next_direction:
+    DEFS 0x1
+
 ; The target length of the snake. The tail will not advance until this length
 ; is met.
 Game_snake_target_length:
@@ -78,6 +81,11 @@ Game_initialise:
     LD HL, Game_snake_length
     LD (HL), 3
 
+    LD IX, Game_next_direction
+    LD (IX), Facing_right
+    RET
+
+; Returns the direction in the tile in A.
 ; HL: address of game tile in HL
 Game_get_direction:
     LD A, (HL)
