@@ -34,6 +34,14 @@ Check_Up:
 	LD L, 10
 	CALL Print_String_At
 
+    DI
+    LD HL, (Game_snake_head_x)
+    CALL Game_get_address
+    CALL Game_get_direction
+    CP Game_tile_facing_down
+    EI
+    RET Z
+
     LD HL, Game_next_direction
     LD (HL), Facing_up
 
@@ -47,6 +55,14 @@ Check_Down:
 	LD H, 10
 	LD L, 10
 	CALL Print_String_At
+
+    DI
+    LD HL, (Game_snake_head_x)
+    CALL Game_get_address
+    CALL Game_get_direction
+    CP Game_tile_facing_up
+    EI
+    RET Z
 
     LD HL, Game_next_direction
     LD (HL), Facing_down
@@ -62,6 +78,14 @@ Check_Left:
 	LD L, 10
 	CALL Print_String_At
 
+    DI
+    LD HL, (Game_snake_head_x)
+    CALL Game_get_address
+    CALL Game_get_direction
+    CP Game_tile_facing_right
+    EI
+    RET Z
+
     LD HL, Game_next_direction
     LD (HL), Facing_left
 
@@ -76,6 +100,14 @@ Check_Right:
 	LD H, 10
 	LD L, 10
 	CALL Print_String_At
+
+    DI
+    LD HL, (Game_snake_head_x)
+    CALL Game_get_address
+    CALL Game_get_direction
+    CP Game_tile_facing_left
+    EI
+    RET Z
 
     LD HL, Game_next_direction
     LD (HL), Facing_right
