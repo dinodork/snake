@@ -8,7 +8,7 @@
 ; that value as the row, then use the current tile's direction and use that
 ; as the column.
 Body_segments:
-    BYTE   9, -1, 10, 13,    -1, 9, 11, 13,    11, 10, 8,  8,    11, 10, -1, 8
+    BYTE   9, -1, 10, 13,    -1, 9, 11, 12,    12, 13, 8,  8,    11, 10, -1, 8
 
 ; Draws a tile (bitmap + attribute) of the snake.
 ;   H: Y position
@@ -47,16 +47,14 @@ Draw_Head:
     POP AF
     RET
 
-; D: Previous body segment Y position
-; E: Previous body segment X position
+; A: Current direction of the segment.
 ; H: Current body segment Y position
 ; L: Current body segment X position
 Draw_snake_body_segment:
     PUSH HL
-    PUSH DE
     CALL Game_get_address
     CALL Game_get_direction
-    LD B, A ; B := previous segment's direction
+    LD B, A
 
     ; A := B * 4
     LD A, 0
@@ -65,12 +63,7 @@ Draw_snake_body_segment_loop:
     DJNZ Draw_snake_body_segment_loop
     LD C, A
 
-    POP DE
-    LD HL, DE
-    CALL Game_get_address
-    CALL Game_get_direction
-    ; A := current segment's direction
-
+    LD A, (Game_next_direction)
     ADD A, C
 
     ; Index into the lookup table, it's one-dimensional at this point.
@@ -91,8 +84,6 @@ Draw_snake_body_segment_loop:
 ; H Snake neck Y position
 ; L Snake neck X position
 Draw_Neck:
-    LD DE, HL
-    LD HL, (Game_snake_head_x)
     CALL Draw_snake_body_segment
     RET
 

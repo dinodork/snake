@@ -115,11 +115,20 @@ Draw_Snake_Loop:
 ;   the direction in the tile before it. It may change during this function, if
 ;   the player requested a turn. The new direction is in this case in
 ;   `Game_next_direction`.
-; - Advance the head in the direction _`Game_next_direction`_.
+; - Advance the head in the direction _`Game_next_direction`_. Before writing
+;   it back, though, check for collisions and return early.
+; - Check if the snake is currently growing. If not, move the tail one step
+;   along its direction.
+
+; Throughout this function, you will notice the construction
+; `LD HL, (Game_snake_head|tail_x)`. This will actually load the X value into
+; L and the Y value into H, courtesy of little-endian, since the Y value
+; follows the X value in memory.
 Update_Snake:
 
     LD HL, (Game_snake_head_x) ; H := Y position, L := X position
     PUSH HL
+
     LD A, (Game_next_direction)
     LD HL, (Game_snake_head_x) ; H := Y position, L := X position
     CALL Get_Next_Position
