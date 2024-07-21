@@ -66,13 +66,19 @@ Game_State:
 ; Checks for collision and updates game state accordingly.
 ;   H Snake head Y position
 ;   L Snake head X position
-; Returns game state in IX
+; Returns address of game state in IX
 
 Detect_Collision:
+    LD IX, Game_State
     LD A, L
     CP 31
     JR Z, Detect_Collision_Happened
-    LD IX, Game_State
+
+    CALL Game_get_address
+    CALL Game_get_direction
+    CP A, Game_tile_empty
+    JR NZ, Detect_Collision_Happened
+
     RET
 Detect_Collision_Happened:
     LD (IX), Game_State_Game_Over
@@ -133,7 +139,9 @@ Update_Snake:
     CALL Get_Next_Position
 
     PUSH AF
+    PUSH HL
     CALL Detect_Collision
+    POP HL
     POP AF
     BIT 0, (IX)
     RET NZ
