@@ -115,16 +115,18 @@ Update_Snake:
     PUSH AF
     PUSH HL
     CALL Detect_Collision
+    LD A, (IX)
+    CP Game_Phase_Game_Over
     POP HL
     POP AF
-    BIT 0, (IX)
-    RET NZ
+    RET Z
 
     ; Write new head position
     LD (Game_snake_head_x), HL
     CALL Game_get_address
     LD (HL), A
 
+    LD DE, (Game_snake_target_length)
     LD HL, (Game_snake_target_length)
     LD DE, (Game_snake_length)
     SBC HL, DE
@@ -206,7 +208,7 @@ main:
     CALL Draw_Snake
     CALL Place_Food
 
-    LD IX, Game_Status
+    LD IX, Game_Phase
     LD (IX), 0
 
 	LD HL, Interrupt
@@ -223,7 +225,7 @@ main:
 Loop:
 	HALT
 	CALL Handle_Controls
-    LD IX, Game_Status
+    LD IX, Game_Phase
     LD A, (IX)
     CP 1
     JR Z, Handle_Game_Over
