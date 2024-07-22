@@ -45,6 +45,10 @@ Game_head_start_x:  EQU Game_width / 2 + Game_initial_snake_length - 1
 Game_head_start_y:  EQU Game_height / 2
 Game_tail_start_x: EQU Game_width / 2
 Game_tail_start_y: EQU Game_height / 2
+Game_Status_Running: EQU 1
+Game_Status_Game_Over: EQU 1
+Game_Status:
+    DEFS 1
 
 Game_initialise:
     ; Clear the whole game
@@ -115,6 +119,28 @@ Game_get_address:
     LD DE, Game
     ADD HL, DE
 
+    RET
+
+
+; Checks for collision and updates game state accordingly.
+;   H Snake head Y position
+;   L Snake head X position
+; Returns address of game state in IX
+
+Detect_Collision:
+    LD IX, Game_Status
+    LD A, L
+    CP 31
+    JR Z, Detect_Collision_Happened
+
+    CALL Game_get_address
+    CALL Game_get_direction
+    CP A, Game_tile_empty
+    JR NZ, Detect_Collision_Happened
+
+    RET
+Detect_Collision_Happened:
+    LD (IX), Game_Status_Game_Over
     RET
 
     endif ; game_state_z80

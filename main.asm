@@ -58,33 +58,6 @@ Get_Next_Position_head_4:
     INC H
     RET
 
-Game_State_Pregame: EQU 0
-Game_State_Ongoing: EQU 1
-Game_State_Game_Over: EQU 1
-Game_State:
-    DEFS 1
-
-; Checks for collision and updates game state accordingly.
-;   H Snake head Y position
-;   L Snake head X position
-; Returns address of game state in IX
-
-Detect_Collision:
-    LD IX, Game_State
-    LD A, L
-    CP 31
-    JR Z, Detect_Collision_Happened
-
-    CALL Game_get_address
-    CALL Game_get_direction
-    CP A, Game_tile_empty
-    JR NZ, Detect_Collision_Happened
-
-    RET
-Detect_Collision_Happened:
-    LD (IX), Game_State_Game_Over
-    RET
-
 ; Draw the snake in its entirety. This is only done in few occasions, mostly
 ; when drawing the screen at the start of the game.
 Draw_Snake:
@@ -233,7 +206,7 @@ main:
     CALL Draw_Snake
     CALL Place_Food
 
-    LD IX, Game_State
+    LD IX, Game_Status
     LD (IX), 0
 
 	LD HL, Interrupt
@@ -250,7 +223,7 @@ main:
 Loop:
 	HALT
 	CALL Handle_Controls
-    LD IX, Game_State
+    LD IX, Game_Status
     LD A, (IX)
     CP 1
     JR Z, Handle_Game_Over
