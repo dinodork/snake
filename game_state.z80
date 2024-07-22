@@ -155,6 +155,8 @@ Detect_Collision_Food:
     INC (IX)
     INC (IX)
 
+    CALL Place_Food
+
     LD IX, Game_Phase
     LD (IX), Game_Phase_Eating
 

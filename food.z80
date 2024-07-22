@@ -37,8 +37,13 @@ Place_Food:
     CALL RND16
     LD A, H
     AND 32 - 1
-    ; Premature optimisation, we know there's always going to be a bottom wall.
+
+    ; Premature optimisation, we know there's always going to be a bottom
+    ; wall...
     CP 23
+    JR NC, Place_Food ; Out of range, retry
+
+    CP 2
     JR NC, Place_Food ; Out of range, retry
     LD H, A
 
