@@ -1,0 +1,68 @@
+    include "lib/math.z80"
+    include "game_state.z80"
+    include "graphics.z80"
+    include "screen.z80"
+
+Place_Food_old:
+    CALL RND16
+    LD DE, Game_size
+
+    ; Increase the likelyhood that the number is less than the size of the
+    ; screen...
+    AND H, 0x03
+    LD H, A
+
+    SBC DE, HL
+    JR C, Place_Food_old ; outside screen, regenerate
+
+    LD BC, HL
+    LD DE, Game
+    ADD HL, DE
+    LD A, (HL)
+    CP A, Game_tile_empty
+    JR NZ, Place_Food_old ; Space occupied, regenerate
+
+    ; We found a free space, place the food
+    LD (HL), Game_tile_food
+
+    LD HL, Start_Of_Attribute_Ram
+    ADD HL, BC
+    LD (HL), 0xFF
+    RET
+
+Place_Food:
+    ;
+    ; Find a random X, Y positions that is within the screen.
+    ;
+    CALL RND16
+    LD A, H
+    AND 32 - 1
+    ; Premature optimisation, we know there's always going to be a bottom wall.
+    CP 23
+    JR NC, Place_Food ; Out of range, retry
+    LD H, A
+
+    LD A, L
+    AND 0x01F ; The screen is exactly 32 positions wide
+    CP 31
+    JR Z, Place_Food ; The right wall
+    CP 0
+    JR Z, Place_Food ; The right wall
+    LD L, A
+    ;
+    ; Check if the position is free.
+    ;
+    PUSH HL
+    CALL Game_get_address
+    LD A, (HL)
+    CP A, Game_tile_empty
+    JR NZ, Place_Food ; Space occupied, regenerate
+
+    ; We found a free space, place the food
+    LD (HL), Game_tile_food
+
+    ; Place the graphic on screen
+    POP HL
+    CALL Draw_food
+
+    RET

@@ -1,4 +1,9 @@
+    ifndef graphics_z80
+    define graphics_z80
+
 ; The game's graphics is all in this file
+
+Graphics_play_area_size: EQU (32 - 2) * (24 - 3)
 
 ; Lookup table for body segments. The tile to choose for a body segment depends
 ; upon:
@@ -25,6 +30,19 @@ Draw_Snake_Tile:
     POP HL
     CALL Get_attr_address
     LD A, Snake_ink
+    CALL Set_Ink
+    RET
+
+Draw_food:
+    PUSH HL
+    CALL Get_Char_Address
+    LD DE, Tiles_1
+    LD A, 14
+    CALL Print_Char
+
+    POP HL
+    CALL Get_attr_address
+    LD A, Food_ink
     CALL Set_Ink
     RET
 
@@ -103,3 +121,5 @@ Draw_Tail:
 
     POP AF
     RET
+
+        endif ; graphics_z80

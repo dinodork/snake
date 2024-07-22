@@ -74,4 +74,4 @@ Set_Ink:
     LD (HL), A
     RET
 
-    endif
+    endif ; lib_attribute_z80

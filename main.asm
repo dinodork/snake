@@ -18,6 +18,7 @@ screen_top: defb    0   ; WPMEMx
     include "canvas.z80"
     include "controls.z80"
     include "screen.z80"
+    include "food.z80"
     include "game_state.z80"
     include "graphics/tile_metadata.z80"
     include "graphics.z80"
@@ -230,6 +231,7 @@ main:
     CALL Draw_Scene
     CALL Game_initialise
     CALL Draw_Snake
+    CALL Place_Food
 
     LD IX, Game_State
     LD (IX), 0

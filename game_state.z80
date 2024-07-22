@@ -1,3 +1,6 @@
+    ifndef game_state_z80
+    define game_state_z80
+
 Game_height: EQU 24
 Game_width: EQU 32
 
@@ -113,3 +116,5 @@ Game_get_address:
     ADD HL, DE
 
     RET
+
+    endif ; game_state_z80

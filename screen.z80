@@ -1,3 +1,6 @@
+    ifndef screen_z80
+    define screen_z80
+
 ; Simple clear-screen routine
 ; Uses LDIR to block clear memory
 ; A:  Colour to clear attribute block of memory with
@@ -107,3 +110,5 @@ Print_String_At:
 	JR Print_String_At
 Print_String_Done:
 	RET
+
+    endif ; screen_z80
