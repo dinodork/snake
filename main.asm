@@ -104,30 +104,29 @@ Draw_Snake_Loop:
 ; L and the Y value into H, courtesy of little-endian, since the Y value
 ; follows the X value in memory.
 Update_Snake:
-
     LD HL, (Game_snake_head_x) ; H := Y position, L := X position
-    PUSH HL
-
     LD A, (Game_next_direction)
-    LD HL, (Game_snake_head_x) ; H := Y position, L := X position
+    LD DE, HL ; We're going to keep the old position in DE in this routine.
     CALL Get_Next_Position
-    LD B, A
+    LD B, A ; Save A in B instead of the stack so we can do an early return.
 
+    PUSH DE
     PUSH HL
     CALL Detect_Collision
+    POP HL
+    POP DE
     LD A, (IX)
     CP Game_Phase_Game_Over
-    POP HL
     RET Z
 
     LD A, B
 
     ; Write new head position
     LD (Game_snake_head_x), HL
+    PUSH DE
     CALL Game_get_address
     LD (HL), A
 
-    LD DE, (Game_snake_target_length)
     LD HL, (Game_snake_target_length)
     LD DE, (Game_snake_length)
     SBC HL, DE
@@ -159,7 +158,8 @@ Grow_Snake:
     LD (Game_snake_length), DE
 Render_snake:
     CALL Draw_Tail
-    POP HL
+    POP DE
+    LD HL, DE
     PUSH HL
     CALL Draw_snake_body_segment
     POP HL
