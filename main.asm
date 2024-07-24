@@ -111,15 +111,16 @@ Update_Snake:
     LD A, (Game_next_direction)
     LD HL, (Game_snake_head_x) ; H := Y position, L := X position
     CALL Get_Next_Position
+    LD B, A
 
-    PUSH AF
     PUSH HL
     CALL Detect_Collision
     LD A, (IX)
     CP Game_Phase_Game_Over
     POP HL
-    POP AF
     RET Z
+
+    LD A, B
 
     ; Write new head position
     LD (Game_snake_head_x), HL
