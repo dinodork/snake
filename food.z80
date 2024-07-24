@@ -44,7 +44,7 @@ Place_Food:
     JR NC, Place_Food ; Out of range, retry
 
     CP 2
-    JR NC, Place_Food ; Out of range, retry
+    JR C, Place_Food ; Out of range, retry
     LD H, A
 
     LD A, L

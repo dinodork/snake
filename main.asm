@@ -143,7 +143,8 @@ Update_Snake:
 
     LD HL, (Game_snake_tail_x)
     CALL Get_attr_address
-    LD A, 0
+    ; Don't bother clearing the graphics, just hide it
+    LD A, Ink_Blue
     CALL Set_Ink
 
     LD HL, (Game_snake_tail_x)
