@@ -132,15 +132,31 @@ Game_get_address:
 Detect_Collision:
     LD IX, Game_Phase
     LD A, L
+
+    ; Right wall
     CP 31
-    JR Z, Detect_Collision_Happened
+    JP Z, Detect_Collision_Happened
+
+    ; Left wall
+    CP 0
+    JP Z, Detect_Collision_Happened
+
+    LD A, H
+
+    ; Top wall
+    CP 1
+    JP Z, Detect_Collision_Happened
+
+    ; Bottom wall
+    CP 23
+    JP Z, Detect_Collision_Happened
 
     CALL Game_get_address
     CALL Game_get_direction
     CP Game_tile_food
-    JR Z, Detect_Collision_Food
+    JP Z, Detect_Collision_Food
     CP A, Game_tile_empty
-    JR NZ, Detect_Collision_Happened
+    JP NZ, Detect_Collision_Happened
 
     LD (IX), Game_Phase_Running
 
