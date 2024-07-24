@@ -28,12 +28,6 @@ Check_Up:
     BIT 4, A
     JR Z, Check_Down
 
-    LD DE, Npm_1 - 0x100
-    LD IX, Up_text
-	LD H, 10
-	LD L, 10
-	CALL Print_String_At
-
     DI
     LD HL, (Game_snake_head_x)
     CALL Game_get_address
@@ -49,12 +43,6 @@ Check_Up:
 Check_Down:
     BIT 3, A
     JR Z, Check_Left
-
-    LD DE, Npm_1 - 0x100
-    LD IX, Down_text
-	LD H, 10
-	LD L, 10
-	CALL Print_String_At
 
     DI
     LD HL, (Game_snake_head_x)
@@ -72,12 +60,6 @@ Check_Left:
     BIT 2, A
     JR Z, Check_Right
 
-    LD DE, Npm_1 - 0x100
-    LD IX, Left_text
-	LD H, 10
-	LD L, 10
-	CALL Print_String_At
-
     DI
     LD HL, (Game_snake_head_x)
     CALL Game_get_address
@@ -94,12 +76,6 @@ Check_Left:
 Check_Right:
     BIT 1, A
     JR Z, Keycheck_Done
-
-    LD DE, Npm_1 - 0x100
-    LD IX, Right_text
-	LD H, 10
-	LD L, 10
-	CALL Print_String_At
 
     DI
     LD HL, (Game_snake_head_x)
