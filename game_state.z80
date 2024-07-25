@@ -135,33 +135,33 @@ Detect_Collision:
 
     ; Right wall
     CP 31
-    JP Z, Detect_Collision_Happened
+    JP Z, Detect_Collision_Wall
 
     ; Left wall
     CP 0
-    JP Z, Detect_Collision_Happened
+    JP Z, Detect_Collision_Wall
 
     LD A, H
 
     ; Top wall
     CP 1
-    JP Z, Detect_Collision_Happened
+    JP Z, Detect_Collision_Wall
 
     ; Bottom wall
     CP 23
-    JP Z, Detect_Collision_Happened
+    JP Z, Detect_Collision_Wall
 
     CALL Game_get_address
     CALL Game_get_direction
     CP Game_tile_food
     JP Z, Detect_Collision_Food
     CP A, Game_tile_empty
-    JP NZ, Detect_Collision_Happened
+    JP NZ, Detect_Collision_Wall
 
     LD (IX), Game_Phase_Running
 
     RET
-Detect_Collision_Happened:
+Detect_Collision_Wall:
     LD (IX), Game_Phase_Game_Over
     RET
 
