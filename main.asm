@@ -110,11 +110,13 @@ Update_Snake:
     CALL Get_Next_Position
     LD B, A ; Save A in B instead of the stack so we can do an early return.
 
-    PUSH DE
     PUSH HL
+    PUSH DE
+    PUSH BC
     CALL Detect_Collision
-    POP HL
+    POP BC
     POP DE
+    POP HL
     LD A, (IX)
     CP Game_Phase_Game_Over
     RET Z
@@ -167,7 +169,6 @@ Render_snake:
     LD A, (Game_next_direction)
     LD (HL), A
     CALL Draw_Head
-
 
     RET
 
