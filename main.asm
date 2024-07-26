@@ -15,6 +15,7 @@ NEX:    equ 0   ;  1=Create nex file, 0=create sna file
 screen_top: defb    0   ; WPMEMx
 
     include "lib/attribute.z80"
+    include "lib/graphics.z80"
     include "canvas.z80"
     include "controls.z80"
     include "screen.z80"
@@ -236,6 +237,13 @@ Loop:
 
 Handle_Game_Over:
     DI
+
+    LD H, 9
+    LD L, 9
+    LD B, 3
+    LD C, 11
+    CALL Clear_Box
+
     LD DE, Npm_1 - 0x100
     LD IX, Game_over_text
 	LD H, 10

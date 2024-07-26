@@ -1,5 +1,3 @@
-
-
     ifndef lib_attribute_z80
     define lib_attribute_z80
 

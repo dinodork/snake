@@ -36,10 +36,9 @@ Get_Char_Address:
 	LD H, A
 	RET		; Returns screen address in HL
 
-; Print a UDG (Single Height)
+; Prints a UDG (Single Height)
 ; IY - Font data to print
 ; HL - Screen address
-;
 Print_UDG8:
 	LD B, 8		; Loop counter
 2:
@@ -109,6 +108,16 @@ Print_String_At:
 	INC L					; Go to the next screen address
 	JR Print_String_At
 Print_String_Done:
+	RET
+
+; Clears a single characters block.
+;   HL: Screen address clear at.
+Clear_Char:
+	DUP 8
+	LD (HL), 255
+	INC H		; Goto next line on screen
+	EDUP
+
 	RET
 
     endif ; screen_z80
