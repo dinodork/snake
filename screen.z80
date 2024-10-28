@@ -76,6 +76,27 @@ Print_Char:
 
 	RET
 
+; Prints a string with attribute information at a given position.
+;   IX: Address of string
+;   H:  Row
+;   L:  Column
+;   DE: Address of character set
+Print_String_With_Attribute_At:
+	CALL Print_String_At
+	PUSH HL
+	PUSH IX
+	PUSH DE
+	LD B, 1
+	LD C, 5
+	LD A, Ink_White
+	CALL Clear_Box
+	POP DE
+	POP IX
+	POP HL
+	CALL Print_String_At
+	RET
+
+
 ; First two bytes of string contain X and Y char position, then the string
 ; Individual strings are terminated with 0xFE
 ; End of data is terminated with 0xFF
@@ -92,6 +113,7 @@ Print_String:
 	INC IX			; Increase HL to the next memory location
 	LD H, (IX+0)	; Fetch the Y coordinate
 	INC IX			; Increase HL to the next memory location
+
 
 ; Prints a string
 ;   IX: Address of string
