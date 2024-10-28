@@ -10,7 +10,9 @@ Tile_index_brick: EQU 20
 Play_area_height: EQU 24 - 3 ; Status bar + top, bottom walls
 
 Snake_ink: EQU Ink_Green
-Food_ink: EQU Ink_Red
+Apple_stalk_ink: EQU Ink_Green
+
+Apple_ink: EQU Ink_Red
 Background_Ink: EQU Ink_Black
 Play_area_attribute: EQU Paper_Blue | Background_Ink | Bright
 Play_area_drop_shadow_attribute: EQU (Paper_Blue | Ink_Black) & ~Bright

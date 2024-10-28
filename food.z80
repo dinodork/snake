@@ -30,6 +30,29 @@ Place_Food_old:
     LD (HL), 0xFF
     RET
 
+; Removes the stalk of the food. The food itself gets overwritten, so don't
+; worry about it.
+;   H Snake head Y position
+;   L Snake head X position
+Remove_Food:
+    DEC H
+    PUSH HL
+    CALL Game_get_address
+    LD A, (HL)
+    CP A, Game_tile_food_stalk
+    POP HL
+    JR NZ, Remove_Food_Exit ; The stalk was replaced by something (snake), exit
+    PUSH HL
+    CALL Game_get_address
+    LD A, Game_tile_empty
+    LD (HL), A
+    POP HL
+    CALL Get_Attr_Address
+    LD A, Ink_Blue | Paper_Blue
+    LD (HL), A
+
+Remove_Food_Exit:
+    RET
 Place_Food:
     ;
     ; Find a random X, Y positions that is within the screen.
@@ -68,6 +91,24 @@ Place_Food:
 
     ; Place the graphic on screen
     POP HL
-    CALL Draw_food
+    PUSH HL
+    CALL Draw_Apple
+    POP HL
+
+    ; Try to place and draw the stalk
+    DEC H
+    PUSH HL
+    CALL Game_get_address
+    LD A, (HL)
+    CP A, Game_tile_empty
+    JR NZ, Place_Food_Done
+    ; There's a free slot to place the stalk
+    LD A, Game_tile_food_stalk
+    LD (HL), A
+    POP HL
+    CALL Draw_Stalk
+    RET
+Place_Food_Done:
+    POP HL
 
     RET
