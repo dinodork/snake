@@ -41,7 +41,7 @@ Attribute_box_rows:    EQU 24
         EDUP
     ENDM
 
-Get_attr_address:
+Get_Attr_Address:
     ; Save the X value in DE
     LD E, L
     LD D, 0

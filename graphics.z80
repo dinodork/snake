@@ -28,7 +28,7 @@ Draw_Snake_Tile:
     CALL Print_Char
 
     POP HL
-    CALL Get_attr_address
+    CALL Get_Attr_Address
     LD A, Snake_ink
     CALL Set_Ink
     RET
@@ -41,7 +41,7 @@ Draw_food:
     CALL Print_Char
 
     POP HL
-    CALL Get_attr_address
+    CALL Get_Attr_Address
     LD A, Food_ink
     CALL Set_Ink
     RET
