@@ -1,0 +1,3 @@
+[submodule "submodules/zx-fonts"]
+	path = submodules/zx-fonts
+	url = git@github.com:dinodork/zx-fonts.git
