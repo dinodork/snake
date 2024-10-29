@@ -28,6 +28,7 @@ Place_Food_old:
     LD HL, Start_Of_Attribute_Ram
     ADD HL, BC
     LD (HL), 0xFF
+
     RET
 
 ; Removes the stalk of the food. The food itself gets overwritten, so don't
@@ -48,11 +49,12 @@ Remove_Food:
     LD (HL), A
     POP HL
     CALL Get_Attr_Address
-    LD A, Ink_Blue | Paper_Blue
-    LD (HL), A
+    LD A, Ink_Blue
+    CALL Set_Ink
 
 Remove_Food_Exit:
     RET
+
 Place_Food:
     ;
     ; Find a random X, Y positions that is within the screen.

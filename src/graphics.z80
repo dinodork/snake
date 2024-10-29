@@ -36,6 +36,7 @@ Draw_Snake_Tile:
     CALL Get_Attr_Address
     LD A, Snake_ink
     CALL Set_Ink
+
     RET
 
 ; Draws food's stalk at the position.
