@@ -13,5 +13,6 @@ DeZog VsCode extension.
 
 ## Recommended tools
 
-- "Z80 Instruction Set" (VsCode extension) - mouse-over instruction reference of assembler instructions.
-- "ASM Code Lens" (VsCode extension) - only syntax highlighting extension I've found that works.
+- Z80 Instruction Set (VsCode extension) - mouse-over instruction reference of assembler instructions.
+- ASM Code Lens (VsCode extension) - only syntax highlighting extension I've found that works.
+- ZX Graphics Editor (VsCode extension)
