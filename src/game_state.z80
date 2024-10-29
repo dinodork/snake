@@ -164,13 +164,16 @@ Detect_Collision:
     PUSH HL
     CALL Game_get_address
     CALL Game_get_direction
+
     CP Game_tile_food
     POP HL
     JP Z, Handle_Collision_With_Food
+
+    CP A, Game_tile_food_stalk
+    RET Z
+
     CP A, Game_tile_empty
     JP NZ, Detect_Collision_Wall
-
-    LD (IX), Game_Phase_Running
 
     RET
 Detect_Collision_Wall:
