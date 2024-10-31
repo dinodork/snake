@@ -34,7 +34,7 @@ Draw_Snake_Tile:
 
     POP HL
     CALL Get_Attr_Address
-    LD A, Snake_ink
+    LD A, (Canvas_current_snake_ink)
     CALL Set_Ink
 
     RET

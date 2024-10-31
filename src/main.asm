@@ -179,19 +179,25 @@ Render_snake:
     RET
 
 Delay:  EQU 10 ; TODO - make sure to initialise to 0
-Delay_timer:
-    DEFS 1
+
+Delay_target: DEFS 1, 10
+Delay_timer: DEFS 1
+Delay_target_reached: DEFS 1
 
 Interrupt:
     DI
     EXX
     EX AF, AF'
 
+    LD A, (Delay_target)
+    LD B, A
     LD A, (Delay_timer)
+
     INC A
-    CP Delay
+    CP B
     JR NZ, Interrupt_done
 
+SM_Interrupt_handler:
     CALL Update_Snake
     LD A, 0
 Interrupt_done:
@@ -200,6 +206,11 @@ Interrupt_done:
     EX AF, AF'
     EXX
     EI
+    RET
+
+Update_Delay_Target_Reached:
+    LD A, 1
+    LD (Delay_target_reached), A
     RET
 
 main:
@@ -241,7 +252,39 @@ Loop:
     JP Loop
 
 Handle_Game_Over:
+
+; Modify the code indside the interrupt handler!
+; The call to Update_Snake now gets replaced with a different routine
+; that simply write a 1 to Delay_target_reached after `Delay_target`
+; interrupts have occured.
     DI
+    LD HL, Update_Delay_Target_Reached
+    LD IX, SM_Interrupt_handler
+    LD (IX + 1), L
+    LD (IX + 2), H
+    EI
+
+    LD B, 3
+Death_sequence_flash_loop:
+    PUSH BC
+
+    ; Clear snake
+    LD A, Ink_Blue
+    LD (Canvas_current_snake_ink), A
+    CALL Draw_Snake
+
+    CALL Pause_One_Second
+
+    ; Draw snake
+    LD A, Snake_ink
+    LD (Canvas_current_snake_ink), A
+    CALL Draw_Snake
+
+    CALL Pause_One_Second
+
+    POP BC
+
+    DJNZ Death_sequence_flash_loop
 
     LD H, 9     ; Y
     LD L, 9     ; X
@@ -254,7 +297,21 @@ Handle_Game_Over:
 	LD H, 10    ; Y
 	LD L, 10    ; X
 	CALL Print_String_With_Attribute_At
+
+    ; Hang the machine
+    DI
     HALT
+
+Pause_One_Second:
+    HALT
+    LD A, (Delay_target_reached)
+    CP 1
+    JP NZ, Pause_One_Second
+
+    LD A, 0
+    LD (Delay_target_reached), A
+
+    RET
 
 stack_top:
     defw 0  ; WPMEM, 2
