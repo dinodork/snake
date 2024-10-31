@@ -68,7 +68,10 @@ Get_Next_Position_head_4:
 Draw_Snake:
     CALL Draw_Tail
     LD HL, (Game_snake_tail_x) ; H := Y position, L := X position
-    LD DE, HL
+    PUSH HL
+    CALL Game_get_address
+    LD A, (HL)
+    POP HL
     CALL Get_Next_Position
 
 Draw_Snake_Loop:
