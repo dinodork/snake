@@ -25,7 +25,7 @@ screen_top: defb    0   ; WPMEMx
     include "graphics.z80"
 
     include "build/graphics/font.asm"
-    include "build/graphics/snake_frames.asm"
+    include "build/graphics/frames.asm"
 
 
  defs 0x8000 - $

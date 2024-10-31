@@ -69,14 +69,8 @@
                 "args": [
                     "scripts/graphics_to_asm.py",
                     "-W1",
-                    "${workspaceFolder}/graphics/snake_frames.udg",
-/*
-   There is a bug in the ZXGraphics Editor preventing it from understanding any
-   other file sizes for graphics except exactly 21 8x8 blocks. Hence we have to
-   divide the graphics into two files.
-*/
-                    "${workspaceFolder}/graphics/environment_frames.udg",
-                    "-o${config:buildPath}/graphics/snake_frames.asm",
+                    "${workspaceFolder}/graphics/frames.udg",
+                    "-o${config:buildPath}/graphics/frames.asm",
                 ],
             },
             "group": {
@@ -115,7 +109,7 @@
                 "isDefault": true
             },
             "dependsOn": [
-                "CheckAssembler"
+                "CheckAssembler",
                 "CreateBuildDirectory",
                 "GenerateFontAsm",
                 "GenerateGraphicsAsm",

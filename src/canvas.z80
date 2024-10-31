@@ -1,5 +1,6 @@
 	include "lib/attribute.z80"
 	include "lib/graphics.z80"
+	include "src/frames.asm"
 
 Text_Scores:
 	DB 0, 0, "Snake", 0xFE
@@ -41,7 +42,7 @@ Draw_Vertical_Fence_Loop:
 	LD (IX + 31), Ink_Yellow | Paper_Red ; cares?
 
 	; Draw the tile
-	LD IY, Environment_frames_1
+	LD IY, Frames_bricks
 	CALL Print_UDG8
 	POP BC
 
@@ -56,11 +57,8 @@ Draw_Scene_Top_Fence_Loop:
 	DEC L
 	CALL Get_Char_Address
 
-	LD A, Tile_index_brick
-	LD DE, Snake_frames_1
-	PUSH BC ; B gets overwritten
-	CALL Print_Char
-	POP BC
+	LD IY, Frames_bricks
+	CALL Print_UDG8
 
 	DJNZ Draw_Scene_Top_Fence_Loop
 
@@ -78,11 +76,8 @@ Draw_Scene_Bottom_Fence_Loop:
 	DEC L
 	CALL Get_Char_Address
 
-	LD A, Tile_index_brick
-	LD DE, Snake_frames_1
-	PUSH BC ; B gets overwritten
-	CALL Print_Char
-	POP BC
+	LD IY, Frames_bricks
+	CALL Print_UDG8
 
 	DJNZ Draw_Scene_Bottom_Fence_Loop
 

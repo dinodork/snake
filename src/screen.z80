@@ -37,16 +37,20 @@ Get_Char_Address:
 	RET		; Returns screen address in HL
 
 ; Prints a UDG (Single Height)
-; IY - Font data to print
+; IY - UDG data to print
 ; HL - Screen address
+; Clobbers
+;   IY
 Print_UDG8:
-	LD B, 8		; Loop counter
-2:
+	DUP 8
+
 	LD A, (IY)
 	LD (HL), A
 	INC IY
 	INC H		; Goto next line on screen
-	DJNZ 2B
+
+	EDUP
+
 	RET
 
 ; Prints a single character to a screen address.
