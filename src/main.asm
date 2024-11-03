@@ -162,20 +162,20 @@ Update_Snake:
     LD HL, (Game_snake_tail_x)
     CALL Get_Attr_Address
     ; Don't bother clearing the graphics, just hide it
-    LD A, Ink_Blue
+    LD A, Invisible_ink
     CALL Set_Ink
 
     LD HL, (Game_snake_tail_x)
     POP AF
     CALL Get_Next_Position
     LD (Game_snake_tail_x), HL
+    CALL Draw_Tail
     JP Render_snake
 
 Grow_Snake:
     INC DE
     LD (Game_snake_length), DE
 Render_snake:
-    CALL Draw_Tail
     POP DE
     LD HL, DE
     PUSH HL
