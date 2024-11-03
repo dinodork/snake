@@ -67,7 +67,6 @@ Game_tail_start_x: EQU Game_width / 2
 Game_tail_start_y: EQU Game_height / 2
 Game_Phase_Running: EQU 0
 Game_Phase_Game_Over: EQU 1
-Game_Phase_Eating: EQU 2
 
 Game_Phase:
     DEFS 1
@@ -198,9 +197,6 @@ Handle_Collision_With_Food:
 
     CALL Remove_Food
     CALL Place_Food
-
-    LD IX, Game_Phase
-    LD (IX), Game_Phase_Eating
 
     RET
 
