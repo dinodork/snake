@@ -97,7 +97,7 @@ Draw_Snake_Loop:
 
     ADD A, Tile_snake_head_start
     LD B, Snake_head_ink
-    CALL Draw_Snake_Tile
+    CALL Draw_Frame_With_Ink
 
     RET
 
@@ -188,9 +188,9 @@ Render_snake:
 
     RET
 
-Delay:  EQU 10 ; TODO - make sure to initialise to 0
+Initial_delay_target:  EQU 10
 
-Delay_target: DEFS 1, 10
+Delay_target: DEFS 1, Initial_delay_target
 Delay_timer: DEFS 1
 Delay_target_reached: DEFS 1
 
@@ -263,26 +263,61 @@ Loop:
 
 Handle_Game_Over:
 
-    LD DE, Font_1 - 0x100
-    LD IX, Game_over_text
-	LD H, 10    ; Y
-	LD L, 10    ; X
-	CALL Print_String_With_Attribute_At
+; X eyes
+    LD HL, (Game_snake_head_x) ; H := Y position, L := X position
+    CALL Game_get_address
+    CALL Game_get_direction
+    ADD 64 - 32
+    CALL Draw_Head_Frame
 
-    CALL Wait_For_Any_Key
-    DI
-    HALT
 
 ; Modify the code indside the interrupt handler!
 ; The call to Update_Snake now gets replaced with a different routine
 ; that simply writes a 1 to Delay_target_reached after `Delay_target`
 ; interrupts have occured.
     DI
+    LD A, 50
+    LD (Delay_target), A
     LD HL, Update_Delay_Target_Reached
     LD IX, SM_Interrupt_handler
     LD (IX + 1), L
     LD (IX + 2), H
     EI
+
+    CALL Pause_One_Second
+
+; Print "Game over" across the screen
+Game_over_text_pos: \
+    EQU ((24 / 2 - 1) << 8) + \
+    32 / 2 - (Game_over_text_end - Game_over_text) / 2
+
+	LD HL, Game_over_text_pos
+    LD DE, Font_1 - 0x100
+    LD IX, Game_over_text
+	CALL Print_String_At
+
+	LD HL, Game_over_text_pos
+    CALL Get_Attr_Address
+    LD (HL), Ink_White | Bright | Paper_Blue
+    LD DE, HL
+    INC DE
+    LD BC, Game_over_text_end - Game_over_text - 2
+    LDIR
+
+; Wait for key press, then restart the game
+    CALL Wait_For_Any_Key
+
+; Restore the interrupt action
+    DI
+    LD A, Initial_delay_target
+    LD (Delay_target), A
+    LD HL, Update_Snake
+    LD IX, SM_Interrupt_handler
+    LD (IX + 1), L
+    LD (IX + 2), H
+    EI
+
+    JP main
 
     LD B, 3
 Death_sequence_flash_loop:
