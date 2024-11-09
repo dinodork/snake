@@ -161,7 +161,6 @@ Game_get_address:
 
     RET
 
-
 ; Checks for collision and updates game state accordingly.
 ;   H Snake head Y position
 ;   L Snake head X position

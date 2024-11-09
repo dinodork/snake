@@ -17,10 +17,10 @@ Clear_Screen:
 	RET
 
 ; Get screen address
-; H = Y character position
-; L = X character position
-; Returns address in HL
-;
+;   H = Y character position
+;   L = X character position
+; Returns address in graphics file in HL
+; Clobbers: A
 Get_Char_Address:
 	LD A, H
 	AND %00000111
@@ -34,13 +34,29 @@ Get_Char_Address:
 	AND %00011000
 	OR %01000000
 	LD H, A
+
+	RET		; Returns screen address in HL
+
+Get_Char_Address_in_IY:
+	LD A, H
+	AND %00000111
+	RRA
+	RRA
+	RRA
+	RRA
+	OR L
+	LD IYH, A
+	LD A, H
+	AND %00011000
+	OR %01000000
+	LD H, A
 	RET		; Returns screen address in HL
 
 ; Prints a UDG (Single Height)
 ; IY - UDG data to print
 ; HL - Screen address
 ; Clobbers
-;   IY
+;   IY, HL
 Print_UDG8:
 	DUP 8
 

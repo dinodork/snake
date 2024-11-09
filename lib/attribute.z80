@@ -41,6 +41,10 @@ Attribute_box_rows:    EQU 24
         EDUP
     ENDM
 
+; Returns the address in the attribute file.
+;   H = Y character position
+;   L = X character position
+; Clobbers: DE
 Get_Attr_Address:
     ; Save the X value in DE
     LD E, L
@@ -62,13 +66,14 @@ Get_Attr_Address:
     RET
 
 ; Sets a new ink value, leaving other attributes intact.
-; A: New ink value
-; HL: Address of attribute byte
+;   A  = New ink value
+;   HL = Address of attribute byte
+; Clobbers: A, C
 Set_Ink:
-    LD B, A
+    LD C, A
     LD A, (HL)
     AND A, ~Ink_White
-    OR A, B
+    OR A, C
     LD (HL), A
     RET
 
