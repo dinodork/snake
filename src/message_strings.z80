@@ -1,0 +1,9 @@
+    ifndef src_message_strings_z80
+    define src_message_strings_z80
+
+    include "messages.z80"
+
+    DEFINE_MESSAGE Game_Over_Message, "Game Over"
+    DEFINE_MESSAGE Press_A_Key_Message, "Press any key to play again"
+
+    endif ; src_message_strings_z80

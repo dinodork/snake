@@ -8,10 +8,6 @@ Input_Custom:
   DB 0xDF, %00000010  	; O (Left)
   DB 0xDF, %00000001  	; P (Right)
 
-Game_over_text:
-    DB "Game Over", 0xFE
-Game_over_text_end:
-
 
 ; Reads the keyboard and updates the player sprite's direction;
 ; Current_Direction
