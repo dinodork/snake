@@ -3,6 +3,13 @@
 
     include "messages.z80"
 
+Text_Scores:
+  DB 0, 0, "Snake", 0xFE
+  DB 9, 0, "Score 12345", 0xFF
+
+;
+; Main menu texts
+;
     DEFINE_MESSAGE Title_Message, "ZX Snake"
     DEFINE_MESSAGE Keys_Message, "Keys are Q, A, O, P"
     DEFINE_MESSAGE Press_Key_To_Play_Message, "Press any key to play"
@@ -13,6 +20,15 @@ Copyright_String2:
 Copyright_String3:
     DB "No rights whatsoever reserved", 0xFE
 
+;
+; In-game texts
+;
+Score_String:
+    ; The numbers are overwritten with actual score during game
+    DB "Score 123456", 0xFE
+;
+; Game over texts
+;
     DEFINE_MESSAGE Game_Over_Message, "Game Over"
     DEFINE_MESSAGE Press_Key_To_Play_Again_Message, "Press any key to play again"
 

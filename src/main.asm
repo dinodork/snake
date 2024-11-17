@@ -16,6 +16,7 @@ screen_top: defb  0   ; WPMEMx
 
   include "lib/attribute.z80"
   include "lib/graphics.z80"
+  include "lib/format.z80"
   include "canvas.z80"
   include "controls.z80"
   include "screen.z80"
@@ -26,7 +27,6 @@ screen_top: defb  0   ; WPMEMx
   include "src/keyboard.z80"
   include "messages.z80"
   include "message_strings.z80"
-  include "messages.z80"
 
   include "build/graphics/font.asm"
   include "build/graphics/frames.asm"
@@ -291,10 +291,10 @@ game:
   LD A, Paper_Black | Ink_White | Bright
   CALL Clear_Screen
 
-  LD IX, Text_Scores
-  LD DE, Font_1 - 0x100
-  CALL Print_Strings
+  LD HL, 0
+  LD (Game_Score), HL
 
+  CALL Draw_Score
   CALL Draw_Scene
   CALL Game_initialise
   CALL Draw_Snake

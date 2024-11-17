@@ -71,6 +71,8 @@ Game_Phase_Game_Over: EQU 1
 Game_Phase:
     DEFS 1
 
+Game_Score:
+    DEFS 2, 0
 Game_initialise:
     ; Clear the whole game
      LD HL, Game
@@ -195,6 +197,13 @@ Handle_Collision_With_Food:
     INC (IX)
 
     CALL Remove_Food
+
+; Award points
+    LD HL, (Game_Score)
+    INC HL
+    LD (Game_Score), HL
+    CALL Draw_Score
+
     CALL Place_Food
 
     RET

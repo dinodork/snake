@@ -1,0 +1,33 @@
+; Input:
+; - HL = number to convert
+; - DE = location of ASCII string
+; Output:
+; - ASCII string at (DE)
+
+Num2Dec:
+	LD bc, -100000
+	CALL Num1
+	LD bc, -10000
+	CALL Num1
+	LD bc, -1000
+	CALL Num1
+	LD bc, -100
+	CALL Num1
+	LD c, -10
+	CALL Num1
+	LD c, b
+
+Num1:
+	LD a, '0' - 1
+Num2:
+	INC	a
+	ADD	hl, bc
+	JR	c,Num2
+	SBC hl, bc
+
+	LD (de),a
+	INC de
+
+    RET
+
+    daa
