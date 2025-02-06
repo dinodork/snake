@@ -40,7 +40,7 @@
                 "args": [
                     "scripts/graphics_to_asm.py",
                     "-W1",
-                    "${workspaceFolder}/submodules/zx-fonts/countdown_sh.fnt",
+                    "${workspaceFolder}/submodules/zx-fonts/arcade.fnt",
                     "-o${config:buildPath}/graphics/font.asm",
                     "-lFont"
                 ],
