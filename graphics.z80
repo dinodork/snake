@@ -7,13 +7,18 @@ Graphics_play_area_size: EQU (32 - 2) * (24 - 3)
 
 ; Lookup table for body segments. The tile to choose for a body segment depends
 ; upon:
-; 1) The previous tile's
+; 1) The previous tile's direction
 ; 2) The current tile's direction
 ; To get the correct tile index, take the previous tile's direction and use
 ; that value as the row, then use the current tile's direction and use that
-; as the column.
+; as the column. Some combinations make no sense, e.g. Up+Down, and these
+; slots contain a -1.
 Body_segments:
-    BYTE   9, -1, 10, 13,    -1, 9, 11, 12,    12, 13, 8,  8,    11, 10, -1, 8
+         ; Up Down Left Right
+    BYTE    9,  -1,  10,   13 ; Up
+    BYTE   -1,   9,  11,   12 ; Down
+    BYTE   12,  13,   8,    8 ; Left
+    BYTE   11,  10,  -1,    8 ; Right
 
 ; Draws a tile (bitmap + attribute) of the snake.
 ;   H: Y position
