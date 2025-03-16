@@ -76,6 +76,10 @@ Draw_Snake:
 
 Draw_Snake_Loop:
     PUSH HL
+    CALL Game_get_address
+    LD A, (HL)
+    POP HL
+    PUSH HL
     CALL Draw_snake_body_segment
     POP HL
 
@@ -272,7 +276,7 @@ Death_sequence_flash_loop:
     PUSH BC
 
     ; Clear snake
-    LD A, Ink_Blue
+    LD A, Ink_Red
     LD (Canvas_current_snake_ink), A
     CALL Draw_Snake
 
