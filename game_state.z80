@@ -21,7 +21,8 @@ Game_tile_facing_down: EQU 0x01
 Game_tile_facing_left: EQU 0x02
 Game_tile_facing_right: EQU 0x03
 Game_tile_wall: EQU 0x04
-Game_tile_food: EQU 0x05
+Game_tile_food_stalk: EQU 0x05
+Game_tile_food: EQU 0x06
 Game_tile_empty: EQU 0xFF
 
 ; The head's on-screen x coordinate
@@ -160,10 +161,12 @@ Detect_Collision:
     CP 23
     JP Z, Detect_Collision_Wall
 
+    PUSH HL
     CALL Game_get_address
     CALL Game_get_direction
     CP Game_tile_food
-    JP Z, Detect_Collision_Food
+    POP HL
+    JP Z, Handle_Collision_With_Food
     CP A, Game_tile_empty
     JP NZ, Detect_Collision_Wall
 
@@ -174,12 +177,13 @@ Detect_Collision_Wall:
     LD (IX), Game_Phase_Game_Over
     RET
 
-Detect_Collision_Food:
+Handle_Collision_With_Food:
     LD IX, Game_snake_target_length
     INC (IX)
     INC (IX)
     INC (IX)
 
+    CALL Remove_Food
     CALL Place_Food
 
     LD IX, Game_Phase

@@ -38,16 +38,32 @@ Draw_Snake_Tile:
     CALL Set_Ink
     RET
 
-Draw_food:
+; Draws food's stalk at the position.
+; H = Y character position
+; L = X character position
+Draw_Stalk:
     PUSH HL
     CALL Get_Char_Address
-    LD DE, Snake_frames_1
-    LD A, 14
+    LD DE, Environment_frames_1
+    LD A, 1
+    CALL Print_Char
+    POP HL
+    CALL Get_Attr_Address
+    LD A, Apple_stalk_ink
+    CALL Set_Ink
+
+    RET
+
+Draw_Apple:
+    PUSH HL
+    CALL Get_Char_Address
+    LD A, 2
+    LD DE, Environment_frames_1
     CALL Print_Char
 
     POP HL
     CALL Get_Attr_Address
-    LD A, Food_ink
+    LD A, Apple_ink
     CALL Set_Ink
     RET
 
