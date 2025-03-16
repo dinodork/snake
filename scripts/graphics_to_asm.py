@@ -11,8 +11,8 @@ def main():
     parser = argparse.ArgumentParser(
         description="Exports .fnt or .udg data to Z80 assembler.")
 
-    parser.add_argument("infile", type=argparse.FileType('rb'),
-                        default=sys.stdin)
+    parser.add_argument("infiles", type=argparse.FileType('rb'),
+                        default=sys.stdin, nargs='*')
     parser.add_argument("-o", "--outfile", type=argparse.FileType('w'),
                         default=sys.stdout, dest='out')
     parser.add_argument("-a", "--append-file", type=argparse.FileType('a'),
@@ -38,32 +38,33 @@ def main():
 
     args = parser.parse_args()
 
-    # Argparse curiously - and undocumentedly - adds singe quotes *inside* the string.
-    label = args.label.replace("'", "") if args.label else os.path.splitext(
-        os.path.basename(args.infile.name))[0].capitalize()
+    for infile in args.infiles:
+        # Argparse curiously - and undocumentedly - adds singe quotes *inside* the string.
+        label = args.label.replace("'", "") if args.label else os.path.splitext(
+            os.path.basename(infile.name))[0].capitalize()
 
-    n_frames = args.frames if args.frames else floor(os.path.getsize(args.infile.name) /
+        n_frames = args.frames if args.frames else floor(os.path.getsize(infile.name) /
                                                      (args.width * 8 * args.height))
 
-    if args.verbose:
-        print("label s " + label + ".")
-        print("Making " + str(n_frames) + " frame(s).")
+        if args.verbose:
+            print("label s " + label + ".")
+            print("Making " + str(n_frames) + " frame(s).")
 
-    for frameno in range(args.start_frame, args.start_frame + n_frames):
-        print(label + "_" + str(frameno) + ":", file=args.out)
-        for chunkno in range(args.height):
-            chunk = args.infile.read(8 * args.width)
-            if len(chunk) < 8 * args.width:
-                print("Warning: file ends in the middle of a sprite",
-                      file=sys.stderr)
-                exit(0)
-            for i in range(0, 8):
-                print(" " * args.indent + "DB " +
-                      " ", file=args.out, end='')
-                print(", ".join(["%" + bin(chunk[byte * 8 + i])[2:].rjust(8,
-                      '0') for byte in range(args.width)]), file=args.out)
-        print(file=args.out)
-        frameno += 1
+        for frameno in range(args.start_frame, args.start_frame + n_frames):
+            print(label + "_" + str(frameno) + ":", file=args.out)
+            for chunkno in range(args.height):
+                chunk = infile.read(8 * args.width)
+                if len(chunk) < 8 * args.width:
+                    print("Warning: file ends in the middle of a sprite",
+                          file=sys.stderr)
+                    exit(0)
+                for i in range(0, 8):
+                    print(" " * args.indent + "DB " +
+                          " ", file=args.out, end='')
+                    print(", ".join(["%" + bin(chunk[byte * 8 + i])[2:].rjust(8,
+                          '0') for byte in range(args.width)]), file=args.out)
+            print(file=args.out)
+            frameno += 1
 
 
 if __name__ == "__main__":

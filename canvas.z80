@@ -1,12 +1,12 @@
-
 	include "lib/attribute.z80"
 	include "lib/graphics.z80"
+
 Text_Scores:
 	DB 0, 0, "Snake", 0xFE
 	DB 9, 0, "Score 00000000", 0xFE
 	DB 24, 0, "Lives 0", 0xFF
 
-Tile_index_brick: EQU 19
+Tile_index_brick: EQU 20
 Play_area_height: EQU 24 - 3 ; Status bar + top, bottom walls
 
 Snake_ink: EQU Ink_Green
@@ -39,7 +39,7 @@ Draw_Vertical_Fence_Loop:
 	LD (IX + 31), Ink_Yellow | Paper_Red ; cares?
 
 	; Draw the tile
-	LD IY, Tiles_1 + Tile_index_brick * 8
+	LD IY, Environment_frames_1
 	CALL Print_UDG8
 	POP BC
 
@@ -55,7 +55,7 @@ Draw_Scene_Top_Fence_Loop:
 	CALL Get_Char_Address
 
 	LD A, Tile_index_brick
-	LD DE, Tiles_1
+	LD DE, Snake_frames_1
 	PUSH BC ; B gets overwritten
 	CALL Print_Char
 	POP BC
@@ -77,7 +77,7 @@ Draw_Scene_Bottom_Fence_Loop:
 	CALL Get_Char_Address
 
 	LD A, Tile_index_brick
-	LD DE, Tiles_1
+	LD DE, Snake_frames_1
 	PUSH BC ; B gets overwritten
 	CALL Print_Char
 	POP BC

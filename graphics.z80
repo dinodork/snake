@@ -14,11 +14,11 @@ Graphics_play_area_size: EQU (32 - 2) * (24 - 3)
 ; as the column. Some combinations make no sense, e.g. Up+Down, and these
 ; slots contain a -1.
 Body_segments:
-         ; Up Down Left Right
-    BYTE    9,  -1,  10,   13 ; Up
-    BYTE   -1,   9,  11,   12 ; Down
-    BYTE   12,  13,   8,    8 ; Left
-    BYTE   11,  10,  -1,    8 ; Right
+; Turning -> Up Down Left Right   While going
+    BYTE     12,  -1,  16,   19 ; Up
+    BYTE     -1,  12,  17,   18 ; Down
+    BYTE     18,  19,  14,   -1 ; Left
+    BYTE     17,  16,  -1,   14 ; Right
 
 ; Draws a tile (bitmap + attribute) of the snake.
 ;   H: Y position
@@ -28,7 +28,7 @@ Draw_Snake_Tile:
     PUSH HL
     PUSH AF
     CALL Get_Char_Address
-    LD DE, Tiles_1
+    LD DE, Snake_frames_1
     POP AF
     CALL Print_Char
 
@@ -41,7 +41,7 @@ Draw_Snake_Tile:
 Draw_food:
     PUSH HL
     CALL Get_Char_Address
-    LD DE, Tiles_1
+    LD DE, Snake_frames_1
     LD A, 14
     CALL Print_Char
 
@@ -120,6 +120,9 @@ Draw_Tail:
     LD HL, (Game_snake_tail_x) ; As above
     CALL Get_Char_Address
     POP AF
+
+    RLA
+
     ADD A, Tile_snake_tail_start
 
     LD HL, (Game_snake_tail_x) ; As above
