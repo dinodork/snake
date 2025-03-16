@@ -120,13 +120,11 @@ Draw_Tail:
     LD HL, (Game_snake_tail_x) ; As above
     CALL Get_Char_Address
     POP AF
-    PUSH AF
     ADD A, Tile_snake_tail_start
 
     LD HL, (Game_snake_tail_x) ; As above
     CALL Draw_Snake_Tile
 
-    POP AF
     RET
 
         endif ; graphics_z80
