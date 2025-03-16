@@ -15,10 +15,10 @@ Graphics_play_area_size: EQU (32 - 2) * (24 - 3)
 ; slots contain a -1.
 Body_segments:
 ; Turning -> Up Down Left Right   While going
-    BYTE     12,  -1,  16,   19 ; Up
-    BYTE     -1,  12,  17,   18 ; Down
-    BYTE     18,  19,  14,   -1 ; Left
-    BYTE     17,  16,  -1,   14 ; Right
+    BYTE     12,  -1,  16,   20 ; Up
+    BYTE     -1,  12,  22,   18 ; Down
+    BYTE     18,  20,  14,   -1 ; Left
+    BYTE     22,  16,  -1,   14 ; Right
 
 ; Draws a tile (bitmap + attribute) of the snake.
 ;   H: Y position
@@ -113,16 +113,17 @@ Draw_snake_body_segment_loop:
     LD A, (HL)
 
     POP HL
+
+    PUSH AF
+    LD A, H
+    XOR L
+    AND A, 1
+    LD B, A
+    POP AF
+    ADD A, B
+
     CALL Draw_Snake_Tile
-    RET
 
-
-; Draws the neck of the snake, i.e. the body segment immediately behind the
-; head.
-; H Snake neck Y position
-; L Snake neck X position
-Draw_Neck:
-    CALL Draw_snake_body_segment
     RET
 
 ; Draws the snake's tail. Takes no arguments.
