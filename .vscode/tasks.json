@@ -95,7 +95,8 @@
                 "--outprefix=${config:buildPath}/",
                 "--sld=${config:buildPath}/${config:projectName}.sld",
                 "--fullpath",
-                "${workspaceFolder}/main.asm"
+                "-I${workspaceFolder}",
+                "${workspaceFolder}/src/main.asm",
             ],
             "problemMatcher": {
                 "owner": "sjasmplus",
