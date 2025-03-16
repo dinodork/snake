@@ -73,25 +73,25 @@ Game_Phase:
 
 Game_initialise:
     ; Clear the whole game
-   	LD HL, Game
-	LD DE, Game + 1
-	LD BC, Game_size
-	LD (HL), Game_tile_empty
-	LDIR		; Copy this byte to the second, and so on
+     LD HL, Game
+  LD DE, Game + 1
+  LD BC, Game_size
+  LD (HL), Game_tile_empty
+  LDIR		; Copy this byte to the second, and so on
 
     ; Draw top wall
     LD HL, Game + Game_width ; Second row, top row is score etc.
-	LD DE, Game + Game_width + 1
-	LD BC, Game_width
-	LD (HL), Game_tile_wall	; Set the first byte
-	LDIR		; Copy this byte to the second, and so on
+  LD DE, Game + Game_width + 1
+  LD BC, Game_width
+  LD (HL), Game_tile_wall	; Set the first byte
+  LDIR		; Copy this byte to the second, and so on
 
     ; Draw bottom wall
     LD HL, Game + Game_width * (Game_height + Game_scores_height - 2)
-	LD DE, Game + Game_width * (Game_height + Game_scores_height - 2) + 1
-	LD BC, Game_width
-	LD (HL), Game_tile_wall	; Set the first byte
-	LDIR		; Copy this byte to the second, and so on
+  LD DE, Game + Game_width * (Game_height + Game_scores_height - 2) + 1
+  LD BC, Game_width
+  LD (HL), Game_tile_wall	; Set the first byte
+  LDIR		; Copy this byte to the second, and so on
 
     ; Draw side walls
     LD IY, Game + Game_width * (Game_scores_height + 1)

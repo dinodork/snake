@@ -1,39 +1,41 @@
-    SLDOPT COMMENT WPMEM, LOGPOINT, ASSERTION
+  SLDOPT COMMENT WPMEM, LOGPOINT, ASSERTION
 
-NEX:    equ 0   ;  1=Create nex file, 0=create sna file
+NEX:  equ 0   ;  1=Create nex file, 0=create sna file
 
-    IF NEX == 0
-        ;DEVICE ZXSPECTRUM128
-        DEVICE ZXSPECTRUM48
-        ;DEVICE NOSLOT64K
-    ELSE
-        DEVICE ZXSPECTRUMNEXT
-    ENDIF
+  IF NEX == 0
+    ;DEVICE ZXSPECTRUM128
+    DEVICE ZXSPECTRUM48
+    ;DEVICE NOSLOT64K
+  ELSE
+      DEVICE ZXSPECTRUMNEXT
+  ENDIF
 
-    ORG 0x4000
-    defs 0x6000 - $    ; move after screen area
-screen_top: defb    0   ; WPMEMx
+  ORG 0x4000
+  defs 0x6000 - $  ; move after screen area
+screen_top: defb  0   ; WPMEMx
 
-    include "lib/attribute.z80"
-    include "lib/graphics.z80"
-    include "canvas.z80"
-    include "controls.z80"
-    include "screen.z80"
-    include "food.z80"
-    include "game_state.z80"
-    include "graphics/tile_metadata.z80"
-    include "graphics.z80"
-    include "src/keyboard.z80"
+  include "lib/attribute.z80"
+  include "lib/graphics.z80"
+  include "canvas.z80"
+  include "controls.z80"
+  include "screen.z80"
+  include "food.z80"
+  include "game_state.z80"
+  include "graphics/tile_metadata.z80"
+  include "graphics.z80"
+  include "src/keyboard.z80"
+  include "messages.z80"
+  include "message_strings.z80"
 
-    include "build/graphics/font.asm"
-    include "build/graphics/frames.asm"
+  include "build/graphics/font.asm"
+  include "build/graphics/frames.asm"
 
 
  defs 0x8000 - $
  ORG $8000
 
-Stack_Top:		EQU 0xFFF0
-			LD SP, Stack_Top
+Stack_Top:  	EQU 0xFFF0
+  		LD SP, Stack_Top
 
 ; Updates the X, Y position of the head according to the direction it's facing.
 ;   H Snake head Y position
@@ -43,63 +45,63 @@ Stack_Top:		EQU 0xFFF0
 ;   H new Y position
 ;   L new X position
 Get_Next_Position:
-    AND 0x0F
-    CP Game_tile_facing_right
-    JP NZ, Get_Next_Position_head_2
-    INC L
-    RET
+  AND 0x0F
+  CP Game_tile_facing_right
+  JP NZ, Get_Next_Position_head_2
+  INC L
+  RET
 Get_Next_Position_head_2:
-    CP Game_tile_facing_left
-    JP NZ, Get_Next_Position_head_3
-    DEC L
-    RET
+  CP Game_tile_facing_left
+  JP NZ, Get_Next_Position_head_3
+  DEC L
+  RET
 Get_Next_Position_head_3:
-    CP Game_tile_facing_up
-    JP NZ, Get_Next_Position_head_4
-    DEC H
-    RET
+  CP Game_tile_facing_up
+  JP NZ, Get_Next_Position_head_4
+  DEC H
+  RET
 Get_Next_Position_head_4:
-    CP Game_tile_facing_down
-    RET NZ
-    INC H
-    RET
+  CP Game_tile_facing_down
+  RET NZ
+  INC H
+  RET
 
 ; Draw the snake in its entirety. This is only done in few occasions, mostly
 ; when drawing the screen at the start of the game.
 Draw_Snake:
-    CALL Draw_Tail
-    LD HL, (Game_snake_tail_x) ; H := Y position, L := X position
-    PUSH HL
-    CALL Game_get_address
-    LD A, (HL)
-    POP HL
-    CALL Get_Next_Position
+  CALL Draw_Tail
+  LD HL, (Game_snake_tail_x) ; H := Y position, L := X position
+  PUSH HL
+  CALL Game_get_address
+  LD A, (HL)
+  POP HL
+  CALL Get_Next_Position
 
 Draw_Snake_Loop:
-    PUSH HL
-    CALL Game_get_address
-    LD A, (HL)
-    POP HL
-    PUSH HL
-    CALL Draw_snake_body_segment
-    POP HL
+  PUSH HL
+  CALL Game_get_address
+  LD A, (HL)
+  POP HL
+  PUSH HL
+  CALL Draw_snake_body_segment
+  POP HL
 
-    PUSH HL
-    CALL Game_get_address
-    CALL Game_get_direction
-    POP HL
-    CALL Get_Next_Position
-    LD BC, (Game_snake_head_x)
-    LD DE, HL
-    SBC DE, BC
+  PUSH HL
+  CALL Game_get_address
+  CALL Game_get_direction
+  POP HL
+  CALL Get_Next_Position
+  LD BC, (Game_snake_head_x)
+  LD DE, HL
+  SBC DE, BC
 
-    JR NZ, Draw_Snake_Loop
+  JR NZ, Draw_Snake_Loop
 
-    ADD A, Tile_snake_head_start
-    LD B, Snake_head_ink
-    CALL Draw_Frame_With_Ink
+  ADD A, Tile_snake_head_start
+  LD B, Snake_head_ink
+  CALL Draw_Frame_With_Ink
 
-    RET
+  RET
 
 ; The heart of the game loop. Updates the state of the snake, checks
 ; for collisions and updates the game's state accordingly.
@@ -119,74 +121,74 @@ Draw_Snake_Loop:
 ; L and the Y value into H, courtesy of little-endian, since the Y value
 ; follows the X value in memory.
 Update_Snake:
-    CALL Clear_tongue
-    LD HL, (Game_snake_head_x) ; H := Y position, L := X position
-    LD A, (Game_next_direction)
-    LD DE, HL ; We're going to keep the old position in DE in this routine.
-    CALL Get_Next_Position
-    LD B, A ; Save A in B instead of the stack so we can do an early return.
+  CALL Clear_tongue
+  LD HL, (Game_snake_head_x) ; H := Y position, L := X position
+  LD A, (Game_next_direction)
+  LD DE, HL ; We're going to keep the old position in DE in this routine.
+  CALL Get_Next_Position
+  LD B, A ; Save A in B instead of the stack so we can do an early return.
 
-    PUSH HL
-    PUSH DE
-    PUSH BC
-    CALL Detect_Collision
-    POP BC
-    POP DE
-    POP HL
-    LD A, (IX)
-    CP Game_Phase_Game_Over
-    RET Z
+  PUSH HL
+  PUSH DE
+  PUSH BC
+  CALL Detect_Collision
+  POP BC
+  POP DE
+  POP HL
+  LD A, (IX)
+  CP Game_Phase_Game_Over
+  RET Z
 
-    LD A, B
+  LD A, B
 
-    ; Write new head position
-    LD (Game_snake_head_x), HL
-    PUSH DE
-    CALL Game_get_address
-    LD (HL), A
+  ; Write new head position
+  LD (Game_snake_head_x), HL
+  PUSH DE
+  CALL Game_get_address
+  LD (HL), A
 
-    LD HL, (Game_snake_target_length)
-    LD DE, (Game_snake_length)
-    SBC HL, DE
-    JR NZ, Grow_Snake
+  LD HL, (Game_snake_target_length)
+  LD DE, (Game_snake_length)
+  SBC HL, DE
+  JR NZ, Grow_Snake
 
-    ; The snake doesn't need to grow anymore, so move the tail one slot in its
-    ; current direction.
+  ; The snake doesn't need to grow anymore, so move the tail one slot in its
+  ; current direction.
 
-    LD HL, (Game_snake_tail_x)
-    CALL Game_get_address
-    CALL Game_get_direction
-    PUSH AF
-    LD (HL), Game_tile_empty
+  LD HL, (Game_snake_tail_x)
+  CALL Game_get_address
+  CALL Game_get_direction
+  PUSH AF
+  LD (HL), Game_tile_empty
 
-    LD HL, (Game_snake_tail_x)
-    CALL Get_Attr_Address
-    ; Don't bother clearing the graphics, just hide it
-    LD A, Invisible_ink
-    CALL Set_Ink
+  LD HL, (Game_snake_tail_x)
+  CALL Get_Attr_Address
+  ; Don't bother clearing the graphics, just hide it
+  LD A, Invisible_ink
+  CALL Set_Ink
 
-    LD HL, (Game_snake_tail_x)
-    POP AF
-    CALL Get_Next_Position
-    LD (Game_snake_tail_x), HL
-    CALL Draw_Tail
-    JP Render_snake
+  LD HL, (Game_snake_tail_x)
+  POP AF
+  CALL Get_Next_Position
+  LD (Game_snake_tail_x), HL
+  CALL Draw_Tail
+  JP Render_snake
 
 Grow_Snake:
-    INC DE
-    LD (Game_snake_length), DE
+  INC DE
+  LD (Game_snake_length), DE
 Render_snake:
-    POP DE
-    LD HL, DE
-    PUSH HL
-    CALL Draw_snake_body_segment
-    POP HL
-    CALL Game_get_address
-    LD A, (Game_next_direction)
-    LD (HL), A
-    CALL Draw_Head
+  POP DE
+  LD HL, DE
+  PUSH HL
+  CALL Draw_snake_body_segment
+  POP HL
+  CALL Game_get_address
+  LD A, (Game_next_direction)
+  LD (HL), A
+  CALL Draw_Head
 
-    RET
+  RET
 
 Initial_interrupt_target_count:  EQU 10
 
@@ -201,189 +203,174 @@ Interrupt_count: DEFS 1
 Interupt_target_count_reached: DEFS 1
 
 Interrupt:
-    DI
-    EXX
-    EX AF, AF'
+  DI
+  EXX
+  EX AF, AF'
 
-    LD A, (Interrupt_target_count)
-    LD B, A
-    LD A, (Interrupt_count)
+  LD A, (Interrupt_target_count)
+  LD B, A
+  LD A, (Interrupt_count)
 
-    INC A
-    CP B
-    JR NZ, Interrupt_done
+  INC A
+  CP B
+  JR NZ, Interrupt_done
 
 SM_Interrupt_handler:
-    CALL Update_Snake
-    LD A, 0
+  CALL Update_Snake
+  LD A, 0
 Interrupt_done:
-    LD (Interrupt_count), A
+  LD (Interrupt_count), A
 
-    EX AF, AF'
-    EXX
-    EI
-    RET
+  EX AF, AF'
+  EXX
+  EI
+  RET
 
 Update_Delay_Target_Reached:
-    LD A, 1
-    LD (Interupt_target_count_reached), A
-    RET
+  LD A, 1
+  LD (Interupt_target_count_reached), A
+  RET
 
 main:
-	DI
-	LD SP, Stack_Top
-	LD A, Paper_Black | Ink_White | Bright
-	CALL Clear_Screen
+  DI
+  LD SP, Stack_Top
+  LD A, Paper_Black | Ink_White | Bright
+  CALL Clear_Screen
 
-	LD IX, Text_Scores
-    LD DE, Font_1 - 0x100
-	CALL Print_Strings
+  LD IX, Text_Scores
+  LD DE, Font_1 - 0x100
+  CALL Print_Strings
 
-    CALL Draw_Scene
-    CALL Game_initialise
-    CALL Draw_Snake
-    CALL Place_Food
+  CALL Draw_Scene
+  CALL Game_initialise
+  CALL Draw_Snake
+  CALL Place_Food
 
-    LD IX, Game_Phase
-    LD (IX), 0
+  LD IX, Game_Phase
+  LD (IX), 0
 
-	LD HL, Interrupt
-	LD IX, 0xFFF0
-	LD (IX + 04h), 0xC3	   ; Opcode for JP
-	LD (IX + 05h), L
-	LD (IX + 06h), H
-	LD (IX + 0Fh), 0x18	    ; Opcode for JR; this will do JR to FFF4h
-	LD A, 0x39
-	LD I, A
-	IM 2
-	EI
+  LD HL, Interrupt
+  LD IX, 0xFFF0
+  LD (IX + 04h), 0xC3	   ; Opcode for JP
+  LD (IX + 05h), L
+  LD (IX + 06h), H
+  LD (IX + 0Fh), 0x18	  ; Opcode for JR; this will do JR to FFF4h
+  LD A, 0x39
+  LD I, A
+  IM 2
+  EI
 
 Loop:
-	HALT
-	CALL Handle_Controls
-    LD IX, Game_Phase
-    LD A, (IX)
-    CP 1
-    JR Z, Handle_Game_Over
-    JP Loop
+  HALT
+  CALL Handle_Controls
+  LD IX, Game_Phase
+  LD A, (IX)
+  CP 1
+  JR Z, Handle_Game_Over
+  JP Loop
 
 Handle_Game_Over:
 
 ; X eyes
-    LD HL, (Game_snake_head_x) ; H := Y position, L := X position
-    CALL Game_get_address
-    CALL Game_get_direction
-    ADD 64 - 32
-    CALL Draw_Head_Frame
+  LD HL, (Game_snake_head_x) ; H := Y position, L := X position
+  CALL Game_get_address
+  CALL Game_get_direction
+  ADD 64 - 32
+  CALL Draw_Head_Frame
 
 ; Modify the code indside the interrupt handler!
 ; The call to Update_Snake now gets replaced with a different routine
 ; that simply writes a 1 to Delay_target_reached after `Delay_target`
 ; interrupts have occured.
-    DI
-    LD A, 50
-    LD (Interrupt_target_count), A
-    LD HL, Update_Delay_Target_Reached
-    LD IX, SM_Interrupt_handler
-    LD (IX + 1), L
-    LD (IX + 2), H
-    EI
+  DI
+  LD A, 50
+  LD (Interrupt_target_count), A
+  LD HL, Update_Delay_Target_Reached
+  LD IX, SM_Interrupt_handler
+  LD (IX + 1), L
+  LD (IX + 2), H
+  EI
 
-    CALL Pause_One_Second
+  CALL Pause_One_Second
 
-; Print "Game over" across the screen
-Game_over_text_pos: \
-    EQU ((24 / 2 - 1) << 8) + \
-    32 / 2 - (Game_over_text_end - Game_over_text) / 2
-
-	LD HL, Game_over_text_pos
-    LD DE, Font_1 - 0x100
-    LD IX, Game_over_text
-	CALL Print_String_At
-
-	LD HL, Game_over_text_pos
-    CALL Get_Attr_Address
-    LD (HL), Ink_White | Bright | Paper_Blue
-    LD DE, HL
-    INC DE
-    LD BC, Game_over_text_end - Game_over_text - 2
-    LDIR
+  PRINT_CENTRED 10, Game_Over_Message
+  PRINT_CENTRED 12, Press_A_Key_Message
 
 ; Wait for key press, then restart the game
-    CALL Wait_For_Any_Key
+  CALL Wait_For_Any_Key
 
 ; Restore the interrupt action
-    DI
-    LD A, 0
-    LD (Interrupt_count), A
-    LD A, Initial_interrupt_target_count
-    LD (Interrupt_target_count), A
-    LD HL, Update_Snake
-    LD IX, SM_Interrupt_handler
-    LD (IX + 1), L
-    LD (IX + 2), H
-    EI
+  DI
+  LD A, 0
+  LD (Interrupt_count), A
+  LD A, Initial_interrupt_target_count
+  LD (Interrupt_target_count), A
+  LD HL, Update_Snake
+  LD IX, SM_Interrupt_handler
+  LD (IX + 1), L
+  LD (IX + 2), H
+  EI
 
-    JP main
+  JP main
 
-    LD B, 3
+  LD B, 3
 Death_sequence_flash_loop:
-    PUSH BC
+  PUSH BC
 
-    ; Clear snake
-    LD A, Ink_Red
-    LD (Canvas_current_snake_ink), A
-    CALL Draw_Snake
+  ; Clear snake
+  LD A, Ink_Red
+  LD (Canvas_current_snake_ink), A
+  CALL Draw_Snake
 
-    CALL Pause_One_Second
+  CALL Pause_One_Second
 
-    ; Draw snake
-    LD A, Snake_body_ink
-    LD (Canvas_current_snake_ink), A
-    CALL Draw_Snake
+  ; Draw snake
+  LD A, Snake_body_ink
+  LD (Canvas_current_snake_ink), A
+  CALL Draw_Snake
 
-    CALL Pause_One_Second
+  CALL Pause_One_Second
 
-    POP BC
+  POP BC
 
-    DJNZ Death_sequence_flash_loop
+  DJNZ Death_sequence_flash_loop
 
-    LD H, 9     ; Y
-    LD L, 9     ; X
-    LD B, 3     ; Height
-    LD C, 11    ; Width
-    CALL Clear_Box
+  LD H, 9   ; Y
+  LD L, 9   ; X
+  LD B, 3   ; Height
+  LD C, 11  ; Width
+  CALL Clear_Box
 
-    LD DE, Font_1 - 0x100
-    LD IX, Game_over_text
-	LD H, 10    ; Y
-	LD L, 10    ; X
-	CALL Print_String_With_Attribute_At
+  LD DE, Font_1 - 0x100
+;  LD IX, Game_over_text
+  LD H, 10  ; Y
+  LD L, 10  ; X
+  CALL Print_String_With_Attribute_At
 
-    ; Hang the machine
-    DI
-    HALT
+  ; Hang the machine
+  DI
+  HALT
 
 Pause_One_Second:
-    HALT
-    LD A, (Interupt_target_count_reached)
-    CP 1
-    JP NZ, Pause_One_Second
+  HALT
+  LD A, (Interupt_target_count_reached)
+  CP 1
+  JP NZ, Pause_One_Second
 
-    LD A, 0
-    LD (Interupt_target_count_reached), A
+  LD A, 0
+  LD (Interupt_target_count_reached), A
 
-    RET
+  RET
 
 stack_top:
-    defw 0  ; WPMEM, 2
+  defw 0  ; WPMEM, 2
 
-    IF NEX == 0
-        SAVESNA "snake.sna", main
-    ELSE
-        SAVENEX OPEN "snake.nex", main, stack_top
-        SAVENEX CORE 3, 1, 5
-        SAVENEX CFG 7   ; Border colour
-        SAVENEX AUTO
-        SAVENEX CLOSE
-    ENDIF
+  IF NEX == 0
+    SAVESNA "snake.sna", main
+  ELSE
+    SAVENEX OPEN "snake.nex", main, stack_top
+    SAVENEX CORE 3, 1, 5
+    SAVENEX CFG 7   ; Border colour
+    SAVENEX AUTO
+    SAVENEX CLOSE
+  ENDIF

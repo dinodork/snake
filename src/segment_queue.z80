@@ -39,10 +39,10 @@ Segment_Queue_front_index:
 ; 1: body segment
 ; 2: head
 Segment_Queue_initialise:
-	LD IX, Segment_Queue_end_index
+  LD IX, Segment_Queue_end_index
     LD (IX), 0
 
-	LD IX, Segment_Queue_front_index
+  LD IX, Segment_Queue_front_index
     LD (IX), 0
 
     RET

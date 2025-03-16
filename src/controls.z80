@@ -3,10 +3,10 @@
 
     include "lib/keyboard.z80"
 Input_Custom:
-  DB 0xFB, %00000001		; Q (Up)
-  DB 0xFD, %00000001		; A (Down)
-  DB 0xDF, %00000010		; O (Left)
-  DB 0xDF, %00000001		; P (Right)
+  DB 0xFB, %00000001  	; Q (Up)
+  DB 0xFD, %00000001  	; A (Down)
+  DB 0xDF, %00000010  	; O (Left)
+  DB 0xDF, %00000001  	; P (Right)
 
 Game_over_text:
     DB "Game Over", 0xFE
