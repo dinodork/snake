@@ -35,6 +35,7 @@ Wait_For_Any_Key_Loop:
   LD D, B
   LD B, (HL)
   IN A, (C)
+  OR A, 0xE0
   CP 0xFF
   RET NZ
 
