@@ -24,18 +24,22 @@ Body_segments:
 ;   H: Y position
 ;   L: X position
 ;   A: Tile number
+;   B: Tile ink
 Draw_Snake_Tile:
-    PUSH HL
     PUSH AF
+    PUSH HL
+
+    ; We set the attribute of the tile first, as this is passed in B, which gets
+    ; clobbered by Get_Char_Address
+    CALL Get_Attr_Address
+    LD A, B
+    CALL Set_Ink
+    POP HL
+
     CALL Get_Char_Address
     LD DE, Frames_1
     POP AF
     CALL Print_Char
-
-    POP HL
-    CALL Get_Attr_Address
-    LD A, (Canvas_current_snake_ink)
-    CALL Set_Ink
 
     RET
 
@@ -82,7 +86,10 @@ Draw_Head:
     ; it starts on position 0, we don't need to.
 
     LD HL, (Game_snake_head_x) ; H := Y position, L := X position
+
+    LD B, Snake_head_ink
     CALL Draw_Snake_Tile
+
     POP AF
 
 Draw_Tongue:
@@ -119,7 +126,7 @@ Draw_Tongue:
 
     POP HL
     CALL Get_Attr_Address
-    LD A, Ink_Red
+    LD A, Snake_tongue_ink
     CALL Set_Ink
 
     RET
@@ -173,7 +180,7 @@ Draw_snake_body_segment_loop:
     LD B, A
     POP AF
     ADD A, B
-
+    LD B, Snake_body_ink
     CALL Draw_Snake_Tile
 
     RET
@@ -209,6 +216,7 @@ Draw_Tail:
     ADD A, Tile_snake_tail_start
 
     LD HL, (Game_snake_tail_x) ; As above
+    LD B, Snake_body_ink
     CALL Draw_Snake_Tile
 
     RET

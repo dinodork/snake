@@ -95,7 +95,9 @@ Draw_Snake_Loop:
     JR NZ, Draw_Snake_Loop
 
     ADD A, Tile_snake_head_start
+    LD B, Snake_head_ink
     CALL Draw_Snake_Tile
+
     RET
 
 ; The heart of the game loop. Updates the state of the snake, checks
@@ -283,7 +285,7 @@ Death_sequence_flash_loop:
     CALL Pause_One_Second
 
     ; Draw snake
-    LD A, Snake_ink
+    LD A, Snake_body_ink
     LD (Canvas_current_snake_ink), A
     CALL Draw_Snake
 
