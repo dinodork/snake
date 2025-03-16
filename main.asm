@@ -145,7 +145,7 @@ Update_Snake:
     LD (HL), Game_tile_empty
 
     LD HL, (Game_snake_tail_x)
-    CALL Get_attr_address
+    CALL Get_Attr_Address
     ; Don't bother clearing the graphics, just hide it
     LD A, Ink_Blue
     CALL Set_Ink
@@ -242,14 +242,13 @@ Handle_Game_Over:
     LD L, 9     ; X
     LD B, 3     ; Height
     LD C, 11    ; Width
-    LD A, Ink_White | Paper_Black
     CALL Clear_Box
 
     LD DE, Npm_1 - 0x100
     LD IX, Game_over_text
 	LD H, 10    ; Y
 	LD L, 10    ; X
-	CALL Print_String_At
+	CALL Print_String_With_Attribute_At
     HALT
 
 stack_top:
