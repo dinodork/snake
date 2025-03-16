@@ -233,6 +233,59 @@ Update_Delay_Target_Reached:
   RET
 
 main:
+Main_Menu:
+; Modify the code indside the interrupt handler!
+; The call to Update_Snake now gets replaced with a different routine
+; that simply writes a 1 to Delay_target_reached after `Delay_target`
+; interrupts have occured.
+  DI
+
+  LD SP, Stack_Top
+  LD A, Paper_Black | Ink_White | Bright
+  CALL Clear_Screen
+
+  PRINT_CENTRED 5, Title_Message
+  PRINT_CENTRED 7, Keys_Message
+  PRINT_CENTRED 10, Press_Key_To_Play_Message
+
+  LD HL, 21 << 8
+  LD IX, Copyright_String1
+  LD DE, Font_1 - 0x100
+  CALL Print_String_At
+
+  LD HL, 22 << 8
+  LD IX, Copyright_String2
+  CALL Print_String_At
+
+  LD HL, 23 << 8
+  LD IX, Copyright_String3
+  CALL Print_String_At
+
+  LD A, 50
+  LD (Interrupt_target_count), A
+  LD HL, Update_Delay_Target_Reached
+  LD IX, SM_Interrupt_handler
+  LD (IX + 1), L
+  LD (IX + 2), H
+  EI
+
+; Wait for key press, then restart the game
+  CALL Wait_For_Any_Key
+
+; Restore the interrupt action
+  DI
+  LD A, 0
+  LD (Interrupt_count), A
+  LD A, Initial_interrupt_target_count
+  LD (Interrupt_target_count), A
+  LD HL, Update_Snake
+  LD IX, SM_Interrupt_handler
+  LD (IX + 1), L
+  LD (IX + 2), H
+  EI
+
+  JP game
+game:
   DI
   LD SP, Stack_Top
   LD A, Paper_Black | Ink_White | Bright
@@ -295,7 +348,7 @@ Handle_Game_Over:
   CALL Pause_One_Second
 
   PRINT_CENTRED 10, Game_Over_Message
-  PRINT_CENTRED 12, Press_A_Key_Message
+  PRINT_CENTRED 12, Press_Key_To_Play_Again_Message
 
 ; Wait for key press, then restart the game
   CALL Wait_For_Any_Key
@@ -312,7 +365,7 @@ Handle_Game_Over:
   LD (IX + 2), H
   EI
 
-  JP main
+  JP game
 
   LD B, 3
 Death_sequence_flash_loop:
