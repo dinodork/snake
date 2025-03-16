@@ -20,12 +20,12 @@ Body_segments:
     BYTE     18,  20,  14,   -1 ; Left
     BYTE     22,  16,  -1,   14 ; Right
 
-; Draws a frame (bitmap + attribute) of the snake.
+; Draws a UDG frame and set the ink value.
 ;   H: Y position
 ;   L: X position
-;   A: Tile number
-;   B: Tile ink
-Draw_Snake_Tile:
+;   A: Character number
+;   B: Ink
+Draw_Frame_With_Ink:
     PUSH AF
     PUSH HL
 
@@ -70,11 +70,14 @@ Draw_Apple:
     RET
 
 ; Draws the head
-;   A: Direction of the head.
 Draw_Head:
     LD HL, (Game_snake_head_x) ; H := Y position, L := X position
     CALL Game_get_address
     CALL Game_get_direction
+
+; Draws a frame inthe head's ink.
+;   A: UDG character of the head.
+Draw_Head_Frame:
 
     PUSH AF
     LD HL, (Game_snake_head_x)
@@ -88,7 +91,7 @@ Draw_Head:
     LD HL, (Game_snake_head_x) ; H := Y position, L := X position
 
     LD B, Snake_head_ink
-    CALL Draw_Snake_Tile
+    CALL Draw_Frame_With_Ink
 
     POP AF
 
@@ -181,7 +184,7 @@ Draw_snake_body_segment_loop:
     POP AF
     ADD A, B
     LD B, Snake_body_ink
-    CALL Draw_Snake_Tile
+    CALL Draw_Frame_With_Ink
 
     RET
 
@@ -217,7 +220,7 @@ Draw_Tail:
 
     LD HL, (Game_snake_tail_x) ; As above
     LD B, Snake_body_ink
-    CALL Draw_Snake_Tile
+    CALL Draw_Frame_With_Ink
 
     RET
 

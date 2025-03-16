@@ -1,6 +1,7 @@
     ifndef src_controls_z80
     define src_controls_z80
 
+    include "lib/keyboard.z80"
 Input_Custom:
   DB 0xFB, %00000001		; Q (Up)
   DB 0xFD, %00000001		; A (Down)
@@ -9,6 +10,8 @@ Input_Custom:
 
 Game_over_text:
     DB "Game Over", 0xFE
+Game_over_text_end:
+
 
 ; Reads the keyboard and updates the player sprite's direction;
 ; Current_Direction
@@ -84,7 +87,10 @@ Keycheck_Done:
     RET
 
 All_key_banks:
-    BYTE 0xFE, 0xFD, 0xFB, 0xF7, 0xEF, 0xDF, 0xBF, 0x7F
+    BYTE Key_bank_12345, Key_bank_09876
+    BYTE Key_bank_QWERT, Key_bank_POIUY
+    BYTE Key_bank_ASDFG, Key_bank_EnterLKJH
+    BYTE Key_bank_CsZXCV, Key_bank_SpaceSsMNB
 All_key_banks_end:
 
     endif ; src_controls_z80
