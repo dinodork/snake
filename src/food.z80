@@ -36,32 +36,42 @@ Place_Food_old:
 ;   H Snake head Y position
 ;   L Snake head X position
 Remove_Food:
-    DEC H
+    DEC H ; The stalk is above the apple
     PUSH HL
     CALL Game_get_address
     LD A, (HL)
     CP A, Game_tile_food_stalk
     POP HL
     JR NZ, Remove_Food_Exit ; The stalk was replaced by something (snake), exit
+
+    ; Remove the food tile from the game state
     PUSH HL
     CALL Game_get_address
     LD A, Game_tile_empty
     LD (HL), A
     POP HL
+
+    ; Remove the food from the screen
     CALL Get_Attr_Address
-    LD A, Ink_Blue
+    LD A, Invisible_ink
     CALL Set_Ink
 
 Remove_Food_Exit:
     RET
 
+; Finds a random X, Y position that is within the screen.
+; Once found, places the food there, both in the game state and  on screen.
 Place_Food:
-    ;
-    ; Find a random X, Y positions that is within the screen.
-    ;
-    CALL RND16
+    CALL RND16 ; H is Y position, L is X position from now on.
+
+    ; Trim the values, they can never be greater than 31.
+    LD A, L
+    AND 32 - 1
+    LD L, A
+
     LD A, H
     AND 32 - 1
+    LD H, A
 
     ; Premature optimisation, we know there's always going to be a bottom
     ; wall...
@@ -72,13 +82,6 @@ Place_Food:
     JR C, Place_Food ; Out of range, retry
     LD H, A
 
-    LD A, L
-    AND 0x01F ; The screen is exactly 32 positions wide
-    CP 31
-    JR Z, Place_Food ; The right wall
-    CP 0
-    JR Z, Place_Food ; The right wall
-    LD L, A
     ;
     ; Check if the position is free.
     ;
