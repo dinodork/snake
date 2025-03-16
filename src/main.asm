@@ -23,6 +23,7 @@ screen_top: defb    0   ; WPMEMx
     include "game_state.z80"
     include "graphics/tile_metadata.z80"
     include "graphics.z80"
+    include "src/keyboard.z80"
 
     include "build/graphics/font.asm"
     include "build/graphics/frames.asm"
@@ -262,9 +263,19 @@ Loop:
 
 Handle_Game_Over:
 
+    LD DE, Font_1 - 0x100
+    LD IX, Game_over_text
+	LD H, 10    ; Y
+	LD L, 10    ; X
+	CALL Print_String_With_Attribute_At
+
+    CALL Wait_For_Any_Key
+    DI
+    HALT
+
 ; Modify the code indside the interrupt handler!
 ; The call to Update_Snake now gets replaced with a different routine
-; that simply write a 1 to Delay_target_reached after `Delay_target`
+; that simply writes a 1 to Delay_target_reached after `Delay_target`
 ; interrupts have occured.
     DI
     LD HL, Update_Delay_Target_Reached

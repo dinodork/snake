@@ -1,3 +1,6 @@
+  ifndef src_keyboard_z80
+  define src_keyboard_z80
+
 ; Read the in-game controls
 ; HL: The control map
 ; Returns:
@@ -23,3 +26,21 @@ Read_Controls2:
   LD A,E  	; Fetch the key flags
   AND A  	; Check for 0
   RET
+
+Wait_For_Any_Key:
+  LD HL, All_key_banks
+  LD B, All_key_banks_end - All_key_banks
+  LD C, 0xFE  ; Low is always 0xFE for reading keyboard
+Wait_For_Any_Key_Loop:
+  LD D, B
+  LD B, (HL)
+  IN A, (C)
+  CP 0xFF
+  RET NZ
+
+  INC HL
+  LD B, D
+  DJNZ Wait_For_Any_Key_Loop
+  JP Wait_For_Any_Key
+
+  endif ; src_keyboard_z80

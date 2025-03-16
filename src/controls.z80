@@ -1,19 +1,11 @@
-    include "keyboard.z80"
+    ifndef src_controls_z80
+    define src_controls_z80
 
 Input_Custom:
   DB 0xFB, %00000001		; Q (Up)
   DB 0xFD, %00000001		; A (Down)
   DB 0xDF, %00000010		; O (Left)
   DB 0xDF, %00000001		; P (Right)
-
-Up_text:
-	DB "Up   ", 0xFE
-Down_text:
-	DB "Down ", 0xFE
-Left_text:
-	DB "Left ", 0xFE
-Right_text:
-	DB "Right", 0xFE
 
 Game_over_text:
     DB "Game Over", 0xFE
@@ -90,3 +82,9 @@ Check_Right:
 
 Keycheck_Done:
     RET
+
+All_key_banks:
+    BYTE 0xFE, 0xFD, 0xFB, 0xF7, 0xEF, 0xDF, 0xBF, 0x7F
+All_key_banks_end:
+
+    endif ; src_controls_z80
