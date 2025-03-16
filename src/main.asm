@@ -26,6 +26,7 @@ screen_top: defb  0   ; WPMEMx
   include "src/keyboard.z80"
   include "messages.z80"
   include "message_strings.z80"
+  include "messages.z80"
 
   include "build/graphics/font.asm"
   include "build/graphics/frames.asm"
