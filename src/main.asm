@@ -188,20 +188,26 @@ Render_snake:
 
     RET
 
-Initial_delay_target:  EQU 10
+Initial_interrupt_target_count:  EQU 10
 
-Delay_target: DEFS 1, Initial_delay_target
-Delay_timer: DEFS 1
-Delay_target_reached: DEFS 1
+Interrupt_target_count: DEFS 1, Initial_interrupt_target_count
+; Incremented for every interrupt. When equal to Interrupt_target_count, the
+; interrupt action is performed. In-game, this is Update_Snake; But different
+; phases of the game swap out the interrupt action.
+Interrupt_count: DEFS 1
+
+; Set to 1 by the Interrupt handler when Interrupt_count reaches
+; Interrupt_target_count.
+Interupt_target_count_reached: DEFS 1
 
 Interrupt:
     DI
     EXX
     EX AF, AF'
 
-    LD A, (Delay_target)
+    LD A, (Interrupt_target_count)
     LD B, A
-    LD A, (Delay_timer)
+    LD A, (Interrupt_count)
 
     INC A
     CP B
@@ -211,7 +217,7 @@ SM_Interrupt_handler:
     CALL Update_Snake
     LD A, 0
 Interrupt_done:
-    LD (Delay_timer), A
+    LD (Interrupt_count), A
 
     EX AF, AF'
     EXX
@@ -220,7 +226,7 @@ Interrupt_done:
 
 Update_Delay_Target_Reached:
     LD A, 1
-    LD (Delay_target_reached), A
+    LD (Interupt_target_count_reached), A
     RET
 
 main:
@@ -270,14 +276,13 @@ Handle_Game_Over:
     ADD 64 - 32
     CALL Draw_Head_Frame
 
-
 ; Modify the code indside the interrupt handler!
 ; The call to Update_Snake now gets replaced with a different routine
 ; that simply writes a 1 to Delay_target_reached after `Delay_target`
 ; interrupts have occured.
     DI
     LD A, 50
-    LD (Delay_target), A
+    LD (Interrupt_target_count), A
     LD HL, Update_Delay_Target_Reached
     LD IX, SM_Interrupt_handler
     LD (IX + 1), L
@@ -309,8 +314,10 @@ Game_over_text_pos: \
 
 ; Restore the interrupt action
     DI
-    LD A, Initial_delay_target
-    LD (Delay_target), A
+    LD A, 0
+    LD (Interrupt_count), A
+    LD A, Initial_interrupt_target_count
+    LD (Interrupt_target_count), A
     LD HL, Update_Snake
     LD IX, SM_Interrupt_handler
     LD (IX + 1), L
@@ -359,12 +366,12 @@ Death_sequence_flash_loop:
 
 Pause_One_Second:
     HALT
-    LD A, (Delay_target_reached)
+    LD A, (Interupt_target_count_reached)
     CP 1
     JP NZ, Pause_One_Second
 
     LD A, 0
-    LD (Delay_target_reached), A
+    LD (Interupt_target_count_reached), A
 
     RET
 
