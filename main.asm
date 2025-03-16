@@ -238,16 +238,17 @@ Loop:
 Handle_Game_Over:
     DI
 
-    LD H, 9
-    LD L, 9
-    LD B, 3
-    LD C, 11
+    LD H, 9     ; Y
+    LD L, 9     ; X
+    LD B, 3     ; Height
+    LD C, 11    ; Width
+    LD A, Ink_White | Paper_Black
     CALL Clear_Box
 
     LD DE, Npm_1 - 0x100
     LD IX, Game_over_text
-	LD H, 10
-	LD L, 10
+	LD H, 10    ; Y
+	LD L, 10    ; X
 	CALL Print_String_At
     HALT
 

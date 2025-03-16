@@ -111,7 +111,7 @@ Print_String_Done:
 	RET
 
 ; Clears a single characters block.
-;   HL: Screen address clear at.
+;   HL: Screen address to clear at.
 Clear_Char:
 	DUP 8
 	LD (HL), 255
