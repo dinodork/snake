@@ -2,13 +2,83 @@
     "version": "2.0.0",
     "tasks": [
         {
+            "label": "CheckAssembler",
+            "type": "shell",
+            "command": "sjasmplus --version",
+            "options": {
+                "shell": {
+                    "executable": "/bin/bash",
+                    "args": ["-c"]
+                }
+            },
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared",
+                "showReuseMessage": true,
+                "clear": false
+            },
+        },
+        {
             "label": "CreateBuildDirectory",
             "type": "shell",
             "command": "mkdir -p ${config:buildPath} ${config:buildPath}/graphics",
             "group": {
                 "kind": "build",
                 "isDefault": false
-            }
+            },
+            "dependsOn": [
+                "CheckAssembler"
+            ],
+        },
+        {
+            "label": "GenerateFontAsm",
+            "type": "process",
+            "linux": {
+                "command": "/usr/bin/python3",
+                "args": [
+                    "scripts/graphics_to_asm.py",
+                    "-W1",
+                    "${workspaceFolder}/graphics/npm.fnt",
+                    "-o${config:buildPath}/graphics/font_npm.asm",
+                ],
+            },
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            },
+            "dependsOn": [
+                "CreateBuildDirectory",
+            ],
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared",
+                "showReuseMessage": true,
+                "clear": false
+            },
+        },
+        {
+            "label": "GenerateGraphicsAsm",
+            "type": "process",
+            "linux": {
+                "command": "/usr/bin/python3",
+                "args": [
+                    "scripts/graphics_to_asm.py",
+                    "-W1",
+                    "${workspaceFolder}/graphics/tiles.udg",
+                    "-o${config:buildPath}/graphics/graphics_snake.asm",
+                ],
+            },
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            },
+            "dependsOn": [
+                "CreateBuildDirectory",
+            ],
         },
         {
             "label": "Make(sjasmplus)",
@@ -29,56 +99,18 @@
                     "line": 2,
                     "severity": 3,
                     "message": 4
-                }
+                },
+
             },
             "group": {
                 "kind": "build",
                 "isDefault": true
             },
             "dependsOn": [
+                "CheckAssembler"
                 "CreateBuildDirectory",
                 "GenerateFontAsm",
                 "GenerateGraphicsAsm",
-            ],
-        },
-        {
-            "label": "GenerateFontAsm",
-            "type": "process",
-            "linux": {
-                "command": "/usr/bin/python3",
-                "args": [
-                    "scripts/graphics_to_asm.py",
-                    "-W1",
-                    "${workspaceFolder}/graphics/npm.fnt",
-                    "-o${config:buildPath}/graphics/font_npm.asm",
-                ],
-            },
-            "group": {
-                "kind": "build",
-                "isDefault": false
-            },
-            "dependsOn": [
-                "create build directory",
-            ],
-        },
-        {
-            "label": "GenerateGraphicsAsm",
-            "type": "process",
-            "linux": {
-                "command": "/usr/bin/python3",
-                "args": [
-                    "scripts/graphics_to_asm.py",
-                    "-W1",
-                    "${workspaceFolder}/graphics/tiles.udg",
-                    "-o${config:buildPath}/graphics/graphics_snake.asm",
-                ],
-            },
-            "group": {
-                "kind": "build",
-                "isDefault": false
-            },
-            "dependsOn": [
-                "create build directory",
             ],
         },
     ]
