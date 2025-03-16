@@ -19,6 +19,7 @@ Apple_stalk_ink: EQU Ink_Green
 Apple_ink: EQU Ink_Red
 Background_Ink: EQU Ink_Black
 Background_Paper: EQU Paper_Blue
+Invisible_ink: EQU Ink_Blue ; Same ink as Background_Paper
 Play_area_attribute: EQU Paper_Blue | Background_Ink | Bright
 Play_area_drop_shadow_attribute: EQU (Paper_Blue | Ink_Black) & ~Bright
 Draw_Vertical_Fence:
