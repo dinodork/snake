@@ -24,7 +24,7 @@ screen_top: defb    0   ; WPMEMx
     include "graphics/tile_metadata.z80"
     include "graphics.z80"
 
-    include "build/graphics/font_npm.asm"
+    include "build/graphics/font.asm"
     include "build/graphics/graphics_snake.asm"
 
  defs 0x8000 - $
@@ -204,7 +204,7 @@ main:
 	CALL Clear_Screen
 
 	LD IX, Text_Scores
-    LD DE, Npm_1 - 0x100
+    LD DE, Font_1 - 0x100
 	CALL Print_Strings
 
     CALL Draw_Scene
@@ -244,7 +244,7 @@ Handle_Game_Over:
     LD C, 11    ; Width
     CALL Clear_Box
 
-    LD DE, Npm_1 - 0x100
+    LD DE, Font_1 - 0x100
     LD IX, Game_over_text
 	LD H, 10    ; Y
 	LD L, 10    ; X
