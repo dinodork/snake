@@ -126,20 +126,33 @@ Draw_Neck:
     RET
 
 ; Draws the snake's tail. Takes no arguments.
+; The snake wags its tail as it slithers across the screen, alternating between
+; left and right. The frames are organised to that even frames point left and odd
+; frames right. We bake the wagging into the formula for indexing into the
+; frames, arriving at:
+;
+;     index := direction + ((Y_pos xor X_pos) mod 2)
+;
+; We choose xor because it changes every time either operand changes.
 Draw_Tail:
 
     ; Get the current tile's direction and push it on the stack.
     LD HL, (Game_snake_tail_x) ; H := Y position, L := X position
+    LD A, H
+    XOR L
+    AND A, 1
+    LD B, A
+
     CALL Game_get_address
     CALL Game_get_direction
-    PUSH AF
 
+    PUSH AF
     LD HL, (Game_snake_tail_x) ; As above
     CALL Get_Char_Address
     POP AF
 
-    RLA
-
+    RLA ; A := A * 2
+    ADD A, B
     ADD A, Tile_snake_tail_start
 
     LD HL, (Game_snake_tail_x) ; As above
