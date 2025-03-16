@@ -141,6 +141,7 @@ Game_get_direction:
 ; Returns address of game tile in HL
 ;   H: Y position
 ;   L: X position
+; Clobbers: DE
 Game_get_address:
     ; Save the X value in DE
     LD E, L
