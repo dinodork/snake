@@ -129,10 +129,10 @@ Print_Strings:
   JP Print_Strings
 
 Print_String:
-  LD L, (IX+0)	; Fetch the X coordinate
-  INC IX			; Increase HL to the next memory location
-  LD H, (IX+0)	; Fetch the Y coordinate
-  INC IX			; Increase HL to the next memory location
+  LD L, (IX + 0)  ; Fetch the X coordinate
+  INC IX			    ; Increase HL to the next memory location
+  LD H, (IX + 0)  ; Fetch the Y coordinate
+  INC IX			    ; Increase HL to the next memory location
 
 
 ; Prints a string

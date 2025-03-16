@@ -2,11 +2,6 @@
   include "lib/graphics.z80"
   include "src/frames.asm"
 
-Text_Scores:
-  DB 0, 0, "Snake", 0xFE
-  DB 9, 0, "Score 00000000", 0xFE
-  DB 24, 0, "Lives 0", 0xFF
-
 Tile_index_brick: EQU 20
 Play_area_height: EQU 24 - 3 ; Status bar + top, bottom walls
 
@@ -150,3 +145,13 @@ Clear_Play_Area_Loop:
   DJNZ Clear_Play_Area_Loop
 
   RET
+
+Draw_Score:
+  LD HL, (Game_Score)
+  LD DE, Score_String + 6
+  CALL Num2Dec
+
+  LD IX, Score_String
+  LD HL, 10
+  LD DE, Font_1 - 0x100
+  CALL Print_String_At
