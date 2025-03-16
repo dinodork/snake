@@ -25,6 +25,7 @@ Game_tile_food_stalk: EQU 0x05
 Game_tile_food: EQU 0x06
 Game_tile_empty: EQU 0xFF
 
+
 ; The head's on-screen x coordinate
 Game_snake_head_x:
     DEFS 0x1
@@ -40,6 +41,8 @@ Game_snake_tail_x:
 Game_snake_tail_y:
     DEFS 0x1
 
+; The direction that the player has selected to go next, (by keyboard,
+; joystick, etc)
 Game_next_direction:
     DEFS 0x1
 

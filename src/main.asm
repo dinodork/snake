@@ -35,9 +35,12 @@ Stack_Top:		EQU 0xFFF0
 			LD SP, Stack_Top
 
 ; Updates the X, Y position of the head according to the direction it's facing.
-; H Snake head Y position
-; L Snake head X position
-; A Snake head direction description, see comment above Snake_segment_queue.
+;   H Snake head Y position
+;   L Snake head X position
+;   A Snake head direction, see comment above Snake_segment_queue.
+; Returns:
+;   H new Y position
+;   L new X position
 Get_Next_Position:
     AND 0x0F
     CP Game_tile_facing_right
