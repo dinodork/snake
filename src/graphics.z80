@@ -44,8 +44,10 @@ Draw_Frame_With_Ink:
     RET
 
 ; Draws food's stalk at the position.
-; H = Y character position
-; L = X character position
+;   H = Y character position
+;   L = X character position
+; Clobbers:
+;   DE, HL, IY
 Draw_Stalk:
     PUSH HL
     CALL Get_Char_Address
@@ -58,7 +60,27 @@ Draw_Stalk:
 
     RET
 
+; Draws an apple
+;   H = Y character position
+;   L = X character position
+; Clobbers:
+;   A, B, DE, HL, IY
 Draw_Apple:
+    PUSH HL
+    CALL Get_Char_Address
+    LD IY, Frames_apple
+    CALL Print_UDG8
+    POP HL
+    CALL Get_Attr_Address
+    LD A, Apple_ink
+    CALL Set_Ink
+    RET
+
+; Draws an apple
+;   IX = Offset from start (i.e. Y * 32 + X)
+; Clobbers:
+;   A, B, DE
+Draw_Apple_At_Offset:
     PUSH HL
     CALL Get_Char_Address
     LD IY, Frames_apple
