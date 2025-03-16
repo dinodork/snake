@@ -20,7 +20,7 @@ Body_segments:
     BYTE     18,  20,  14,   -1 ; Left
     BYTE     22,  16,  -1,   14 ; Right
 
-; Draws a tile (bitmap + attribute) of the snake.
+; Draws a frame (bitmap + attribute) of the snake.
 ;   H: Y position
 ;   L: X position
 ;   A: Tile number
@@ -28,7 +28,7 @@ Draw_Snake_Tile:
     PUSH HL
     PUSH AF
     CALL Get_Char_Address
-    LD DE, Snake_frames_1
+    LD DE, Frames_1
     POP AF
     CALL Print_Char
 
@@ -45,9 +45,8 @@ Draw_Snake_Tile:
 Draw_Stalk:
     PUSH HL
     CALL Get_Char_Address
-    LD DE, Environment_frames_1
-    LD A, 1
-    CALL Print_Char
+    LD IY, Frames_apple_stalk
+    CALL Print_UDG8
     POP HL
     CALL Get_Attr_Address
     LD A, Apple_stalk_ink
@@ -58,31 +57,34 @@ Draw_Stalk:
 Draw_Apple:
     PUSH HL
     CALL Get_Char_Address
-    LD A, 2
-    LD DE, Environment_frames_1
-    CALL Print_Char
-
+    LD IY, Frames_apple
+    CALL Print_UDG8
     POP HL
     CALL Get_Attr_Address
     LD A, Apple_ink
     CALL Set_Ink
     RET
 
+; Draws the head
+;   A: Direction of the head.
 Draw_Head:
     LD HL, (Game_snake_head_x) ; H := Y position, L := X position
     CALL Game_get_address
     CALL Game_get_direction
+
     PUSH AF
     LD HL, (Game_snake_head_x)
     CALL Get_Char_Address
     POP AF
+
     PUSH AF
-    ADD A, Tile_snake_head_start
+    ; We would normally add an offset to the first head frame here, but since
+    ; it starts on position 0, we don't need to.
 
     LD HL, (Game_snake_head_x) ; H := Y position, L := X position
     CALL Draw_Snake_Tile
-
     POP AF
+
     RET
 
 ; A: Current direction of the segment.
