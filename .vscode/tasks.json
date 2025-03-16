@@ -115,5 +115,21 @@
                 "GenerateGraphicsAsm",
             ],
         },
+        {
+            "label": "GenerateTapeFile",
+            "type": "shell",
+            "command": "snap2tzx",
+            "args": [
+                "${config:buildPath}/${config:projectName}.sna",
+                "-o${config:buildPath}/${config:projectName}.tzx",
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "dependsOn": [
+                "Make(sjasmplus)"
+            ]
+        },
     ]
 }
