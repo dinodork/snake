@@ -108,20 +108,22 @@ Draw_Neck:
     CALL Draw_snake_body_segment
     RET
 
-; H Snake head Y position
-; L Snake head X position
+; Draws the snake's tail. Takes no arguments.
 Draw_Tail:
+
+    ; Get the current tile's direction and push it on the stack.
     LD HL, (Game_snake_tail_x) ; H := Y position, L := X position
     CALL Game_get_address
     CALL Game_get_direction
     PUSH AF
-    LD HL, (Game_snake_tail_x)
+
+    LD HL, (Game_snake_tail_x) ; As above
     CALL Get_Char_Address
     POP AF
     PUSH AF
     ADD A, Tile_snake_tail_start
 
-    LD HL, (Game_snake_tail_x) ; H := Y position, L := X position
+    LD HL, (Game_snake_tail_x) ; As above
     CALL Draw_Snake_Tile
 
     POP AF
