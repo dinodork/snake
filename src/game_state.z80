@@ -12,7 +12,7 @@
 ; There is also some additional information, such as the position of the head and the tail.
 Game_height: EQU 24
 Game_width: EQU 32
-
+Game_scores_height: EQU 1
 Game_size: EQU Game_height * Game_width
 Game:
     DEFS Game_size
@@ -31,6 +31,13 @@ Game_snake_head_x:
     DEFS 0x1
 ; The head's on-screen y coordinate
 Game_snake_head_y:
+    DEFS 0x1
+
+; The position we drew a tongue on the screen. A zero value means there was no
+; tongue drawn (it couldn't be drawn at 0, 0 anyway.)
+Game_tounge_x:
+    DEFS 0x1
+Game_tongue_y:
     DEFS 0x1
 
 ; The tail's on-screen x coordinate
@@ -74,13 +81,31 @@ Game_initialise:
 	LDIR		; Copy this byte to the second, and so on
 
     ; Draw top wall
-   	LD HL, Game + Game_width
+    LD HL, Game + Game_width ; Second row, top row is score etc.
 	LD DE, Game + Game_width + 1
 	LD BC, Game_width
-	LD (HL), Game_tile_wall	; Set the first byte to 0
+	LD (HL), Game_tile_wall	; Set the first byte
 	LDIR		; Copy this byte to the second, and so on
 
-    ; Draw snake
+    ; Draw bottom wall
+    LD HL, Game + Game_width * (Game_height + Game_scores_height - 2)
+	LD DE, Game + Game_width * (Game_height + Game_scores_height - 2) + 1
+	LD BC, Game_width
+	LD (HL), Game_tile_wall	; Set the first byte
+	LDIR		; Copy this byte to the second, and so on
+
+    ; Draw side walls
+    LD IY, Game + Game_width * (Game_scores_height + 1)
+    LD B, Game_height - 2 - Game_scores_height
+Draw_side_walls_loop:
+    LD (IY), Game_tile_wall
+    LD (IY + Game_width - 1), Game_tile_wall
+    LD D, 0
+    LD E, Game_width
+    ADD IY, DE
+    DJNZ Draw_side_walls_loop
+
+    ; Place snake
     LD IX, Game_snake_head_x
     LD (IX), Game_head_start_x
 
@@ -146,24 +171,6 @@ Detect_Collision:
     LD IX, Game_Phase
     LD A, L
 
-    ; Right wall
-    CP 31
-    JP Z, Detect_Collision_Wall
-
-    ; Left wall
-    CP 0
-    JP Z, Detect_Collision_Wall
-
-    LD A, H
-
-    ; Top wall
-    CP 1
-    JP Z, Detect_Collision_Wall
-
-    ; Bottom wall
-    CP 23
-    JP Z, Detect_Collision_Wall
-
     PUSH HL
     CALL Game_get_address
     CALL Game_get_direction
@@ -176,10 +183,9 @@ Detect_Collision:
     RET Z
 
     CP A, Game_tile_empty
-    JP NZ, Detect_Collision_Wall
+    RET Z
 
-    RET
-Detect_Collision_Wall:
+    ; Collision with wall
     LD (IX), Game_Phase_Game_Over
     RET
 
