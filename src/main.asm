@@ -348,6 +348,9 @@ Handle_Game_Over:
   CALL Pause_One_Second
 
   PRINT_CENTRED 10, Game_Over_Message
+
+  CALL Pause_One_Second
+
   PRINT_CENTRED 12, Press_Key_To_Play_Again_Message
 
 ; Wait for key press, then restart the game
