@@ -26,22 +26,22 @@ Body_segments:
 ;   A: Character number
 ;   B: Ink
 Draw_Frame_With_Ink:
-    PUSH AF
-    PUSH HL
+  PUSH AF
+  PUSH HL
 
     ; We set the attribute of the tile first, as this is passed in B, which gets
     ; clobbered by Get_Char_Address
-    CALL Get_Attr_Address
-    LD A, B
-    CALL Set_Ink
-    POP HL
+  CALL Get_Attr_Address
+  LD A, B
+  CALL Set_Ink
+  POP HL
 
-    CALL Get_Char_Address
-    LD DE, Frames_1
-    POP AF
-    CALL Print_Char
+  CALL Get_Char_Address
+  LD DE, Frames_1
+  POP AF
+  CALL Print_Char
 
-    RET
+  RET
 
 ; Draws food's stalk at the position.
 ;   H = Y character position
@@ -49,16 +49,16 @@ Draw_Frame_With_Ink:
 ; Clobbers:
 ;   DE, HL, IY
 Draw_Stalk:
-    PUSH HL
-    CALL Get_Char_Address
-    LD IY, Frames_apple_stalk
-    CALL Print_UDG8
-    POP HL
-    CALL Get_Attr_Address
-    LD A, Apple_stalk_ink
-    CALL Set_Ink
+  PUSH HL
+  CALL Get_Char_Address
+  LD IY, Frames_apple_stalk
+  CALL Print_UDG8
+  POP HL
+  CALL Get_Attr_Address
+  LD A, Apple_stalk_ink
+  CALL Set_Ink
 
-    RET
+  RET
 
 ; Draws an apple
 ;   H = Y character position
@@ -66,149 +66,149 @@ Draw_Stalk:
 ; Clobbers:
 ;   A, B, DE, HL, IY
 Draw_Apple:
-    PUSH HL
-    CALL Get_Char_Address
-    LD IY, Frames_apple
-    CALL Print_UDG8
-    POP HL
-    CALL Get_Attr_Address
-    LD A, Apple_ink
-    CALL Set_Ink
-    RET
+  PUSH HL
+  CALL Get_Char_Address
+  LD IY, Frames_apple
+  CALL Print_UDG8
+  POP HL
+  CALL Get_Attr_Address
+  LD A, Apple_ink
+  CALL Set_Ink
+  RET
 
 ; Draws an apple
 ;   IX = Offset from start (i.e. Y * 32 + X)
 ; Clobbers:
 ;   A, B, DE
 Draw_Apple_At_Offset:
-    PUSH HL
-    CALL Get_Char_Address
-    LD IY, Frames_apple
-    CALL Print_UDG8
-    POP HL
-    CALL Get_Attr_Address
-    LD A, Apple_ink
-    CALL Set_Ink
-    RET
+  PUSH HL
+  CALL Get_Char_Address
+  LD IY, Frames_apple
+  CALL Print_UDG8
+  POP HL
+  CALL Get_Attr_Address
+  LD A, Apple_ink
+  CALL Set_Ink
+  RET
 
 ; Draws the head
 Draw_Head:
-    LD HL, (Game_snake_head_x) ; H := Y position, L := X position
-    CALL Game_get_address
-    CALL Game_get_direction
+  LD HL, (Game_snake_head_x) ; H := Y position, L := X position
+  CALL Game_get_address
+  CALL Game_get_direction
 
 ; Draws a frame inthe head's ink.
 ;   A: UDG character of the head.
 Draw_Head_Frame:
 
-    PUSH AF
-    LD HL, (Game_snake_head_x)
-    CALL Get_Char_Address
-    POP AF
+  PUSH AF
+  LD HL, (Game_snake_head_x)
+  CALL Get_Char_Address
+  POP AF
 
-    PUSH AF
+  PUSH AF
     ; We would normally add an offset to the first head frame here, but since
     ; it starts on position 0, we don't need to.
 
-    LD HL, (Game_snake_head_x) ; H := Y position, L := X position
+  LD HL, (Game_snake_head_x) ; H := Y position, L := X position
 
-    LD B, Snake_head_ink
-    CALL Draw_Frame_With_Ink
+  LD B, Snake_head_ink
+  CALL Draw_Frame_With_Ink
 
-    POP AF
+  POP AF
 
 Draw_Tongue:
-    LD HL, (Game_snake_head_x) ; H := Y position, L := X position
-    CALL Game_get_address
-    LD A, (HL)
+  LD HL, (Game_snake_head_x) ; H := Y position, L := X position
+  CALL Game_get_address
+  LD A, (HL)
 
-    LD HL, (Game_snake_head_x) ; H := Y position, L := X position
-    CALL Get_Next_Position ; HL is now the position in front of the head.
-    LD BC, HL
+  LD HL, (Game_snake_head_x) ; H := Y position, L := X position
+  CALL Get_Next_Position ; HL is now the position in front of the head.
+  LD BC, HL
 
     ; Return if there is anything in this game tile.
-    CALL Game_get_address
-    LD B, A
-    LD A, (HL)
+  CALL Game_get_address
+  LD B, A
+  LD A, (HL)
 
     ; Exit if there's something in the way of the tongue.
-    CP A, Game_tile_empty
-    RET NZ
+  CP A, Game_tile_empty
+  RET NZ
 
     ; Actually draw the tongue
 
-    LD A, B
-    LD HL, (Game_snake_head_x) ; H := Y position, L := X position
-    CALL Get_Next_Position ; HL is now the position in front of the head.
-    LD (Game_tounge_x), HL
-    PUSH HL
+  LD A, B
+  LD HL, (Game_snake_head_x) ; H := Y position, L := X position
+  CALL Get_Next_Position ; HL is now the position in front of the head.
+  LD (Game_tounge_x), HL
+  PUSH HL
 
-    CALL Get_Char_Address
-    LD DE, Frames_1
-    LD A, B
-    ADD A, Frames_charno_tongue -32
-    CALL Print_Char
+  CALL Get_Char_Address
+  LD DE, Frames_1
+  LD A, B
+  ADD A, Frames_charno_tongue -32
+  CALL Print_Char
 
-    POP HL
-    CALL Get_Attr_Address
-    LD A, Snake_tongue_ink
-    CALL Set_Ink
+  POP HL
+  CALL Get_Attr_Address
+  LD A, Snake_tongue_ink
+  CALL Set_Ink
 
-    RET
+  RET
 
 Clear_tongue:
-    LD HL, (Game_tounge_x)
-    LD A, H
-    CP 0
-    RET Z
-    CALL Get_Attr_Address
-    LD A, Ink_Blue
-    CALL Set_Ink
-    LD HL, 0
-    LD (Game_tounge_x), HL ; Just to be on the safe side
+  LD HL, (Game_tounge_x)
+  LD A, H
+  CP 0
+  RET Z
+  CALL Get_Attr_Address
+  LD A, Ink_Blue
+  CALL Set_Ink
+  LD HL, 0
+  LD (Game_tounge_x), HL ; Just to be on the safe side
 
-    RET
+  RET
 
 ; A: Current direction of the segment.
 ; H: Current body segment Y position
 ; L: Current body segment X position
 Draw_snake_body_segment:
-    PUSH HL
-    CALL Game_get_address
-    CALL Game_get_direction
-    LD B, A
+  PUSH HL
+  CALL Game_get_address
+  CALL Game_get_direction
+  LD B, A
 
     ; A := B * 4
-    LD A, 0
+  LD A, 0
 Draw_snake_body_segment_loop:
-    ADD A, 4
-    DJNZ Draw_snake_body_segment_loop
-    LD C, A
+  ADD A, 4
+  DJNZ Draw_snake_body_segment_loop
+  LD C, A
 
-    LD A, (Game_next_direction)
-    ADD A, C
+  LD A, (Game_next_direction)
+  ADD A, C
 
     ; Index into the lookup table, it's one-dimensional at this point.
-    LD D, 0
-    LD E, A
-    LD HL, Body_segments
-    ADD HL, DE
+  LD D, 0
+  LD E, A
+  LD HL, Body_segments
+  ADD HL, DE
 
-    LD A, (HL)
+  LD A, (HL)
 
-    POP HL
+  POP HL
 
-    PUSH AF
-    LD A, H
-    XOR L
-    AND A, 1
-    LD B, A
-    POP AF
-    ADD A, B
-    LD B, Snake_body_ink
-    CALL Draw_Frame_With_Ink
+  PUSH AF
+  LD A, H
+  XOR L
+  AND A, 1
+  LD B, A
+  POP AF
+  ADD A, B
+  LD B, Snake_body_ink
+  CALL Draw_Frame_With_Ink
 
-    RET
+  RET
 
 ; Draws the snake's tail. Takes no arguments.
 ; The snake wags its tail as it slithers across the screen, alternating between
@@ -222,28 +222,28 @@ Draw_snake_body_segment_loop:
 Draw_Tail:
 
     ; Get the current tile's direction and push it on the stack.
-    LD HL, (Game_snake_tail_x) ; H := Y position, L := X position
-    LD A, H
-    XOR L
-    AND A, 1
-    LD B, A
+  LD HL, (Game_snake_tail_x) ; H := Y position, L := X position
+  LD A, H
+  XOR L
+  AND A, 1
+  LD B, A
 
-    CALL Game_get_address
-    CALL Game_get_direction
+  CALL Game_get_address
+  CALL Game_get_direction
 
-    PUSH AF
-    LD HL, (Game_snake_tail_x) ; As above
-    CALL Get_Char_Address
-    POP AF
+  PUSH AF
+  LD HL, (Game_snake_tail_x) ; As above
+  CALL Get_Char_Address
+  POP AF
 
-    RLA ; A := A * 2
-    ADD A, B
-    ADD A, Tile_snake_tail_start
+  RLA ; A := A * 2
+  ADD A, B
+  ADD A, Tile_snake_tail_start
 
-    LD HL, (Game_snake_tail_x) ; As above
-    LD B, Snake_body_ink
-    CALL Draw_Frame_With_Ink
+  LD HL, (Game_snake_tail_x) ; As above
+  LD B, Snake_body_ink
+  CALL Draw_Frame_With_Ink
 
-    RET
+  RET
 
         endif ; graphics_z80

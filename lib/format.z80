@@ -5,27 +5,27 @@
 ; - ASCII string at (DE)
 
 Num2Dec:
-	LD BC, -100000
-	CALL Num1
-	LD BC, -10000
-	CALL Num1
-	LD BC, -1000
-	CALL Num1
-	LD BC, -100
-	CALL Num1
-	LD C, -10
-	CALL Num1
-	LD C, b
+  LD BC, -100000
+  CALL Num1
+  LD BC, -10000
+  CALL Num1
+  LD BC, -1000
+  CALL Num1
+  LD BC, -100
+  CALL Num1
+  LD C, -10
+  CALL Num1
+  LD C, b
 
 Num1:
-	LD A, '0' - 1
+  LD A, '0' - 1
 Num2:
-	INC	A
-	ADD	HL, BC
-	JR	C, Num2
-	SBC HL, BC
+  INC	A
+  ADD	HL, BC
+  JR	C, Num2
+  SBC HL, BC
 
-	LD (DE), A
-	INC DE
+  LD (DE), A
+  INC DE
 
-    RET
+  RET

@@ -4,113 +4,113 @@
     include "screen.z80"
 
 Place_Food_old:
-    CALL RND16
-    LD DE, Game_size
+  CALL RND16
+  LD DE, Game_size
 
     ; Increase the likelyhood that the number is less than the size of the
     ; screen...
-    AND H, 0x03
-    LD H, A
+  AND H, 0x03
+  LD H, A
 
-    SBC DE, HL
-    JR C, Place_Food_old ; outside screen, regenerate
+  SBC DE, HL
+  JR C, Place_Food_old ; outside screen, regenerate
 
-    LD BC, HL
-    LD DE, Game
-    ADD HL, DE
-    LD A, (HL)
-    CP A, Game_tile_empty
-    JR NZ, Place_Food_old ; Space occupied, regenerate
+  LD BC, HL
+  LD DE, Game
+  ADD HL, DE
+  LD A, (HL)
+  CP A, Game_tile_empty
+  JR NZ, Place_Food_old ; Space occupied, regenerate
 
     ; We found a free space, place the food
-    LD (HL), Game_tile_food
+  LD (HL), Game_tile_food
 
-    LD HL, Start_Of_Attribute_Ram
-    ADD HL, BC
-    LD (HL), 0xFF
+  LD HL, Start_Of_Attribute_Ram
+  ADD HL, BC
+  LD (HL), 0xFF
 
-    RET
+  RET
 
 ; Removes the stalk of the food. The food itself gets overwritten, so don't
 ; worry about it.
 ;   H Snake head Y position
 ;   L Snake head X position
 Remove_Food:
-    DEC H ; The stalk is above the apple
-    PUSH HL
-    CALL Game_get_address
-    LD A, (HL)
-    CP A, Game_tile_food_stalk
-    POP HL
-    JR NZ, Remove_Food_Exit ; The stalk was replaced by something (snake), exit
+  DEC H ; The stalk is above the apple
+  PUSH HL
+  CALL Game_get_address
+  LD A, (HL)
+  CP A, Game_tile_food_stalk
+  POP HL
+  JR NZ, Remove_Food_Exit ; The stalk was replaced by something (snake), exit
 
     ; Remove the food tile from the game state
-    PUSH HL
-    CALL Game_get_address
-    LD A, Game_tile_empty
-    LD (HL), A
-    POP HL
+  PUSH HL
+  CALL Game_get_address
+  LD A, Game_tile_empty
+  LD (HL), A
+  POP HL
 
     ; Remove the food from the screen
-    CALL Get_Attr_Address
-    LD A, Invisible_ink
-    CALL Set_Ink
+  CALL Get_Attr_Address
+  LD A, Invisible_ink
+  CALL Set_Ink
 
 Remove_Food_Exit:
-    RET
+  RET
 
 ; Finds a random X, Y position that is within the screen.
 ; Once found, places the food there, both in the game state and on-screen.
 Place_Food:
-    CALL RND16 ; H is Y position, L is X position from now on.
+  CALL RND16 ; H is Y position, L is X position from now on.
 
     ; The X value can be 0-31, so it suffices to mask it.
-    LD A, L
-    AND 32 - 1
-    LD L, A
+  LD A, L
+  AND 32 - 1
+  LD L, A
 
     ; The Y value can be 0-22 (1 row of score). We mask it first, so it's
     ; in the interval 0-31. Then if it's greater than 22, divide in half.
-    LD A, H
-    AND 32 - 1
-    CP 23 - Game_scores_height
-    JP S, Write_back_food_Y:
-    RR A
+  LD A, H
+  AND 32 - 1
+  CP 23 - Game_scores_height
+  JP S, Write_back_food_Y:
+  RR A
 Write_back_food_Y:
-    ADD Game_scores_height
-    LD H, A
+  ADD Game_scores_height
+  LD H, A
 
-    LD BC, HL
+  LD BC, HL
 
     ; Check if the position is free.
-    CALL Game_get_address
-    LD A, (HL)
-    CP A, Game_tile_empty
-    JR NZ, Place_Food ; Space occupied, regenerate
+  CALL Game_get_address
+  LD A, (HL)
+  CP A, Game_tile_empty
+  JR NZ, Place_Food ; Space occupied, regenerate
 
     ; We found a free space, place the food
-    LD (HL), Game_tile_food
+  LD (HL), Game_tile_food
 
-    LD HL, BC
+  LD HL, BC
 
     ; Place the graphic on screen
-    PUSH HL
-    CALL Draw_Apple
-    POP HL
+  PUSH HL
+  CALL Draw_Apple
+  POP HL
 
     ; Try to place and draw the stalk
-    DEC H
-    LD BC, HL
-    CALL Game_get_address
-    LD A, (HL)
-    CP A, Game_tile_empty
-    JR NZ, Place_Food_Done
+  DEC H
+  LD BC, HL
+  CALL Game_get_address
+  LD A, (HL)
+  CP A, Game_tile_empty
+  JR NZ, Place_Food_Done
     ; There's a free slot to place the stalk
-    LD A, Game_tile_food_stalk
-    LD (HL), A
-    LD HL, BC
-    CALL Draw_Stalk
-    RET
+  LD A, Game_tile_food_stalk
+  LD (HL), A
+  LD HL, BC
+  CALL Draw_Stalk
+  RET
 Place_Food_Done:
 
-    RET
+  RET

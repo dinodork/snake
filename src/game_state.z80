@@ -75,69 +75,69 @@ Game_Score:
     DEFS 2, 0
 Game_initialise:
     ; Clear the whole game
-     LD HL, Game
+  LD HL, Game
   LD DE, Game + 1
   LD BC, Game_size
   LD (HL), Game_tile_empty
   LDIR		; Copy this byte to the second, and so on
 
     ; Draw top wall
-    LD HL, Game + Game_width ; Second row, top row is score etc.
+  LD HL, Game + Game_width ; Second row, top row is score etc.
   LD DE, Game + Game_width + 1
   LD BC, Game_width
   LD (HL), Game_tile_wall	; Set the first byte
   LDIR		; Copy this byte to the second, and so on
 
     ; Draw bottom wall
-    LD HL, Game + Game_width * (Game_height + Game_scores_height - 2)
+  LD HL, Game + Game_width * (Game_height + Game_scores_height - 2)
   LD DE, Game + Game_width * (Game_height + Game_scores_height - 2) + 1
   LD BC, Game_width
   LD (HL), Game_tile_wall	; Set the first byte
   LDIR		; Copy this byte to the second, and so on
 
     ; Draw side walls
-    LD IY, Game + Game_width * (Game_scores_height + 1)
-    LD B, Game_height - 2 - Game_scores_height
+  LD IY, Game + Game_width * (Game_scores_height + 1)
+  LD B, Game_height - 2 - Game_scores_height
 Draw_side_walls_loop:
-    LD (IY), Game_tile_wall
-    LD (IY + Game_width - 1), Game_tile_wall
-    LD D, 0
-    LD E, Game_width
-    ADD IY, DE
-    DJNZ Draw_side_walls_loop
+  LD (IY), Game_tile_wall
+  LD (IY + Game_width - 1), Game_tile_wall
+  LD D, 0
+  LD E, Game_width
+  ADD IY, DE
+  DJNZ Draw_side_walls_loop
 
     ; Place snake
-    LD IX, Game_snake_head_x
-    LD (IX), Game_head_start_x
+  LD IX, Game_snake_head_x
+  LD (IX), Game_head_start_x
 
-    LD IX, Game_snake_head_y
-    LD (IX), Game_head_start_y
+  LD IX, Game_snake_head_y
+  LD (IX), Game_head_start_y
 
-    LD IX, Game_snake_tail_x
-    LD (IX), Game_tail_start_x
+  LD IX, Game_snake_tail_x
+  LD (IX), Game_tail_start_x
 
-    LD IX, Game_snake_tail_y
-    LD (IX), Game_tail_start_y
+  LD IX, Game_snake_tail_y
+  LD (IX), Game_tail_start_y
 
-    LD IX, Game + Game_tail_start_y * Game_width + Game_tail_start_x
-    LD (IX), Game_tile_facing_right
-    LD (IX + 1), Game_tile_facing_right
-    LD (IX + 2), Game_tile_facing_right
+  LD IX, Game + Game_tail_start_y * Game_width + Game_tail_start_x
+  LD (IX), Game_tile_facing_right
+  LD (IX + 1), Game_tile_facing_right
+  LD (IX + 2), Game_tile_facing_right
 
-    LD HL, Game_snake_target_length
-    LD (HL), 3
-    LD HL, Game_snake_length
-    LD (HL), 3
+  LD HL, Game_snake_target_length
+  LD (HL), 3
+  LD HL, Game_snake_length
+  LD (HL), 3
 
-    LD IX, Game_next_direction
-    LD (IX), Game_tile_facing_right
-    RET
+  LD IX, Game_next_direction
+  LD (IX), Game_tile_facing_right
+  RET
 
 ; HL: address of game tile in HL
 ; Returns the direction that the snake exited the tile in A.
 Game_get_direction:
-    LD A, (HL)
-    RET
+  LD A, (HL)
+  RET
 
 ; Returns address of game tile in HL
 ;   H: Y position
@@ -145,23 +145,23 @@ Game_get_direction:
 ; Clobbers: DE
 Game_get_address:
     ; Save the X value in DE
-    LD E, L
-    LD D, 0
+  LD E, L
+  LD D, 0
 
     ; Make HL contain only the Y value
-    LD L, H
-    LD H, 0
+  LD L, H
+  LD H, 0
 
     HL_X_32
 
     ; Add the X value back
-    ADD HL, DE
+  ADD HL, DE
 
     ; Add this to the start of Game
-    LD DE, Game
-    ADD HL, DE
+  LD DE, Game
+  ADD HL, DE
 
-    RET
+  RET
 
 ; Checks for collision and updates game state accordingly.
 ;   H Snake head Y position
@@ -169,43 +169,43 @@ Game_get_address:
 ; Returns address of game state in IX
 
 Detect_Collision:
-    LD IX, Game_Phase
-    LD A, L
+  LD IX, Game_Phase
+  LD A, L
 
-    PUSH HL
-    CALL Game_get_address
-    CALL Game_get_direction
+  PUSH HL
+  CALL Game_get_address
+  CALL Game_get_direction
 
-    CP Game_tile_food
-    POP HL
-    JP Z, Handle_Collision_With_Food
+  CP Game_tile_food
+  POP HL
+  JP Z, Handle_Collision_With_Food
 
-    CP A, Game_tile_food_stalk
-    RET Z
+  CP A, Game_tile_food_stalk
+  RET Z
 
-    CP A, Game_tile_empty
-    RET Z
+  CP A, Game_tile_empty
+  RET Z
 
     ; Collision with wall
-    LD (IX), Game_Phase_Game_Over
-    RET
+  LD (IX), Game_Phase_Game_Over
+  RET
 
 Handle_Collision_With_Food:
-    LD IX, Game_snake_target_length
-    INC (IX)
-    INC (IX)
-    INC (IX)
+  LD IX, Game_snake_target_length
+  INC (IX)
+  INC (IX)
+  INC (IX)
 
-    CALL Remove_Food
+  CALL Remove_Food
 
 ; Award points
-    LD HL, (Game_Score)
-    INC HL
-    LD (Game_Score), HL
-    CALL Draw_Score
+  LD HL, (Game_Score)
+  INC HL
+  LD (Game_Score), HL
+  CALL Draw_Score
 
-    CALL Place_Food
+  CALL Place_Food
 
-    RET
+  RET
 
     endif ; game_state_z80

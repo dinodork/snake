@@ -20,7 +20,7 @@ Play_area_drop_shadow_attribute: EQU (Paper_Blue | Ink_Black) & ~Bright
 Draw_Vertical_Fence:
   LD B, 21
 Draw_Vertical_Fence_Loop:
-    LD H, B ; Row
+  LD H, B ; Row
   LD L, D ; Column
   INC H
   CALL Get_Char_Address
@@ -52,7 +52,7 @@ Draw_Vertical_Fence_Loop:
 Draw_Scene:
   LD B, 32
 Draw_Scene_Top_Fence_Loop:
-    LD H, 1
+  LD H, 1
   LD L, B
   DEC L
   CALL Get_Char_Address
@@ -71,7 +71,7 @@ Draw_Scene_Top_Fence_Loop:
 
   LD B, 32
 Draw_Scene_Bottom_Fence_Loop:
-    LD H, 23
+  LD H, 23
   LD L, B
   DEC L
   CALL Get_Char_Address

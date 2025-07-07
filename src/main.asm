@@ -36,7 +36,7 @@ screen_top: defb  0   ; WPMEMx
  ORG $8000
 
 Stack_Top:  	EQU 0xFFF0
-  		LD SP, Stack_Top
+  LD SP, Stack_Top
 
 ; Updates the X, Y position of the head according to the direction it's facing.
 ;   H Snake head Y position

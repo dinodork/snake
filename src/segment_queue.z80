@@ -40,111 +40,111 @@ Segment_Queue_front_index:
 ; 2: head
 Segment_Queue_initialise:
   LD IX, Segment_Queue_end_index
-    LD (IX), 0
+  LD (IX), 0
 
   LD IX, Segment_Queue_front_index
-    LD (IX), 0
+  LD (IX), 0
 
-    RET
+  RET
 
 ; HL: The address of the first element
 Segment_Queue_get_front:
-    LD DE, (Segment_Queue_front_index)
-    LD HL, Segment_Queue_buffer
-    ADD HL, DE
-    RET
+  LD DE, (Segment_Queue_front_index)
+  LD HL, Segment_Queue_buffer
+  ADD HL, DE
+  RET
 
 ; Pops the first element off the queue and returns it in A
 Segment_Queue_pop_front:
-    CALL Segment_Queue_get_front
-    LD A, (HL)
-    PUSH AF
-    LD HL, (Segment_Queue_front_index)
-    CALL Segment_Queue_get_next_index
-    LD (Segment_Queue_front_index), HL
-    POP AF
-    RET
+  CALL Segment_Queue_get_front
+  LD A, (HL)
+  PUSH AF
+  LD HL, (Segment_Queue_front_index)
+  CALL Segment_Queue_get_next_index
+  LD (Segment_Queue_front_index), HL
+  POP AF
+  RET
 
 ; Advances HL to the next index.
 ;   HL: Current index
 Segment_Queue_get_next_index:
-    INC HL
-    PUSH HL
-    LD DE, Segment_Queue_buffer_size
-    SBC HL, DE
-    POP HL
-    RET S
-    LD HL, 0
-    RET
+  INC HL
+  PUSH HL
+  LD DE, Segment_Queue_buffer_size
+  SBC HL, DE
+  POP HL
+  RET S
+  LD HL, 0
+  RET
 
 
 ; Returns address of the last element.
 ;   HL: The address of the last element
 Segment_Queue_get_back:
-    LD IX, Segment_Queue_end_index
-    LD E, (IX)
-    DEC E
-    LD D, 0
-    LD HL, Segment_Queue_buffer
-    ADD HL, DE
-    RET
+  LD IX, Segment_Queue_end_index
+  LD E, (IX)
+  DEC E
+  LD D, 0
+  LD HL, Segment_Queue_buffer
+  ADD HL, DE
+  RET
 
 ; HL: The address after the last element
 Segment_Queue_get_end:
-    LD HL, Segment_Queue_buffer
-    LD BC, (Segment_Queue_end_index)
-    ADD HL, BC
-    RET
+  LD HL, Segment_Queue_buffer
+  LD BC, (Segment_Queue_end_index)
+  ADD HL, BC
+  RET
 
 
 ; Adds an element to the end of the queue.
 ; If the queue is full the effect is undefined.
 ; A: the element to push
 Segment_Queue_push_back:
-    LD HL, (Segment_Queue_end_index)
-    LD DE, HL
-    LD BC, Segment_Queue_buffer
-    ADD HL, BC
-    LD (HL), A
+  LD HL, (Segment_Queue_end_index)
+  LD DE, HL
+  LD BC, Segment_Queue_buffer
+  ADD HL, BC
+  LD (HL), A
 
-    LD BC, Segment_Queue_buffer + Segment_Queue_buffer_size
+  LD BC, Segment_Queue_buffer + Segment_Queue_buffer_size
     ; If the new head index is outside the buffer,
     ; set it to 0
-    SBC HL, BC
-    JR NZ, Nowrap
-    LD DE, 0
-    JP Wrap
+  SBC HL, BC
+  JR NZ, Nowrap
+  LD DE, 0
+  JP Wrap
 Nowrap:
-    INC DE
+  INC DE
 Wrap:
-    LD (Segment_Queue_end_index), DE
-    RET
+  LD (Segment_Queue_end_index), DE
+  RET
 
 ; HL: Length of the queue
 Segment_Queue_get_length:
-    LD HL, (Segment_Queue_end_index)
-    LD DE, (Segment_Queue_front_index)
-    SBC HL, DE
+  LD HL, (Segment_Queue_end_index)
+  LD DE, (Segment_Queue_front_index)
+  SBC HL, DE
 
-    RET NC ; No carry, we're done.
+  RET NC ; No carry, we're done.
 
     ; head index < tail index
-    LD BC, Segment_Queue_buffer_size
-    ADD HL, BC
-    RET
+  LD BC, Segment_Queue_buffer_size
+  ADD HL, BC
+  RET
 
 ; The next index in the queue
 ; HL current address
 ; Returns address of the next element in HL
 Segment_Queue_get_next:
-    INC HL
-    LD BC, HL
-    LD DE, Segment_Queue_buffer + Segment_Queue_buffer_size
-    SBC HL, DE
+  INC HL
+  LD BC, HL
+  LD DE, Segment_Queue_buffer + Segment_Queue_buffer_size
+  SBC HL, DE
 
-    JR C, Segment_Queue_next_index_nowrap
-    LD HL, 0
-    RET
+  JR C, Segment_Queue_next_index_nowrap
+  LD HL, 0
+  RET
 Segment_Queue_next_index_nowrap:
-    LD HL, BC
-    RET
+  LD HL, BC
+  RET
