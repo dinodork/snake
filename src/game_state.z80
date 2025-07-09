@@ -196,6 +196,12 @@ Handle_Collision_With_Food:
   INC (IX)
   INC (IX)
 
+  LD A, 10
+  LD B, 20
+  LD C, 0xFF
+  LD D, 0xFF
+  CALL SoundFX_A_Init
+  CALL SoundFX_A_Main
   CALL Remove_Food
 
 ; Award points
