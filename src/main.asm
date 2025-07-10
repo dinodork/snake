@@ -152,7 +152,7 @@ Update_Snake:
   LD HL, (Game_snake_target_length)
   LD DE, (Game_snake_length)
   SBC HL, DE
-  JR NZ, Grow_Snake
+  JR NZ, Update_Snake_Grow
 
   ; The snake doesn't need to grow anymore, so move the tail one slot in its
   ; current direction.
@@ -174,12 +174,12 @@ Update_Snake:
   CALL Get_Next_Position
   LD (Game_snake_tail_x), HL
   CALL Draw_Tail
-  JP Render_snake
+  JP Update_Snake_Render
 
-Grow_Snake:
+Update_Snake_Grow:
   INC DE
   LD (Game_snake_length), DE
-Render_snake:
+Update_Snake_Render:
   POP DE
   LD HL, DE
   PUSH HL
@@ -189,6 +189,22 @@ Render_snake:
   LD A, (Game_next_direction)
   LD (HL), A
   CALL Draw_Head
+
+  ; Play sound if snake just ate
+  LD IX, Game_Phase
+  LD A, (IX)
+  LD (IX), Game_Phase_Running
+
+  CP A, Game_Phase_Eating
+  RET NZ
+
+  LD A, 10
+  LD B, 20
+  LD C, 0xFF
+  LD D, 0xFF
+  CALL SoundFX_A_Init
+  CALL SoundFX_A_Main
+  CALL Remove_Food
 
   RET
 
@@ -302,7 +318,7 @@ game:
   CALL Place_Food
 
   LD IX, Game_Phase
-  LD (IX), 0
+  LD (IX), Game_Phase_Running
 
   LD HL, Interrupt
   LD IX, 0xFFF0
@@ -320,7 +336,7 @@ Loop:
   CALL Handle_Controls
   LD IX, Game_Phase
   LD A, (IX)
-  CP 1
+  CP Game_Phase_Game_Over
   JR Z, Handle_Game_Over
   JP Loop
 
