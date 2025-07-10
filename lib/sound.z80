@@ -41,7 +41,7 @@ SoundFX_A_V1:
   LD HL,SoundFX_A_V4
 SoundFX_A_L1:
   LD C,B
-;			LD A,%00001000
+  AND %11111000 | Game_border
   OUT (254),A
   LD A,(HL)
 SoundFX_A_V2:

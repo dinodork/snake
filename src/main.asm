@@ -257,8 +257,10 @@ Main_Menu:
   DI
 
   LD SP, Stack_Top
-  LD A, Paper_Black | Ink_White | Bright
+  AND A, Menu_attribute
   CALL Clear_Screen
+  AND A, Menu_border
+  OUT (254), A
 
   PRINT_CENTRED 5, Title_Message
   PRINT_CENTRED 7, Keys_Message

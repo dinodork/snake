@@ -1,6 +1,10 @@
     ifndef screen_z80
     define screen_z80
 
+Menu_attribute: EQU Paper_Black | Ink_White | Bright
+Menu_border: EQU 0 ; Black
+Game_border: EQU Menu_border
+
 ; Simple clear-screen routine
 ; Uses LDIR to block clear memory
 ; A:  Colour to clear attribute block of memory with
