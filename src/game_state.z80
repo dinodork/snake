@@ -65,11 +65,12 @@ Game_head_start_x:  EQU Game_width / 2 + Game_initial_snake_length - 1
 Game_head_start_y:  EQU Game_height / 2
 Game_tail_start_x: EQU Game_width / 2
 Game_tail_start_y: EQU Game_height / 2
-Game_Phase_Running: EQU 0
-Game_Phase_Game_Over: EQU 1
 
 Game_Phase:
     DEFS 1
+Game_Phase_Running: EQU 0
+Game_Phase_Game_Over: EQU 1
+Game_Phase_Eating: EQU 2
 
 Game_Score:
     DEFS 2, 0
@@ -166,8 +167,6 @@ Game_get_address:
 ; Checks for collision and updates game state accordingly.
 ;   H Snake head Y position
 ;   L Snake head X position
-; Returns address of game state in IX
-
 Detect_Collision:
   LD IX, Game_Phase
   LD A, L
@@ -190,18 +189,16 @@ Detect_Collision:
   LD (IX), Game_Phase_Game_Over
   RET
 
+; Assumes that the snake's head is in the same location as the food.
+;   H Food Y position
+;   L Food X position
 Handle_Collision_With_Food:
+  LD (IX), Game_Phase_Eating
   LD IX, Game_snake_target_length
   INC (IX)
   INC (IX)
   INC (IX)
 
-  LD A, 10
-  LD B, 20
-  LD C, 0xFF
-  LD D, 0xFF
-  CALL SoundFX_A_Init
-  CALL SoundFX_A_Main
   CALL Remove_Food
 
 ; Award points

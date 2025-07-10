@@ -33,8 +33,8 @@ Place_Food_old:
 
 ; Removes the stalk of the food. The food itself gets overwritten, so don't
 ; worry about it.
-;   H Snake head Y position
-;   L Snake head X position
+;   H Food Y position
+;   L Food X position
 Remove_Food:
   DEC H ; The stalk is above the apple
   PUSH HL
