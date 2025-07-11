@@ -306,14 +306,14 @@ Main_Menu:
 game:
   DI
   LD SP, Stack_Top
-  LD A, Paper_Black | Ink_White | Bright
-  CALL Clear_Screen
+;  LD A, Paper_Black | Ink_White | Bright
+;  CALL Clear_Screen
 
   LD HL, 0
   LD (Game_Score), HL
 
   CALL Draw_Score
-  CALL Draw_Scene
+  CALL Draw_Game_Screen
   CALL Game_initialise
   CALL Draw_Snake
   CALL Place_Food
