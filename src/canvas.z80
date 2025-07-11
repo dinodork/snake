@@ -2,149 +2,171 @@
   include "lib/graphics.z80"
   include "src/frames.asm"
 
+  MACRO SLOW_DOWN_VISUALS
+    HALT
+  ENDM
+
 Tile_index_brick: EQU 20
 Play_area_height: EQU 24 - 3 ; Status bar + top, bottom walls
 
 Canvas_current_snake_ink: DEFS 1, Snake_body_ink
+
 Snake_body_ink: EQU Ink_Green
 Snake_head_ink: EQU Ink_White
 Snake_tongue_ink: EQU Ink_Red
+
 Apple_stalk_ink: EQU Ink_Green
-
 Apple_ink: EQU Ink_Red
-Background_Ink: EQU Ink_Black
+
 Background_Paper: EQU Paper_Blue
+Background_Ink: EQU Ink_Black
 Invisible_ink: EQU Ink_Blue ; Same ink as Background_Paper
-Play_area_attribute: EQU Paper_Blue | Background_Ink | Bright
-Play_area_drop_shadow_attribute: EQU (Paper_Blue | Ink_Black) & ~Bright
-Draw_Vertical_Fence:
-  LD B, 21
-Draw_Vertical_Fence_Loop:
-  LD H, B ; Row
-  LD L, D ; Column
-  INC H
-  CALL Get_Char_Address
+Play_area_attribute: EQU Paper_Blue | Ink_Blue | Bright
+Play_area_drop_shadow_attribute: EQU Play_area_attribute & ~Bright
 
-  PUSH BC
+Brick_attribute: EQU Ink_Yellow | Paper_Red
 
-  ; Fill in the colour
-  LD C, B
-  INC C
-  LD B, 0
+Draw_Game_Screen:
 
-  DUP 5 ; Multiply BC by 32
-  RL BC
-  EDUP
-
-  LD IX, Start_Of_Attribute_Ram
-  ADD IX, BC
-  LD (IX), Ink_Yellow | Paper_Red      ; We do these two lines twice, but who
-  LD (IX + 31), Ink_Yellow | Paper_Red ; cares?
-
-  ; Draw the tile
-  LD IY, Frames_bricks
-  CALL Print_UDG8
-  POP BC
-
-  DJNZ Draw_Vertical_Fence_Loop
+  LD A, Background_Paper | Ink_Black
+  CALL Draw_Game_Backdrop
+  LD A, Paper_Blue | Ink_Blue | Bright
+  CALL Draw_Game_Backdrop
+  CALL Draw_Fence
   RET
 
-Draw_Scene:
-  LD B, 32
-Draw_Scene_Top_Fence_Loop:
-  LD H, 1
-  LD L, B
-  DEC L
-  CALL Get_Char_Address
-
-  LD IY, Frames_bricks
-  CALL Print_UDG8
-
-  DJNZ Draw_Scene_Top_Fence_Loop
-
-  ; Brick colours
-  LD HL, Start_Of_Attribute_Ram + 32 ; Second row of attribute ram
-  LD DE, Start_Of_Attribute_Ram + 32 + 1
-  LD BC, 31 ; Repeat this many times.
-  LD (HL), Ink_Yellow | Paper_Red
+; A Attribute
+Draw_Game_Backdrop:
+  LD HL, Start_Of_Attribute_Ram + 32
+  LD DE, Start_Of_Attribute_Ram + 33
+  LD BC, 31
+  LD (HL), A
   LDIR
 
-  LD B, 32
-Draw_Scene_Bottom_Fence_Loop:
-  LD H, 23
-  LD L, B
-  DEC L
-  CALL Get_Char_Address
+  DUP 22
+  SLOW_DOWN_VISUALS
+  LD BC, 32
+  LDIR
+  EDUP
 
+  RET
+
+Draw_Fence:
+  LD HL, 0x0100 ; (X 0, Y 1)
+Draw_Fence_top_loop:
+  PUSH HL
+  CALL Get_Char_Address
   LD IY, Frames_bricks
   CALL Print_UDG8
+  POP HL
 
-  DJNZ Draw_Scene_Bottom_Fence_Loop
-
-  LD HL, Start_Of_Attribute_Ram + 32 * 23
-  LD DE, Start_Of_Attribute_Ram + 32 * 23 + 1
-  LD BC, 31 ; Repeat this many times.
-  LD (HL), Ink_Yellow | Paper_Red
-  LDIR
-
-  LD D, 0
-  CALL Draw_Vertical_Fence
-  LD D, 31
-  CALL Draw_Vertical_Fence
-
-
-Clear_Play_Area: ; Purely done in attribute RAM
-
-  ; Draw the drop shadow of top wall
-  LD HL, Start_Of_Attribute_Ram + 32 * 2 + 1
-  LD DE, Start_Of_Attribute_Ram + 32 * 2 + 2
-  LD BC, 29	; Length of bitmap memory to clear
-  LD (HL), Paper_Blue | Ink_Black
-  LDIR		; Copy this byte to the second, and so on
-
-  ; Draw the drop shadow of left wall
-  LD B, 20
-  LD HL, Start_Of_Attribute_Ram + Attribute_ram_columns * 3 + 1
-  LD DE, Attribute_ram_columns
-Left_wall_drop_shadow_loop:
-  LD (HL), Play_area_drop_shadow_attribute
-  ADD HL, DE
-
-  DJNZ Left_wall_drop_shadow_loop
-
-  LD B, Play_area_height - 1
-Clear_Play_Area_Loop:
+  LD DE, Start_Of_Attribute_Ram + 32
+  PUSH HL
   LD H, 0
-  LD L, B
-  INC L
-  INC L
-
-  ; Multiply by 32 (length of attribute rows)
-  DUP 5
-  RL HL
-  EDUP
-
-  ; Shift two positions to the right (wall + drop shadow)
-  INC HL
-  INC HL
-
-  ; Add that to the start of attr area
-  LD DE, Start_Of_Attribute_Ram
   ADD HL, DE
+  LD (HL), Brick_attribute
+  POP HL
 
-  ; DE := HL + 1
-  LD DE, HL
-  INC DE
+  ; Draw drop shadow
+  LD DE, Start_Of_Attribute_Ram + 64
+  PUSH HL
+  LD H, 0
+  ADD HL, DE
+  LD (HL), Play_area_drop_shadow_attribute
+  POP HL
 
-  PUSH BC
-  LD BC, 28	; Length of bitmap memory to clear
-  LD (HL), Paper_Blue | Ink_Black | Bright
-  LDIR		; Copy this byte to the second, and so on
-  POP BC
+  LD DE, Start_Of_Attribute_Ram + 96
+  PUSH HL
+  LD H, 0
+  ADD HL, DE
+  LD (HL), Play_area_drop_shadow_attribute
+  POP HL
 
-  DJNZ Clear_Play_Area_Loop
 
-  RET
+  INC L
+  LD A, L
+  CP 32
+
+  SLOW_DOWN_VISUALS
+
+  JP NZ, Draw_Fence_top_loop
+
+  LD HL, 0x021F ; (X 31, Y 2)
+Draw_Fence_right_loop:
+  PUSH HL
+  CALL Get_Char_Address
+  LD IY, Frames_bricks
+  CALL Print_UDG8
+  POP HL
+
+  PUSH HL
+  CALL Get_Attr_Address
+  LD (HL), Brick_attribute
+  POP HL
+
+  INC H
+  LD A, H
+  CP 23
+
+  SLOW_DOWN_VISUALS
+
+  JP NZ, Draw_Fence_right_loop
+
+  LD HL, 0x171F ; (X 31, Y 23)
+Draw_Fence_bottom_loop:
+  PUSH HL
+  CALL Get_Char_Address
+  LD IY, Frames_bricks
+  CALL Print_UDG8
+  POP HL
+
+  PUSH HL
+  CALL Get_Attr_Address
+  LD (HL), Brick_attribute
+  POP HL
+
+  SLOW_DOWN_VISUALS
+
+  DEC L
+  LD A, L
+  CP -1
+  JP NZ, Draw_Fence_bottom_loop
+
+  LD L, 0
+  LD B, 22
+Draw_Fence_left_loop:
+  LD H, B
+  PUSH HL
+  CALL Get_Char_Address
+  LD IY, Frames_bricks
+  CALL Print_UDG8
+  POP HL
+
+  PUSH HL
+  CALL Get_Attr_Address
+  LD (HL), Brick_attribute
+  POP HL
+
+  ; Draw drop shadow
+  PUSH HL
+  LD L, 1
+  CALL Get_Attr_Address
+  LD (HL), Play_area_drop_shadow_attribute
+  POP HL
+
+  PUSH HL
+  LD L, 2
+  CALL Get_Attr_Address
+  LD (HL), Play_area_drop_shadow_attribute
+  POP HL
+
+  SLOW_DOWN_VISUALS
+
+  DEC B
+  LD A, B
+  CP 1
+  RET Z
+  JP Draw_Fence_left_loop
 
 Draw_Score:
   LD HL, (Game_Score)

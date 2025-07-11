@@ -306,14 +306,14 @@ Main_Menu:
 game:
   DI
   LD SP, Stack_Top
-  LD A, Paper_Black | Ink_White | Bright
-  CALL Clear_Screen
+;  LD A, Paper_Black | Ink_White | Bright
+;  CALL Clear_Screen
 
   LD HL, 0
   LD (Game_Score), HL
 
   CALL Draw_Score
-  CALL Draw_Scene
+  CALL Draw_Game_Screen
   CALL Game_initialise
   CALL Draw_Snake
   CALL Place_Food
@@ -373,20 +373,9 @@ Handle_Game_Over:
 
 ; Wait for key press, then restart the game
   CALL Wait_For_Any_Key
+  CALL Pause_One_Second
 
-; Restore the interrupt action
-  DI
-  LD A, 0
-  LD (Interrupt_count), A
-  LD A, Initial_interrupt_target_count
-  LD (Interrupt_target_count), A
-  LD HL, Update_Snake
-  LD IX, SM_Interrupt_handler
-  LD (IX + 1), L
-  LD (IX + 2), H
-  EI
-
-  JP game
+  JP Main_Menu
 
   LD B, 3
 Death_sequence_flash_loop:
