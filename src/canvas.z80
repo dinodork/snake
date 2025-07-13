@@ -1,13 +1,10 @@
   include "lib/attribute.z80"
   include "lib/graphics.z80"
-  include "src/frames.asm"
+  include "graphics/tile_metadata.z80"
 
   MACRO SLOW_DOWN_VISUALS
-    HALT
+;    HALT
   ENDM
-
-Tile_index_brick: EQU 20
-Play_area_height: EQU 24 - 3 ; Status bar + top, bottom walls
 
 Canvas_current_snake_ink: DEFS 1, Snake_body_ink
 
@@ -21,18 +18,43 @@ Apple_ink: EQU Ink_Red
 Background_Paper: EQU Paper_Blue
 Background_Ink: EQU Ink_Black
 Invisible_ink: EQU Ink_Blue ; Same ink as Background_Paper
-Play_area_attribute: EQU Paper_Blue | Ink_Blue | Bright
+Play_area_attribute: EQU Paper_Blue | Background_Ink | Bright
 Play_area_drop_shadow_attribute: EQU Play_area_attribute & ~Bright
 
 Brick_attribute: EQU Ink_Yellow | Paper_Red
 
 Draw_Game_Screen:
 
-  LD A, Background_Paper | Ink_Black
+  LD A, Play_area_attribute
   CALL Draw_Game_Backdrop
-  LD A, Paper_Blue | Ink_Blue | Bright
-  CALL Draw_Game_Backdrop
+
+  CALL Draw_Game_Floor
   CALL Draw_Fence
+
+  RET
+
+Draw_Game_Floor:
+
+  LD B, 23
+Draw_Game_Floor_loop:
+
+  LD H, B ; (Y B)
+  PUSH BC
+  LD B, 31
+Draw_Game_Floor_row_loop:
+  LD L, B
+  PUSH HL
+  CALL Get_Char_Address
+  LD IY, Tile_background
+  CALL Print_UDG8
+  POP HL
+
+  DJNZ Draw_Game_Floor_row_loop
+
+  POP BC
+
+  DJNZ Draw_Game_Floor_loop
+
   RET
 
 ; A Attribute
@@ -56,7 +78,7 @@ Draw_Fence:
 Draw_Fence_top_loop:
   PUSH HL
   CALL Get_Char_Address
-  LD IY, Frames_bricks
+  LD IY, Tile_bricks
   CALL Print_UDG8
   POP HL
 
@@ -95,7 +117,7 @@ Draw_Fence_top_loop:
 Draw_Fence_right_loop:
   PUSH HL
   CALL Get_Char_Address
-  LD IY, Frames_bricks
+  LD IY, Tile_bricks
   CALL Print_UDG8
   POP HL
 
@@ -116,7 +138,7 @@ Draw_Fence_right_loop:
 Draw_Fence_bottom_loop:
   PUSH HL
   CALL Get_Char_Address
-  LD IY, Frames_bricks
+  LD IY, Tile_bricks
   CALL Print_UDG8
   POP HL
 
@@ -138,7 +160,7 @@ Draw_Fence_left_loop:
   LD H, B
   PUSH HL
   CALL Get_Char_Address
-  LD IY, Frames_bricks
+  LD IY, Tile_bricks
   CALL Print_UDG8
   POP HL
 

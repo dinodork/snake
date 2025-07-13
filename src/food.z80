@@ -52,9 +52,7 @@ Remove_Food:
   POP HL
 
     ; Remove the food from the screen
-  CALL Get_Attr_Address
-  LD A, Invisible_ink
-  CALL Set_Ink
+  CALL Clear_Tile
 
 Remove_Food_Exit:
   RET

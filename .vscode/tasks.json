@@ -69,8 +69,8 @@
                 "args": [
                     "scripts/graphics_to_asm.py",
                     "-W1",
-                    "${workspaceFolder}/graphics/frames.udg",
-                    "-o${config:buildPath}/graphics/frames.asm",
+                    "${workspaceFolder}/graphics/tiles.udg",
+                    "-o${config:buildPath}/graphics/tiles.asm",
                 ],
             },
             "group": {

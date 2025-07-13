@@ -1,6 +1,8 @@
     ifndef graphics_z80
     define graphics_z80
 
+    include "graphics/tile_metadata.z80"
+
 ; The game's graphics is all in this file
 
 Graphics_play_area_size: EQU (32 - 2) * (24 - 3)
@@ -20,7 +22,7 @@ Body_segments:
     BYTE     18,  20,  14,   -1 ; Left
     BYTE     22,  16,  -1,   14 ; Right
 
-; Draws a UDG frame and set the ink value.
+; Draws a UDG frame and sets the ink value.
 ;   H: Y position
 ;   L: X position
 ;   A: Character number
@@ -51,7 +53,7 @@ Draw_Frame_With_Ink:
 Draw_Stalk:
   PUSH HL
   CALL Get_Char_Address
-  LD IY, Frames_apple_stalk
+  LD IY, Tile_apple_stalk
   CALL Print_UDG8
   POP HL
   CALL Get_Attr_Address
@@ -68,22 +70,7 @@ Draw_Stalk:
 Draw_Apple:
   PUSH HL
   CALL Get_Char_Address
-  LD IY, Frames_apple
-  CALL Print_UDG8
-  POP HL
-  CALL Get_Attr_Address
-  LD A, Apple_ink
-  CALL Set_Ink
-  RET
-
-; Draws an apple
-;   IX = Offset from start (i.e. Y * 32 + X)
-; Clobbers:
-;   A, B, DE
-Draw_Apple_At_Offset:
-  PUSH HL
-  CALL Get_Char_Address
-  LD IY, Frames_apple
+  LD IY, Tile_apple
   CALL Print_UDG8
   POP HL
   CALL Get_Attr_Address
@@ -146,7 +133,7 @@ Draw_Tongue:
   CALL Get_Char_Address
   LD DE, Frames_1
   LD A, B
-  ADD A, Frames_charno_tongue -32
+  ADD A, Tile_snake_tongue -32
   CALL Print_Char
 
   POP HL
@@ -161,11 +148,7 @@ Clear_tongue:
   LD A, H
   CP 0
   RET Z
-  CALL Get_Attr_Address
-  LD A, Ink_Blue
-  CALL Set_Ink
-  LD HL, 0
-  LD (Game_tounge_x), HL ; Just to be on the safe side
+  CALL Clear_Tile
 
   RET
 
@@ -243,6 +226,24 @@ Draw_Tail:
   LD HL, (Game_snake_tail_x) ; As above
   LD B, Snake_body_ink
   CALL Draw_Frame_With_Ink
+
+  RET
+
+; Clears an 8x8 tile (draws the background on it)
+;   H: Y position
+;   L: X position
+Clear_Tile:
+  PUSH HL
+  CALL Get_Char_Address
+  LD IY, Tile_background
+  CALL Print_UDG8
+  POP HL
+
+  CALL Get_Attr_Address
+  LD A, (HL)
+  AND A, Bright
+  OR A, Play_area_drop_shadow_attribute
+  LD (HL), A
 
   RET
 

@@ -164,10 +164,7 @@ Update_Snake:
   LD (HL), Game_tile_empty
 
   LD HL, (Game_snake_tail_x)
-  CALL Get_Attr_Address
-  ; Don't bother clearing the graphics, just hide it
-  LD A, Invisible_ink
-  CALL Set_Ink
+  CALL Clear_Tile
 
   LD HL, (Game_snake_tail_x)
   POP AF
@@ -373,6 +370,8 @@ Handle_Game_Over:
 
 ; Wait for key press, then restart the game
   CALL Wait_For_Any_Key
+  CALL Pause_One_Second
+  CALL Pause_One_Second
   CALL Pause_One_Second
 
   JP Main_Menu
