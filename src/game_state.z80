@@ -167,15 +167,19 @@ Game_get_address:
 ; Checks for collision and updates game state accordingly.
 ;   H Snake head Y position
 ;   L Snake head X position
+; Returns:
+;   IX Address of game state
+; Clobbers:
+;   A
 Detect_Collision:
   LD IX, Game_Phase
   LD A, L
 
   PUSH HL
   CALL Game_get_address
-  CALL Game_get_direction
+  LD A, (HL)
 
-  CP Game_tile_food
+  CP A, Game_tile_food
   POP HL
   JP Z, Handle_Collision_With_Food
 

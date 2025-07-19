@@ -39,30 +39,32 @@ screen_top: defb  0   ; WPMEMx
 Stack_Top:  	EQU 0xFFF0
   LD SP, Stack_Top
 
-; Updates the X, Y position of the head according to the direction it's facing.
-;   H Snake head Y position
-;   L Snake head X position
-;   A Snake head direction, see comment above Snake_segment_queue.
+; Calculates the X, Y position of the head according to the direction it's facing.
+;   H Current head Y position
+;   L Current head X position
+;   A Current head direction, see comment above Snake_segment_queue.
 ; Returns:
 ;   H new Y position
 ;   L new X position
-Get_Next_Position:
+; Clobbers:
+;   A
+Get_Next_Head_Position:
   AND 0x0F
   CP Game_tile_facing_right
-  JP NZ, Get_Next_Position_head_2
+  JP NZ, Get_Next_Position_left
   INC L
   RET
-Get_Next_Position_head_2:
+Get_Next_Position_left:
   CP Game_tile_facing_left
-  JP NZ, Get_Next_Position_head_3
+  JP NZ, Get_Next_Position_up
   DEC L
   RET
-Get_Next_Position_head_3:
+Get_Next_Position_up:
   CP Game_tile_facing_up
-  JP NZ, Get_Next_Position_head_4
+  JP NZ, Get_Next_Position_down
   DEC H
   RET
-Get_Next_Position_head_4:
+Get_Next_Position_down:
   CP Game_tile_facing_down
   RET NZ
   INC H
@@ -77,7 +79,7 @@ Draw_Snake:
   CALL Game_get_address
   LD A, (HL)
   POP HL
-  CALL Get_Next_Position
+  CALL Get_Next_Head_Position
 
 Draw_Snake_Loop:
   PUSH HL
@@ -92,7 +94,7 @@ Draw_Snake_Loop:
   CALL Game_get_address
   CALL Game_get_direction
   POP HL
-  CALL Get_Next_Position
+  CALL Get_Next_Head_Position
   LD BC, (Game_snake_head_x)
   LD DE, HL
   SBC DE, BC
@@ -127,7 +129,7 @@ Update_Snake:
   LD HL, (Game_snake_head_x) ; H := Y position, L := X position
   LD A, (Game_next_direction)
   LD DE, HL ; We're going to keep the old position in DE in this routine.
-  CALL Get_Next_Position
+  CALL Get_Next_Head_Position
   LD B, A ; Save A in B instead of the stack so we can do an early return.
 
   PUSH HL
@@ -168,7 +170,7 @@ Update_Snake:
 
   LD HL, (Game_snake_tail_x)
   POP AF
-  CALL Get_Next_Position
+  CALL Get_Next_Head_Position
   LD (Game_snake_tail_x), HL
   CALL Draw_Tail
   JP Update_Snake_Render

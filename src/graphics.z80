@@ -84,7 +84,7 @@ Draw_Head:
   CALL Game_get_address
   CALL Game_get_direction
 
-; Draws a frame inthe head's ink.
+; Draws a frame in the head's ink.
 ;   A: UDG character of the head.
 Draw_Head_Frame:
 
@@ -104,16 +104,16 @@ Draw_Head_Frame:
 
   POP AF
 
-Draw_Tongue:
+Update_And_Draw_Tongue:
   LD HL, (Game_snake_head_x) ; H := Y position, L := X position
   CALL Game_get_address
   LD A, (HL)
 
   LD HL, (Game_snake_head_x) ; H := Y position, L := X position
-  CALL Get_Next_Position ; HL is now the position in front of the head.
+  CALL Get_Next_Head_Position ; HL is now the position in front of the head.
   LD BC, HL
 
-    ; Return if there is anything in this game tile.
+  ; Return if there is anything in this game tile.
   CALL Game_get_address
   LD B, A
   LD A, (HL)
@@ -122,21 +122,23 @@ Draw_Tongue:
   CP A, Game_tile_empty
   RET NZ
 
-    ; Actually draw the tongue
+  ; Actually draw the tongue
 
   LD A, B
   LD HL, (Game_snake_head_x) ; H := Y position, L := X position
-  CALL Get_Next_Position ; HL is now the position in front of the head.
-  LD (Game_tounge_x), HL
-  PUSH HL
 
+  CALL Get_Next_Head_Position ; HL is now the position in front of the head.
+  LD (Game_tounge_x), HL
+
+  ; Draw the tongue
+  PUSH HL
   CALL Get_Char_Address
   LD DE, Frames_1
   LD A, B
   ADD A, Tile_snake_tongue -32
   CALL Print_Char
-
   POP HL
+
   CALL Get_Attr_Address
   LD A, Snake_tongue_ink
   CALL Set_Ink
