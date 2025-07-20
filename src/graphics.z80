@@ -111,7 +111,7 @@ Update_And_Draw_Tongue:
   LD A, (HL)
   LD HL, (Game_snake_head_x)
   CALL Get_Next_Head_Position ; HL is now the position in front of the head.
-  LD (Game_tounge_x), HL
+  LD (Game_snake_tounge_x), HL
 
   LD BC, HL
 
@@ -131,7 +131,7 @@ Update_And_Draw_Tongue:
 
 
   ; Draw the tongue
-  LD HL, (Game_tounge_x)
+  LD HL, (Game_snake_tounge_x)
   PUSH HL
   CALL Get_Char_Address
   LD DE, Frames_1
@@ -147,14 +147,14 @@ Update_And_Draw_Tongue:
   RET
 
 Clear_Tongue:
-  LD HL, (Game_tounge_x)
+  LD HL, (Game_snake_tounge_x)
   CALL Game_get_address
   LD A, (HL)
   CP A, Game_tile_empty
   RET NZ ; Something occupies this position (fruit, wall), hence the tongue was
          ; never drawn. So we're done.
 
-  LD HL, (Game_tounge_x)
+  LD HL, (Game_snake_tounge_x)
   CALL Graphics_Clear_Box
 
   RET

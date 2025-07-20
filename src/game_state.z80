@@ -26,25 +26,20 @@ Game_tile_food: EQU 0x06
 Game_tile_empty: EQU 0xFF
 
 
-; The head's on-screen x coordinate
+; The theoretical position of the tongue. We say theoretical because the tongue
+; might not be visible in case some other visual element occupies the same
+; space. For the same reason, we need to keep it in a special variable rather
+; than in the game state.
+Game_snake_tounge_x:
+    DEFS 0x1
+Game_snake_tongue_y:
+    DEFS 0x1
 Game_snake_head_x:
     DEFS 0x1
-; The head's on-screen y coordinate
 Game_snake_head_y:
     DEFS 0x1
-
-; The position we drew a tongue on the screen. A zero value means there was no
-; tongue drawn (it couldn't be drawn at 0, 0 anyway.)
-Game_tounge_x:
-    DEFS 0x1
-Game_tongue_y:
-    DEFS 0x1
-
-; The tail's on-screen x coordinate
 Game_snake_tail_x:
     DEFS 0x1
-
-; The tail's on-screen y coordinate
 Game_snake_tail_y:
     DEFS 0x1
 
@@ -60,10 +55,12 @@ Game_snake_target_length:
 Game_snake_length:
     DEFS 0x2
 
-Game_initial_snake_length: EQU 3
-Game_head_start_x:  EQU Game_width / 2 + Game_initial_snake_length - 1
+Game_snake_start_length: EQU 3
+Game_head_start_x:  EQU Game_width / 2 + Game_snake_start_length / 2
 Game_head_start_y:  EQU Game_height / 2
-Game_tail_start_x: EQU Game_width / 2
+Game_tongue_start_x:  EQU Game_head_start_x + 1
+Game_tongue_start_y:  EQU Game_head_start_y
+Game_tail_start_x: EQU Game_head_start_x - Game_snake_start_length
 Game_tail_start_y: EQU Game_height / 2
 
 Game_Phase:
@@ -107,7 +104,10 @@ Draw_side_walls_loop:
   ADD IY, DE
   DJNZ Draw_side_walls_loop
 
-    ; Place snake
+  ; Place snake
+  LD IX, Game_snake_tongue_y
+  LD (IX), Game_tongue_start_x
+
   LD IX, Game_snake_head_x
   LD (IX), Game_head_start_x
 
