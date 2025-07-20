@@ -105,12 +105,14 @@ Draw_Head_Frame:
   POP AF
 
 Update_And_Draw_Tongue:
+  ; Advance the tongue position
   LD HL, (Game_snake_head_x) ; H := Y position, L := X position
   CALL Game_get_address
   LD A, (HL)
-
-  LD HL, (Game_snake_head_x) ; H := Y position, L := X position
+  LD HL, (Game_snake_head_x)
   CALL Get_Next_Head_Position ; HL is now the position in front of the head.
+  LD (Game_tounge_x), HL
+
   LD BC, HL
 
   ; Return if there is anything in this game tile.
@@ -118,7 +120,7 @@ Update_And_Draw_Tongue:
   LD B, A
   LD A, (HL)
 
-    ; Exit if there's something in the way of the tongue.
+  ; Exit if there's something in the way of the tongue.
   CP A, Game_tile_empty
   RET NZ
 
@@ -127,10 +129,9 @@ Update_And_Draw_Tongue:
   LD A, B
   LD HL, (Game_snake_head_x) ; H := Y position, L := X position
 
-  CALL Get_Next_Head_Position ; HL is now the position in front of the head.
-  LD (Game_tounge_x), HL
 
   ; Draw the tongue
+  LD HL, (Game_tounge_x)
   PUSH HL
   CALL Get_Char_Address
   LD DE, Frames_1
@@ -145,12 +146,16 @@ Update_And_Draw_Tongue:
 
   RET
 
-Clear_tongue:
+Clear_Tongue:
   LD HL, (Game_tounge_x)
-  LD A, H
-  CP 0
-  RET Z
-  CALL Clear_Tile
+  CALL Game_get_address
+  LD A, (HL)
+  CP A, Game_tile_empty
+  RET NZ ; Something occupies this position (fruit, wall), hence the tongue was
+         ; never drawn. So we're done.
+
+  LD HL, (Game_tounge_x)
+  CALL Graphics_Clear_Box
 
   RET
 
@@ -231,10 +236,10 @@ Draw_Tail:
 
   RET
 
-; Clears an 8x8 tile (draws the background on it)
+; Clears an 8x8 box (draws the background on it)
 ;   H: Y position
 ;   L: X position
-Clear_Tile:
+Graphics_Clear_Box:
   PUSH HL
   CALL Get_Char_Address
   LD IY, Tile_background

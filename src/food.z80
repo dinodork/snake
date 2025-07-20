@@ -52,7 +52,7 @@ Remove_Food:
   POP HL
 
     ; Remove the food from the screen
-  CALL Clear_Tile
+  CALL Graphics_Clear_Box
 
 Remove_Food_Exit:
   RET

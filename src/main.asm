@@ -125,7 +125,7 @@ Draw_Snake_Loop:
 ; L and the Y value into H, courtesy of little-endian, since the Y value
 ; follows the X value in memory.
 Update_Snake:
-  CALL Clear_tongue
+  CALL Clear_Tongue
   LD HL, (Game_snake_head_x) ; H := Y position, L := X position
   LD A, (Game_next_direction)
   LD DE, HL ; We're going to keep the old position in DE in this routine.
@@ -166,7 +166,7 @@ Update_Snake:
   LD (HL), Game_tile_empty
 
   LD HL, (Game_snake_tail_x)
-  CALL Clear_Tile
+  CALL Graphics_Clear_Box
 
   LD HL, (Game_snake_tail_x)
   POP AF
