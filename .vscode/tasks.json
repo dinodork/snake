@@ -79,6 +79,7 @@
             },
             "dependsOn": [
                 "CreateBuildDirectory",
+                "${workspaceFolder}/graphics/tiles.udg",
             ],
         },
         {

@@ -6,13 +6,13 @@ Tile_basic_offset: EQU 32
 
 Tile_snake_tongue: EQU 56
 
-Tile_bricks: EQU Frames_1 + 41 * 8
-Tile_apple_stalk: EQU Frames_1 + 28 * 8
-Tile_apple: EQU Frames_1 + 29 * 8
+Tile_bricks: EQU Tiles_1 + 41 * 8
+Tile_apple_stalk: EQU Tiles_1 + 28 * 8
+Tile_apple: EQU Tiles_1 + 29 * 8
 
 Tile_snake_head_start: EQU 0
 Tile_snake_tail_start: EQU 4
 Tile_snake_body_start: EQU 8
-Tile_background: EQU Frames_1 + (69 - Tile_basic_offset) * 8
+Tile_background: EQU Tiles_1 + (69 - Tile_basic_offset) * 8
 
   endif ; graphics_tile_metadata_z80

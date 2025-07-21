@@ -30,7 +30,7 @@ screen_top: defb  0   ; WPMEMx
   include "lib/sound.z80"
 
   include "build/graphics/font.asm"
-  include "build/graphics/frames.asm"
+  include "build/graphics/tiles.asm"
 
 
  defs 0x8000 - $

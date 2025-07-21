@@ -39,7 +39,7 @@ Draw_Frame_With_Ink:
   POP HL
 
   CALL Get_Char_Address
-  LD DE, Frames_1
+  LD DE, Tiles_1
   POP AF
   CALL Print_Char
 
@@ -134,7 +134,7 @@ Update_And_Draw_Tongue:
   LD HL, (Game_snake_tounge_x)
   PUSH HL
   CALL Get_Char_Address
-  LD DE, Frames_1
+  LD DE, Tiles_1
   LD A, B
   ADD A, Tile_snake_tongue -32
   CALL Print_Char
