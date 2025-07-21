@@ -187,9 +187,16 @@ Draw_Fence_left_loop:
   DEC B
   LD A, B
   CP 1
-  RET Z
-  JP Draw_Fence_left_loop
+  JP NZ, Draw_Fence_left_loop
 
+Set_Score_Attr:
+  LD B, 31
+Set_Score_Attr_loop:
+  LD H, 0
+  LD L, B
+  CALL Get_Attr_Address
+  LD (HL), Ink_White | Paper_Black | Bright
+  DJNZ Set_Score_Attr_loop
 Draw_Score:
   LD HL, (Game_Score)
   LD DE, Score_String + 6
