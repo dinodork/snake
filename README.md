@@ -11,6 +11,8 @@ build from within VsCode, tasks.json is used as build system which
 is not great, but sort of works. In order to run, you need the
 DeZog VsCode extension.
 
+To generate a `.tzx` file, run the build task `GenerateTapeFile` in VsCode.
+
 # fuse-emulator-utils
 
 
