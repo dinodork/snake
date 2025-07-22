@@ -159,13 +159,13 @@ Clear_Tongue:
 
   RET
 
-; A: Current direction of the segment.
+; Draws a body segment (i.e. not tail, tongue or head)
 ; H: Current body segment Y position
 ; L: Current body segment X position
 Draw_snake_body_segment:
   PUSH HL
   CALL Game_get_address
-  CALL Game_get_direction
+  LD A, (HL)
   LD B, A
 
     ; A := B * 4

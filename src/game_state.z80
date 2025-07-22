@@ -124,6 +124,7 @@ Draw_side_walls_loop:
   LD (IX), Game_tile_facing_right
   LD (IX + 1), Game_tile_facing_right
   LD (IX + 2), Game_tile_facing_right
+  LD (IX + 3), Game_tile_facing_right
 
   LD HL, Game_snake_target_length
   LD (HL), 3
