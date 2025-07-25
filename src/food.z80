@@ -3,38 +3,6 @@
     include "graphics.z80"
     include "screen.z80"
 
-Place_Food_old:
-  CALL RND16
-  LD DE, Game_size
-
-    ; Increase the likelyhood that the number is less than the size of the
-    ; screen...
-  AND H, 0x03
-  LD H, A
-
-  SBC DE, HL
-  JR C, Place_Food_old ; outside screen, regenerate
-
-  LD BC, HL
-  LD DE, Game
-  ADD HL, DE
-  LD A, (HL)
-  CP A, Game_tile_empty
-  JR NZ, Place_Food_old ; Space occupied, regenerate
-
-    ; We found a free space, place the food
-  LD (HL), Game_tile_food
-
-  LD HL, Start_Of_Attribute_Ram
-  ADD HL, BC
-  LD (HL), 0xFF
-
-  RET
-
-; Removes the stalk of the food. The food itself gets overwritten, so don't
-; worry about it.
-;   H Food Y position
-;   L Food X position
 Remove_Food:
   DEC H ; The stalk is above the apple
   PUSH HL
@@ -68,13 +36,13 @@ Place_Food:
   LD L, A
 
     ; The Y value can be 0-22 (1 row of score). We mask it first, so it's
-    ; in the interval 0-31. Then if it's greater than 22, divide in half.
+    ; in the interval 0-31.
   LD A, H
   AND 32 - 1
   CP 23 - Game_scores_height
-  JP S, Write_back_food_Y:
-  RR A
-Write_back_food_Y:
+  JP S, Place_Food_y_ok:
+  RR A ;  It's greater than 22, divide in half. Now we know it's o.k.
+Place_Food_y_ok:
   ADD Game_scores_height
   LD H, A
 
@@ -93,7 +61,15 @@ Write_back_food_Y:
 
     ; Place the graphic on screen
   PUSH HL
-  CALL Draw_Apple
+
+  ; Generate a random even number in the range 0 <= n <= 2.
+  ; LD A, R
+  ; AND A, 0x1
+  ; RL A
+
+  LD A, 2
+
+  CALL Draw_Food
   POP HL
 
     ; Try to place and draw the stalk
@@ -107,6 +83,8 @@ Write_back_food_Y:
   LD A, Game_tile_food_stalk
   LD (HL), A
   LD HL, BC
+
+  LD A, 2
   CALL Draw_Stalk
   RET
 Place_Food_Done:

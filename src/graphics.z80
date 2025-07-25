@@ -46,32 +46,46 @@ Print_Char_With_Ink:
   RET
 
 ; Draws food's stalk at the position.
-;   H = Y character position
-;   L = X character position
+;   A: Food index
+;   H: Y character position
+;   L: X character position
 ; Clobbers:
 ;   DE, HL, IY
 Draw_Stalk:
   PUSH HL
+
+  PUSH AF
   CALL Get_Char_Address
-  LD IY, Tile_apple_stalk
-  CALL Print_UDG8
+  POP AF
+
+  ADD A, Char_apple_stalk
+  LD DE, Tiles_1
+  CALL Print_Char
+
   POP HL
+
   CALL Get_Attr_Address
   LD A, Apple_stalk_ink
   CALL Set_Ink
 
   RET
 
-; Draws an apple
-;   H = Y character position
-;   L = X character position
+; Draws food
+;   A: Food index
+;   H: Y character position
+;   L: X character position
 ; Clobbers:
 ;   A, B, DE, HL, IY
-Draw_Apple:
+Draw_Food:
   PUSH HL
+
+  PUSH AF
   CALL Get_Char_Address
-  LD IY, Tile_apple
-  CALL Print_UDG8
+  POP AF
+
+  ADD A, Char_apple
+  LD DE, Tiles_1
+  CALL Print_Char
   POP HL
   CALL Get_Attr_Address
   LD A, Apple_ink
