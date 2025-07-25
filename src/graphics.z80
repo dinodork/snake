@@ -22,12 +22,12 @@ Body_segments:
     BYTE     18,  20,  14,   -1 ; Left
     BYTE     22,  16,  -1,   14 ; Right
 
-; Draws a UDG frame and sets the ink value.
+; Prints a single character and sets the ink value.
 ;   H: Y position
 ;   L: X position
 ;   A: Character number
 ;   B: Ink
-Draw_Frame_With_Ink:
+Print_Char_With_Ink:
   PUSH AF
   PUSH HL
 
@@ -100,7 +100,7 @@ Draw_Head_Frame:
   LD HL, (Game_snake_head_x) ; H := Y position, L := X position
 
   LD B, Snake_head_ink
-  CALL Draw_Frame_With_Ink
+  CALL Print_Char_With_Ink
 
   POP AF
 
@@ -136,7 +136,7 @@ Update_And_Draw_Tongue:
   CALL Get_Char_Address
   LD DE, Tiles_1
   LD A, B
-  ADD A, Tile_snake_tongue -32
+  ADD A, Char_snake_tongue
   CALL Print_Char
   POP HL
 
@@ -196,7 +196,7 @@ Draw_snake_body_segment_loop:
   POP AF
   ADD A, B
   LD B, Snake_body_ink
-  CALL Draw_Frame_With_Ink
+  CALL Print_Char_With_Ink
 
   RET
 
@@ -228,11 +228,11 @@ Draw_Tail:
 
   RLA ; A := A * 2
   ADD A, B
-  ADD A, Tile_snake_tail_start
+  ADD A, Char_snake_tail_start
 
   LD HL, (Game_snake_tail_x) ; As above
   LD B, Snake_body_ink
-  CALL Draw_Frame_With_Ink
+  CALL Print_Char_With_Ink
 
   RET
 

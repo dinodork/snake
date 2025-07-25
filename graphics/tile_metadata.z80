@@ -1,18 +1,28 @@
   ifndef graphics_tile_metadata_z80
   define graphics_tile_metadata_z80
 
-; Offsets of various tiles in tiles.udg.
-Tile_basic_offset: EQU 32
+; Mapping from tile number as shown in ZX Graphics Editor to a memory address
+; in the .asm file generated from the .udg file. (See GenerateGraphicsAsm rule
+; tasks.json.) This memory address can be used with Print_UDG8.
+  MACRO TILE name, i
+Tile_name: EQU Tiles_1 + (i - 32) * 8
+  ENDM
 
-Tile_snake_tongue: EQU 56
+; Like above, but maps to a character number suitable for calling Print_Char.
+; This is useful when we choose snake tiles depending on direction and need
+; to do the multiplication with 8 anyway.
+  MACRO CHAR name, i
+Char_name: EQU (i - 32)
+  ENDM
 
-Tile_bricks: EQU Tiles_1 + 41 * 8
-Tile_apple_stalk: EQU Tiles_1 + 28 * 8
-Tile_apple: EQU Tiles_1 + 29 * 8
+  CHAR snake_tongue, 56
 
-Tile_snake_head_start: EQU 0
-Tile_snake_tail_start: EQU 4
-Tile_snake_body_start: EQU 8
-Tile_background: EQU Tiles_1 + (69 - Tile_basic_offset) * 8
+  TILE bricks, 73
+  TILE apple_stalk, 60
+  TILE apple, 61
+  CHAR snake_head_start, 32
+  CHAR snake_tail_start, 36
+  CHAR snake_body_start, 40
+  TILE background, 69
 
   endif ; graphics_tile_metadata_z80

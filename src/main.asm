@@ -101,9 +101,9 @@ Draw_Snake_Loop:
 
   JR NZ, Draw_Snake_Loop
 
-  ADD A, Tile_snake_head_start
+  ADD A, Char_snake_head_start
   LD B, Snake_head_ink
-  CALL Draw_Frame_With_Ink
+  CALL Print_Char_With_Ink
 
   RET
 
