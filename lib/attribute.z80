@@ -41,6 +41,14 @@ Attribute_box_rows:    EQU 24
         EDUP
     ENDM
 
+    MACRO X_32 register
+        ClearCarryFlag
+        DUP 5
+        RL register
+        EDUP
+    ENDM
+
+
 ; Returns the address in the attribute file.
 ;   H = Y character position
 ;   L = X character position

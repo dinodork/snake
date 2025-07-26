@@ -2,6 +2,7 @@
     define graphics_z80
 
     include "graphics/tile_metadata.z80"
+    include "src/food.z80"
 
 ; The game's graphics is all in this file
 
@@ -58,6 +59,7 @@ Draw_Stalk:
   CALL Get_Char_Address
   POP AF
 
+  RL A ; x2
   ADD A, Char_apple_stalk
   LD DE, Tiles_1
   CALL Print_Char
@@ -83,13 +85,17 @@ Draw_Food:
   CALL Get_Char_Address
   POP AF
 
+  RL A ; x2
   ADD A, Char_apple
   LD DE, Tiles_1
   CALL Print_Char
+
   POP HL
+
   CALL Get_Attr_Address
   LD A, Apple_ink
   CALL Set_Ink
+
   RET
 
 ; Draws the head

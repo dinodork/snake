@@ -135,10 +135,11 @@ Update_Snake:
   PUSH HL
   PUSH DE
   PUSH BC
-  CALL Detect_Collision
+  CALL Detect_And_Handle_Collision
   POP BC
   POP DE
   POP HL
+  LD IX, Game_Phase
   LD A, (IX)
   CP Game_Phase_Game_Over
   RET Z

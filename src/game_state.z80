@@ -21,10 +21,15 @@ Game_tile_facing_down: EQU 0x01
 Game_tile_facing_left: EQU 0x02
 Game_tile_facing_right: EQU 0x03
 Game_tile_wall: EQU 0x04
-Game_tile_food_stalk: EQU 0x05
-Game_tile_food: EQU 0x06
-Game_tile_empty: EQU 0xFF
 
+; Unlike food, we don't have different representations of the stalk in the game
+; state, it's all represented by this value.
+Game_tile_food_stalk: EQU 0x05
+Game_tile_food_bit: EQU 0x3
+Game_tile_food_mask: EQU 1 << Game_tile_food_bit
+Game_tile_apple: EQU 0x08 | Food_apple
+Game_tile_cherry: EQU 0x08 | Food_cherry
+Game_tile_empty: EQU 0xFF
 
 ; The theoretical position of the tongue. We say theoretical because the tongue
 ; might not be visible in case some other visual element occupies the same
@@ -154,7 +159,7 @@ Game_get_address:
   LD L, H
   LD H, 0
 
-    HL_X_32
+  HL_X_32
 
     ; Add the X value back
   ADD HL, DE
@@ -165,6 +170,29 @@ Game_get_address:
 
   RET
 
+; Returns address of game tile in IX
+;   H: Y position
+;   L: X position
+; Clobbers: BC
+Game_get_address_IX:
+  ; IX = H * 32
+  LD B, 0
+  LD C, H
+  X_32 BC
+  LD IX, BC
+
+  ; IX += L
+  LD B, 0
+  LD C, L
+  ADD IX, BC
+
+  ; IX += L Game
+  LD BC, Game
+  ADD IX, BC
+
+  RET
+
+
 ; Checks for collision and updates game state accordingly.
 ;   H Snake head Y position
 ;   L Snake head X position
@@ -172,32 +200,31 @@ Game_get_address:
 ;   IX Address of game state
 ; Clobbers:
 ;   A
-Detect_Collision:
-  LD IX, Game_Phase
+Detect_And_Handle_Collision:
+  LD IY, Game_Phase
   LD A, L
 
-  PUSH HL
-  CALL Game_get_address
-  LD A, (HL)
-
-  CP A, Game_tile_food
-  POP HL
-  JP Z, Handle_Collision_With_Food
-
-  CP A, Game_tile_food_stalk
-  RET Z
+  CALL Game_get_address_IX
+  LD A, (IX)
 
   CP A, Game_tile_empty
   RET Z
 
-    ; Collision with wall
-  LD (IX), Game_Phase_Game_Over
+  CP A, Game_tile_food_stalk
+  RET Z
+
+  BIT Game_tile_food_bit, A
+  JP NZ, Handle_Collision_With_Food
+
+  ; Collision with wall
+  LD (IY), Game_Phase_Game_Over
   RET
 
 ; Assumes that the snake's head is in the same location as the food.
 ;   H Food Y position
 ;   L Food X position
 Handle_Collision_With_Food:
+  LD IX, Game_Phase
   LD (IX), Game_Phase_Eating
   LD IX, Game_snake_target_length
   INC (IX)

@@ -79,6 +79,7 @@ Print_UDG8:
 ;   DE: Address of character set (if entering at Print_Char_UDG.)
 ; No SM code here - needs to be reentrant if called on interrupt.
 ;
+; Clobbers: BC, IY
 Print_Char:
   PUSH HL
 
