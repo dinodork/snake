@@ -1,7 +1,7 @@
     ifndef lib_graphics_z80
     define lib_graphics_z80
 
-    include "attribute.z80"
+    include "attribute.asm"
 
 Attribute_ram_columns: EQU 32
 Start_Of_Image_File: EQU 0x4000

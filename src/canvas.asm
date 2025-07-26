@@ -1,6 +1,6 @@
-  include "lib/attribute.z80"
-  include "lib/graphics.z80"
-  include "graphics/tile_metadata.z80"
+  include "lib/attribute.asm"
+  include "lib/graphics.asm"
+  include "graphics/tile_metadata.asm"
 
   MACRO SLOW_DOWN_VISUALS
 ;    HALT

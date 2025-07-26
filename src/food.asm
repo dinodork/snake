@@ -1,11 +1,11 @@
     ifndef src_food_z80
     define src_food_z80
 
-    include "lib/attribute.z80"
-    include "lib/math.z80"
-    include "game_state.z80"
-    include "graphics.z80"
-    include "screen.z80"
+    include "lib/attribute.asm"
+    include "lib/math.asm"
+    include "game_state.asm"
+    include "graphics.asm"
+    include "screen.asm"
 
 Food_apple: EQU 1
 Food_cherry: EQU 2

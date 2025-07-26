@@ -1,7 +1,7 @@
     ifndef src_controls_z80
     define src_controls_z80
 
-    include "lib/keyboard.z80"
+    include "lib/keyboard.asm"
 Input_Custom:
   DB 0xFB, %00000001  	; Q (Up)
   DB 0xFD, %00000001  	; A (Down)

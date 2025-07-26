@@ -1,7 +1,7 @@
     ifndef src_message_strings_z80
     define src_message_strings_z80
 
-    include "messages.z80"
+    include "messages.asm"
 
 Text_Scores:
   DB 0, 0, "Snake", 0xFE

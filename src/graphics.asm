@@ -1,8 +1,8 @@
     ifndef graphics_z80
     define graphics_z80
 
-    include "graphics/tile_metadata.z80"
-    include "src/food.z80"
+    include "graphics/tile_metadata.asm"
+    include "src/food.asm"
 
 ; The game's graphics is all in this file
 
