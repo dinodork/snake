@@ -1,6 +1,7 @@
     ifndef src_food_z80
     define src_food_z80
 
+    include "lib/attribute.z80"
     include "lib/math.z80"
     include "game_state.z80"
     include "graphics.z80"
@@ -8,6 +9,10 @@
 
 Food_apple: EQU 1
 Food_cherry: EQU 2
+
+Food_inks:
+  ;    Apple    Cherry       Pineapple   Pear
+  BYTE Ink_Red, Ink_Magenta, Ink_Yellow, Ink_Green
 
 ; Removes food from games state and screen
 ; H: Y position
@@ -75,9 +80,10 @@ Place_Food_y_ok:
   ; We found a free space, place the food
   ;
 
-  ; Choose fruit: generate a random index.
+  ; Choose fruit: generate a random index. There are four fruits, so use bottom
+  ; two bits of only.
   LD A, R
-  AND A, 1
+  AND A, 3
 
   PUSH AF
   OR A, Game_tile_food_mask

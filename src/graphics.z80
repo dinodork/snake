@@ -85,15 +85,20 @@ Draw_Food:
   CALL Get_Char_Address
   POP AF
 
+  PUSH AF
   RL A ; x2
   ADD A, Char_apple
   LD DE, Tiles_1
   CALL Print_Char
+  POP AF
 
   POP HL
 
   CALL Get_Attr_Address
-  LD A, Apple_ink
+  LD IY, Food_inks
+  LD (SM_Food_ink_offset + 2), A
+SM_Food_ink_offset:
+  LD A, (IY + 2)
   CALL Set_Ink
 
   RET
