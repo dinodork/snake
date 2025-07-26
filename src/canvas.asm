@@ -1,6 +1,6 @@
+  include "graphics/tile_metadata.asm"
   include "lib/attribute.asm"
   include "lib/graphics.asm"
-  include "graphics/tile_metadata.asm"
 
   MACRO SLOW_DOWN_VISUALS
 ;    HALT

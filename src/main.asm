@@ -14,20 +14,20 @@ NEX:  equ 0   ;  1=Create nex file, 0=create sna file
   defs 0x6000 - $  ; move after screen area
 screen_top: defb  0   ; WPMEMx
 
-  include "lib/attribute.asm"
-  include "lib/graphics.asm"
-  include "lib/format.asm"
   include "canvas.asm"
   include "controls.asm"
-  include "screen.asm"
   include "food.asm"
   include "game_state.asm"
-  include "graphics/tile_metadata.asm"
   include "graphics.asm"
-  include "src/keyboard.asm"
-  include "messages.asm"
-  include "message_strings.asm"
+  include "graphics/tile_metadata.asm"
+  include "lib/attribute.asm"
+  include "lib/format.asm"
+  include "lib/graphics.asm"
   include "lib/sound.asm"
+  include "message_strings.asm"
+  include "messages.asm"
+  include "screen.asm"
+  include "src/keyboard.asm"
 
   include "build/graphics/font.asm"
   include "build/graphics/tiles.asm"
