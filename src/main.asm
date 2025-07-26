@@ -342,13 +342,11 @@ Loop:
   JP Loop
 
 Handle_Game_Over:
-
-; X eyes
   LD HL, (Game_snake_head_x) ; H := Y position, L := X position
   CALL Game_get_address
   CALL Game_get_direction
-  ADD 64 - 32
-  CALL Draw_Head_Frame
+  ADD A, Char_snake_head_x_eyes
+  CALL Print_Head_Char
 
 ; Modify the code indside the interrupt handler!
 ; The call to Update_Snake now gets replaced with a different routine

@@ -25,11 +25,12 @@ Char_name: EQU (i - 32)
   CHAR snake_tongue, 56
 
   TILE bricks, 73
-  FRUIT apple, 60
-  FRUIT cherry, 62
+  FRUIT apple, 64
+  FRUIT cherry, 66
   CHAR snake_head_start, 32
   CHAR snake_tail_start, 36
   CHAR snake_body_start, 40
+  CHAR snake_head_x_eyes, 60
   TILE background, 69
 
   endif ; graphics_tile_metadata_z80

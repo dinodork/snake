@@ -105,9 +105,8 @@ Draw_Head:
   CALL Game_get_direction
 
 ; Draws a frame in the head's ink.
-;   A: UDG character of the head.
-Draw_Head_Frame:
-
+;   A: Character of the head.
+Print_Head_Char:
   PUSH AF
   LD HL, (Game_snake_head_x)
   CALL Get_Char_Address
