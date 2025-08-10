@@ -27,6 +27,7 @@ screen_top: defb  0   ; WPMEMx
   include "message_strings.asm"
   include "messages.asm"
   include "screen.asm"
+  include "src/effects.asm"
   include "src/keyboard.asm"
 
   include "build/graphics/font.asm"
@@ -155,6 +156,8 @@ Update_Snake:
   LD HL, (Game_snake_target_length)
   LD DE, (Game_snake_length)
   SBC HL, DE
+
+
   JR NZ, Update_Snake_Grow
 
   ; The snake doesn't need to grow anymore, so move the tail one slot in its
@@ -315,8 +318,29 @@ game:
   CALL Draw_Score
   CALL Draw_Game_Screen
   CALL Game_initialise
+  CALL Play_Intro
+
+  CALL Effects_Update_Snake
+  CALL Effects_Update_Snake
+  CALL Effects_Update_Snake
+  CALL Effects_Update_Snake
+  CALL Effects_Update_Snake
+  CALL Effects_Update_Snake
+  CALL Effects_Update_Snake
+  CALL Effects_Update_Snake
+  CALL Effects_Update_Snake
+  CALL Effects_Update_Snake
+  CALL Effects_Update_Snake
+  CALL Effects_Update_Snake
+  CALL Effects_Update_Snake
+  CALL Effects_Update_Snake
+  CALL Effects_Update_Snake
+  CALL Effects_Update_Snake
+  CALL Effects_Update_Snake
+
   CALL Draw_Snake
   CALL Place_Food
+
 
   LD IX, Game_Phase
   LD (IX), Game_Phase_Running

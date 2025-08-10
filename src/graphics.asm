@@ -263,6 +263,7 @@ Draw_Tail:
 ; Clears an 8x8 box (draws the background on it)
 ;   H: Y position
 ;   L: X position
+; Clobbers: A, HL
 Graphics_Clear_Box:
   PUSH HL
   CALL Get_Char_Address
